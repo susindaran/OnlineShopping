@@ -1,0 +1,46 @@
+logging:
+  level: INFO
+
+databaseConfiguration:
+  # the name of your JDBC driver
+  driverClass: com.mysql.jdbc.Driver
+  # the username
+  user: root
+  # the password
+  password: root
+  # the JDBC URL
+  url: jdbc:mysql://localhost:3306/shopping
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    hibernate.generate_statistics: false
+    hibernate.session.events.log: false
+    hibernate.show_sql: true
+    hibernate.format_sql: true
+    hibernate.jdbc.batch_size property: 20
+
+#    hibernate.hbm2ddl.auto: validate
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* MyApplication Health Check */ SELECT 1"
+  # the minimum number of connections to keep open
+  minSize: 3
+  # the maximum number of connections to keep open
+  maxSize: 32
+  # whether or not idle connections should be validated
+  checkConnectionWhileIdle: false
+
+
+# server settings
+server:
+  applicationConnectors:
+    - type: http
+      port: 8888
+
+  adminConnectors:
+    - type: http
+      port: 8889
+
+endpoint: http://localhost:8888/

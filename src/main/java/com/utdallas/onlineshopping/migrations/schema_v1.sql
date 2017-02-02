@@ -1,0 +1,1 @@
+ALTER TABLE `customer` ADD CONSTRAINT `email_id_UK_customer` UNIQUE (`email_id`);

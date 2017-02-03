@@ -3,9 +3,12 @@ package com.utdallas.onlineshopping.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.utdallas.onlineshopping.action.customer.ChallengeLoginAction;
 import com.utdallas.onlineshopping.action.customer.CreateCustomerAction;
 import com.utdallas.onlineshopping.action.customer.GetCustomerAction;
+import com.utdallas.onlineshopping.payload.request.customer.ChallengeLoginRequest;
 import com.utdallas.onlineshopping.payload.request.customer.CreateCustomerRequest;
+import com.utdallas.onlineshopping.payload.response.customer.ChallengeLoginResponse;
 import com.utdallas.onlineshopping.payload.response.customer.CustomerResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +27,16 @@ public class CustomerResource
 {
     private final GetCustomerAction getCustomerAction;
     private final CreateCustomerAction createCustomerAction;
+    private final ChallengeLoginAction challengeLoginAction;
 
     @Inject
     public CustomerResource( Provider<GetCustomerAction> getCustomerActionProvider,
-                             Provider<CreateCustomerAction> createCustomerActionProvider )
+                             Provider<CreateCustomerAction> createCustomerActionProvider,
+                             Provider<ChallengeLoginAction> challengeLoginActionProvider)
     {
         this.getCustomerAction = getCustomerActionProvider.get();
         this.createCustomerAction = createCustomerActionProvider.get();
+        this.challengeLoginAction = challengeLoginActionProvider.get();
     }
 
     @GET
@@ -51,5 +57,15 @@ public class CustomerResource
     {
         CustomerResponse customerResponse = this.createCustomerAction.withRequest(createCustomerRequest).invoke();
         return Response.status(Response.Status.CREATED).entity(customerResponse).build();
+    }
+
+    @POST
+    @Path("/login")
+    @UnitOfWork
+    @Timed
+    public Response challengeLogin(@Context HttpHeaders headers, @NotNull ChallengeLoginRequest challengeLoginRequest)
+    {
+        ChallengeLoginResponse challengeLoginResponse = this.challengeLoginAction.withRequest(challengeLoginRequest).invoke();
+        return Response.status(Response.Status.OK).entity(challengeLoginResponse).build();
     }
 }

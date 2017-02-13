@@ -31,9 +31,9 @@ public class CustomerHibernateDAO extends BaseHibernateDAO<Customer> implements 
         }
     }
 
-    public Customer update(Customer obj)
+    public Customer update(Customer customer)
     {
-        return null;
+        return persist(customer);
     }
 
     public void delete(Customer customer)

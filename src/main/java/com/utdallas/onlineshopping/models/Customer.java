@@ -4,6 +4,8 @@ import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "customer")
@@ -27,4 +29,10 @@ public class Customer extends BaseModel
     private String emailId;
 
     private String password;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Address> addresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer")
+    private List<CardDetail> cardDetails = new ArrayList<>();
 }

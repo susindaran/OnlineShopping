@@ -25,6 +25,7 @@ public class CardDetail extends BaseModel
 
     private String nameOnCard;
 
+    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "customer_id", nullable = false)

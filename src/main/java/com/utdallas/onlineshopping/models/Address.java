@@ -38,6 +38,7 @@ public class Address extends BaseModel
 
     private String type;
 
+    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "customer_id", nullable = false)

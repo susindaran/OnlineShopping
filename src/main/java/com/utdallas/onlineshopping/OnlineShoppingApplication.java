@@ -7,7 +7,9 @@ import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
 import com.utdallas.onlineshopping.health.OnlineShoppingHealthCheck;
 import com.utdallas.onlineshopping.inject.HibernateModule;
 import com.utdallas.onlineshopping.inject.OnlineShoppingModule;
+import com.utdallas.onlineshopping.models.Address;
 import com.utdallas.onlineshopping.models.Customer;
+import com.utdallas.onlineshopping.models.TaxDetails;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -29,7 +31,9 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
 
     private static final HibernateBundle<OnlineShoppingConfiguration> HIBERNATE_BUNDLE =
             new HibernateBundle<OnlineShoppingConfiguration>(
-                    Customer.class
+                    Customer.class,
+                    TaxDetails.class,
+                    Address.class
             )
             {
                 @Override

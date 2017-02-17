@@ -6,9 +6,11 @@ import com.google.inject.TypeLiteral;
 import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
 import com.utdallas.onlineshopping.db.GenericDAO;
 import com.utdallas.onlineshopping.db.hibernate.AddressHibernateDAO;
+import com.utdallas.onlineshopping.db.hibernate.CardDetailHibernateDAO;
 import com.utdallas.onlineshopping.db.hibernate.CustomerHibernateDAO;
 import com.utdallas.onlineshopping.db.hibernate.TaxDetailsHibernateDAO;
 import com.utdallas.onlineshopping.models.Address;
+import com.utdallas.onlineshopping.models.CardDetail;
 import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.models.TaxDetails;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -19,7 +21,8 @@ public class HibernateModule extends AbstractModule
             {
                     Customer.class,
                     TaxDetails.class,
-                    Address.class
+                    Address.class,
+                    CardDetail.class
             };
 
     private final HibernateBundle<OnlineShoppingConfiguration> hibernateBundle;
@@ -35,6 +38,7 @@ public class HibernateModule extends AbstractModule
         bind(new TypeLiteral<GenericDAO<Customer>>(){}).to(CustomerHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<TaxDetails>>(){}).to(TaxDetailsHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<Address>>(){}).to(AddressHibernateDAO.class);
+        bind(new TypeLiteral<GenericDAO<CardDetail>>(){}).to(CardDetailHibernateDAO.class);
     }
 
     @Provides
@@ -53,5 +57,11 @@ public class HibernateModule extends AbstractModule
     public AddressHibernateDAO provideAddressHibernateDAO()
     {
         return new AddressHibernateDAO(hibernateBundle.getSessionFactory());
+    }
+
+    @Provides
+    public CardDetailHibernateDAO provideCardDetailHibernateDAO()
+    {
+        return new CardDetailHibernateDAO(hibernateBundle.getSessionFactory());
     }
 }

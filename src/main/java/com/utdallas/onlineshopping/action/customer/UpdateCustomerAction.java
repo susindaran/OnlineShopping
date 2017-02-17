@@ -1,5 +1,6 @@
 package com.utdallas.onlineshopping.action.customer;
 
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
@@ -42,13 +43,13 @@ public class UpdateCustomerAction implements Action<CustomerResponse>
     {
         CustomerHibernateDAO customerHibernateDAO = hibernateUtil.getCustomerHibernateDAO();
         Customer customer = customerHibernateDAO.findById( customer_id ).get();
-        if( updateCustomerRequest.getFirstName() != null )
+        if( !Strings.isNullOrEmpty(updateCustomerRequest.getFirstName()) )
             customer.setFirstName(updateCustomerRequest.getFirstName());
-        if( updateCustomerRequest.getLastName() != null )
+        if( !Strings.isNullOrEmpty(updateCustomerRequest.getLastName()) )
             customer.setLastName(updateCustomerRequest.getLastName());
-        if( updateCustomerRequest.getEmailId() != null)
+        if( !Strings.isNullOrEmpty(updateCustomerRequest.getEmailId()) )
             customer.setEmailId(updateCustomerRequest.getEmailId());
-        if( updateCustomerRequest.getPassword() != null )
+        if( !Strings.isNullOrEmpty(updateCustomerRequest.getPassword()) )
             customer.setPassword(PasswordEncrypter.encryptWithMD5(updateCustomerRequest.getPassword()));
 
         customerHibernateDAO.update(customer);

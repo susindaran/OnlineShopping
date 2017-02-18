@@ -11,6 +11,7 @@ import lombok.Data;
 public class AddressResponse
 {
     private Long addressId;
+    private String name;
     private String phone;
     private String street;
     private String city;

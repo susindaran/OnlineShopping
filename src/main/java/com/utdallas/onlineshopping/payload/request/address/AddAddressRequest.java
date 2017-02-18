@@ -14,4 +14,5 @@ public class AddAddressRequest
     private String country;
     private String zipcode;
     private String type;
+    private String name;
 }

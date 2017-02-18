@@ -38,6 +38,8 @@ public class Address extends BaseModel
 
     private String type;
 
+    private String name;
+
     @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull

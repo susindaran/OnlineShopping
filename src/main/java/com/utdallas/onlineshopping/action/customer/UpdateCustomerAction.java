@@ -5,13 +5,18 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.CustomerHibernateDAO;
+import com.utdallas.onlineshopping.exceptions.ConflictingRequestException;
+import com.utdallas.onlineshopping.exceptions.InternalErrorException;
 import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.payload.request.customer.UpdateCustomerRequest;
 import com.utdallas.onlineshopping.payload.response.customer.CustomerResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import com.utdallas.onlineshopping.util.PasswordEncrypter;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
+@Slf4j
 public class UpdateCustomerAction implements Action<CustomerResponse>
 {
     private final HibernateUtil hibernateUtil;
@@ -43,16 +48,27 @@ public class UpdateCustomerAction implements Action<CustomerResponse>
     {
         CustomerHibernateDAO customerHibernateDAO = hibernateUtil.getCustomerHibernateDAO();
         Customer customer = customerHibernateDAO.findById( customer_id ).get();
-        if( !Strings.isNullOrEmpty(updateCustomerRequest.getFirstName()) )
-            customer.setFirstName(updateCustomerRequest.getFirstName());
-        if( !Strings.isNullOrEmpty(updateCustomerRequest.getLastName()) )
-            customer.setLastName(updateCustomerRequest.getLastName());
-        if( !Strings.isNullOrEmpty(updateCustomerRequest.getEmailId()) )
-            customer.setEmailId(updateCustomerRequest.getEmailId());
-        if( !Strings.isNullOrEmpty(updateCustomerRequest.getPassword()) )
-            customer.setPassword(PasswordEncrypter.encryptWithMD5(updateCustomerRequest.getPassword()));
 
-        customerHibernateDAO.update(customer);
-        return modelMapper.map(customer, CustomerResponse.class);
+        try
+        {
+            if( !Strings.isNullOrEmpty(updateCustomerRequest.getFirstName()) )
+                customer.setFirstName(updateCustomerRequest.getFirstName());
+            if( !Strings.isNullOrEmpty(updateCustomerRequest.getLastName()) )
+                customer.setLastName(updateCustomerRequest.getLastName());
+            if( !Strings.isNullOrEmpty(updateCustomerRequest.getEmailId()) )
+                customer.setEmailId(updateCustomerRequest.getEmailId());
+            if( !Strings.isNullOrEmpty(updateCustomerRequest.getPassword()) )
+                customer.setPassword(PasswordEncrypter.encryptWithMD5(updateCustomerRequest.getPassword()));
+            Customer newCustomer = customerHibernateDAO.update(customer);
+            return modelMapper.map(newCustomer, CustomerResponse.class);
+        }
+        catch( HibernateException e )
+        {
+            log.error(String.valueOf(e.getCause()));
+            String errorMessage = e.getCause().getMessage();
+            if( errorMessage.contains("Duplicate entry") )
+                throw new ConflictingRequestException("Email ID already exists");
+            throw new InternalErrorException(e.getMessage());
+        }
     }
 }

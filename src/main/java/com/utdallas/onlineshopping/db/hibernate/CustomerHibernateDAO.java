@@ -33,7 +33,12 @@ public class CustomerHibernateDAO extends BaseHibernateDAO<Customer> implements 
 
     public Customer update(Customer customer)
     {
-        return persist(customer);
+        Customer newCustomer = persist(customer);
+        //Flushing the session explicitly here because hibernate sometimes decides not to
+        //update the entity immediately, which causes the exception not to be thrown until
+        //the transaction is committed.
+        this.currentSession().flush();
+        return newCustomer;
     }
 
     public void delete(Customer customer)

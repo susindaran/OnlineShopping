@@ -57,15 +57,13 @@ public class AddAddressAction implements Action<AddressResponse>
         TaxDetails taxDetails = taxDetailsHibernateDAO.findByState(addAddressRequest.getState());
         Customer customer = customerHibernateDAO.findById(this.customerId).get();
 
-        Address address = addressHibernateDAO.create(Address.builder().phone(addAddressRequest.getPhone())
-                .street(addAddressRequest.getStreet())
-                .city(addAddressRequest.getCity())
-                .taxDetails(taxDetails)
-                .country(addAddressRequest.getCountry())
-                .zipcode(addAddressRequest.getZipcode())
-                .type(addAddressRequest.getType()).customer(customer).build());
+        Address address = modelMapper.map(addAddressRequest, Address.class);
+        address.setTaxDetails(taxDetails);
+        address.setCustomer(customer);
 
-        AddressResponse addressResponse = modelMapper.map(address, AddressResponse.class);
+        Address newAddress = addressHibernateDAO.create(address);
+
+        AddressResponse addressResponse = modelMapper.map(newAddress, AddressResponse.class);
         addressResponse.setCustomerId(customer.getCustomerId());
 
         return addressResponse;

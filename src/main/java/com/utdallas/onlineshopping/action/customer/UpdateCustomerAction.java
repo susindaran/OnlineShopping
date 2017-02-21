@@ -11,7 +11,7 @@ import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.payload.request.customer.UpdateCustomerRequest;
 import com.utdallas.onlineshopping.payload.response.customer.CustomerResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
-import com.utdallas.onlineshopping.util.PasswordEncrypter;
+import com.utdallas.onlineshopping.util.PasswordEncipher;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
@@ -58,7 +58,7 @@ public class UpdateCustomerAction implements Action<CustomerResponse>
             if( !Strings.isNullOrEmpty(updateCustomerRequest.getEmailId()) )
                 customer.setEmailId(updateCustomerRequest.getEmailId());
             if( !Strings.isNullOrEmpty(updateCustomerRequest.getPassword()) )
-                customer.setPassword(PasswordEncrypter.encryptWithMD5(updateCustomerRequest.getPassword()));
+                customer.setPassword(PasswordEncipher.encryptWithMD5(updateCustomerRequest.getPassword()));
             Customer newCustomer = customerHibernateDAO.update(customer);
             return modelMapper.map(newCustomer, CustomerResponse.class);
         }

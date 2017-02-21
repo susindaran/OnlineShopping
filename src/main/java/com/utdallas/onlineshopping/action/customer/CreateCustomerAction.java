@@ -10,13 +10,10 @@ import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.payload.request.customer.CreateCustomerRequest;
 import com.utdallas.onlineshopping.payload.response.customer.CustomerResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
-import com.utdallas.onlineshopping.util.PasswordEncrypter;
+import com.utdallas.onlineshopping.util.PasswordEncipher;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
-
-import java.util.Collections;
-import java.util.List;
 
 @Slf4j
 public class CreateCustomerAction implements Action<CustomerResponse>
@@ -48,7 +45,7 @@ public class CreateCustomerAction implements Action<CustomerResponse>
                     .firstName(createCustomerRequest.getFirstName())
                     .lastName(createCustomerRequest.getLastName())
                     .emailId(createCustomerRequest.getEmailId())
-                    .password(PasswordEncrypter.encryptWithMD5(createCustomerRequest.getPassword()))
+                    .password(PasswordEncipher.encryptWithMD5(createCustomerRequest.getPassword()))
                     .build();
             Customer newCustomer = customerHibernateDAO.create(customer);
             return modelMapper.map(newCustomer, CustomerResponse.class);

@@ -9,10 +9,13 @@ import com.google.inject.Singleton;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import com.utdallas.onlineshopping.OnlineShoppingApplication;
 import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
+import com.utdallas.onlineshopping.models.Product;
+import com.utdallas.onlineshopping.payload.request.product.AddProductRequest;
 import com.utdallas.onlineshopping.resources.CustomerResource;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import io.dropwizard.jackson.Jackson;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 
 public class OnlineShoppingModule extends AbstractModule
 {
@@ -48,6 +51,17 @@ public class OnlineShoppingModule extends AbstractModule
     {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
+
+        //Configuring modelMapper to set the productId of Product class from
+        //categoryPrefix of AddProductRequest class.
+        //This is to avoid not null error when persisting the product in DB
+        modelMapper.addMappings(new PropertyMap<AddProductRequest, Product>() {
+            @Override
+            protected void configure() {
+                map().setProductId(source.getCategoryPrefix());
+            }
+        });
+
         return modelMapper;
     }
 }

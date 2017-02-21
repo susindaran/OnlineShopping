@@ -5,14 +5,8 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
 import com.utdallas.onlineshopping.db.GenericDAO;
-import com.utdallas.onlineshopping.db.hibernate.AddressHibernateDAO;
-import com.utdallas.onlineshopping.db.hibernate.CardDetailHibernateDAO;
-import com.utdallas.onlineshopping.db.hibernate.CustomerHibernateDAO;
-import com.utdallas.onlineshopping.db.hibernate.TaxDetailsHibernateDAO;
-import com.utdallas.onlineshopping.models.Address;
-import com.utdallas.onlineshopping.models.CardDetail;
-import com.utdallas.onlineshopping.models.Customer;
-import com.utdallas.onlineshopping.models.TaxDetails;
+import com.utdallas.onlineshopping.db.hibernate.*;
+import com.utdallas.onlineshopping.models.*;
 import io.dropwizard.hibernate.HibernateBundle;
 
 public class HibernateModule extends AbstractModule
@@ -22,7 +16,8 @@ public class HibernateModule extends AbstractModule
                     Customer.class,
                     TaxDetails.class,
                     Address.class,
-                    CardDetail.class
+                    CardDetail.class,
+                    Product.class
             };
 
     private final HibernateBundle<OnlineShoppingConfiguration> hibernateBundle;
@@ -39,6 +34,7 @@ public class HibernateModule extends AbstractModule
         bind(new TypeLiteral<GenericDAO<TaxDetails>>(){}).to(TaxDetailsHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<Address>>(){}).to(AddressHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<CardDetail>>(){}).to(CardDetailHibernateDAO.class);
+        bind(new TypeLiteral<GenericDAO<Product>>(){}).to(ProductHibernateDAO.class);
     }
 
     @Provides
@@ -63,5 +59,11 @@ public class HibernateModule extends AbstractModule
     public CardDetailHibernateDAO provideCardDetailHibernateDAO()
     {
         return new CardDetailHibernateDAO(hibernateBundle.getSessionFactory());
+    }
+
+    @Provides
+    public ProductHibernateDAO provideProductHibernateDAO()
+    {
+        return new ProductHibernateDAO(hibernateBundle.getSessionFactory());
     }
 }

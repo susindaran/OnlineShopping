@@ -8,9 +8,6 @@ import org.hibernate.SessionFactory;
 
 import java.util.Collections;
 
-/**
- * Created by susindaran on 2/16/17.
- */
 public class TaxDetailsHibernateDAO extends BaseHibernateDAO<TaxDetails> implements GenericDAO<TaxDetails>
 {
     @Inject
@@ -20,7 +17,8 @@ public class TaxDetailsHibernateDAO extends BaseHibernateDAO<TaxDetails> impleme
     }
 
     @Override
-    public TaxDetails create(TaxDetails taxDetails) {
+    public TaxDetails create(TaxDetails taxDetails)
+    {
         return persist(taxDetails);
     }
 
@@ -30,22 +28,26 @@ public class TaxDetailsHibernateDAO extends BaseHibernateDAO<TaxDetails> impleme
     }
 
     @Override
-    public Optional<TaxDetails> findById(Long id) {
+    public Optional<TaxDetails> findById(Long id)
+    {
         return null;
     }
 
     @Override
-    public TaxDetails update(TaxDetails obj) {
+    public TaxDetails update(TaxDetails obj)
+    {
         return null;
     }
 
     @Override
-    public void delete(TaxDetails obj) {
+    public void delete(TaxDetails obj)
+    {
 
     }
 
     @Override
-    public TaxDetails merge(TaxDetails obj) {
+    public TaxDetails merge(TaxDetails obj)
+    {
         return null;
     }
 }

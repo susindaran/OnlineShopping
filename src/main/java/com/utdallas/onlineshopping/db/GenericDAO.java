@@ -8,17 +8,17 @@ import java.util.Map;
 
 public interface GenericDAO<T extends BaseModel>
 {
-    public T create(T obj);
+    T create(T obj);
 
-    public Optional<T> findById(Long id);
+    Optional<T> findById(Long id);
 
-    public List<T> findByParams(Map<String, Object> params);
+    List<T> findByParams(Map<String, Object> params);
 
-    public T update(T obj);
+    T update(T obj);
 
-    public void delete(T obj);
+    void delete(T obj);
 
-    public long count();
+    long count();
 
-    public T merge(T obj);
+    T merge(T obj);
 }

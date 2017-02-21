@@ -7,10 +7,7 @@ import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
 import com.utdallas.onlineshopping.health.OnlineShoppingHealthCheck;
 import com.utdallas.onlineshopping.inject.HibernateModule;
 import com.utdallas.onlineshopping.inject.OnlineShoppingModule;
-import com.utdallas.onlineshopping.models.Address;
-import com.utdallas.onlineshopping.models.CardDetail;
-import com.utdallas.onlineshopping.models.Customer;
-import com.utdallas.onlineshopping.models.TaxDetails;
+import com.utdallas.onlineshopping.models.*;
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -36,7 +33,8 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
                     Customer.class,
                     TaxDetails.class,
                     Address.class,
-                    CardDetail.class
+                    CardDetail.class,
+                    Product.class
             )
             {
                 @Override
@@ -87,7 +85,5 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
     public static void main(String[] args) throws Exception
     {
         new OnlineShoppingApplication().run(args);
-//        LocalDateTime dateTime = LocalDateTime.now();
-//        System.out.println( dateTime.toString() );
     }
 }

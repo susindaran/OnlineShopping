@@ -6,7 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @Slf4j
-public class PasswordEncrypter
+public class PasswordEncipher
 {
     private static MessageDigest messageDigest;
     public static String encryptWithMD5(String password)

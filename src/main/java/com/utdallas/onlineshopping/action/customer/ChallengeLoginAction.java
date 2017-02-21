@@ -5,13 +5,12 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.CustomerHibernateDAO;
 import com.utdallas.onlineshopping.exceptions.AuthorizationFailedException;
-import com.utdallas.onlineshopping.exceptions.ConflictingRequestException;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
 import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.payload.request.customer.ChallengeLoginRequest;
 import com.utdallas.onlineshopping.payload.response.customer.ChallengeLoginResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
-import com.utdallas.onlineshopping.util.PasswordEncrypter;
+import com.utdallas.onlineshopping.util.PasswordEncipher;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
@@ -46,7 +45,7 @@ public class ChallengeLoginAction implements Action<ChallengeLoginResponse>
         CustomerHibernateDAO customerHibernateDAO = hibernateUtil.getCustomerHibernateDAO();
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("emailId", challengeLoginRequest.getEmailId());
-        queryParams.put("password", PasswordEncrypter.encryptWithMD5(challengeLoginRequest.getPassword()));
+        queryParams.put("password", PasswordEncipher.encryptWithMD5(challengeLoginRequest.getPassword()));
 
         try
         {

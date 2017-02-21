@@ -6,9 +6,6 @@ import com.utdallas.onlineshopping.db.GenericDAO;
 import com.utdallas.onlineshopping.models.CardDetail;
 import org.hibernate.SessionFactory;
 
-/**
- * Created by susindaran on 2/17/17.
- */
 public class CardDetailHibernateDAO extends BaseHibernateDAO<CardDetail> implements GenericDAO<CardDetail>
 {
     @Inject

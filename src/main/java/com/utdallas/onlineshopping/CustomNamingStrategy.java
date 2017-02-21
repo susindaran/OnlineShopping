@@ -13,9 +13,6 @@ public class CustomNamingStrategy extends ImprovedNamingStrategy
 
     private String transformToPluralForm(String singularTableName)
     {
-        StringBuilder pluralTableName = new StringBuilder();
-        pluralTableName.append(singularTableName);
-        pluralTableName.append(PLURAL_SUFFIX);
-        return pluralTableName.toString();
+        return singularTableName + PLURAL_SUFFIX;
     }
 }

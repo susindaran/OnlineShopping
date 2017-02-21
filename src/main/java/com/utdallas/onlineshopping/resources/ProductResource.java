@@ -31,7 +31,6 @@ public class ProductResource
         this.addProductAction = addProductActionProvider.get();
     }
 
-    @Path("/")
     @POST
     @UnitOfWork
     @Timed

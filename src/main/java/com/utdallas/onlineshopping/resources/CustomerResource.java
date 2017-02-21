@@ -67,7 +67,6 @@ public class CustomerResource
     }
 
     @POST
-    @Path("/")
     @UnitOfWork
     @Timed
     public Response create(@Context HttpHeaders headers, @NotNull CreateCustomerRequest createCustomerRequest)

@@ -35,6 +35,7 @@ public class HibernateModule extends AbstractModule
         bind(new TypeLiteral<GenericDAO<Address>>(){}).to(AddressHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<CardDetail>>(){}).to(CardDetailHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<Product>>(){}).to(ProductHibernateDAO.class);
+        bind(new TypeLiteral<GenericDAO<Category>>(){}).to(CategoryHibernateDAO.class);
     }
 
     @Provides
@@ -65,5 +66,11 @@ public class HibernateModule extends AbstractModule
     public ProductHibernateDAO provideProductHibernateDAO()
     {
         return new ProductHibernateDAO(hibernateBundle.getSessionFactory());
+    }
+
+    @Provides
+    public CategoryHibernateDAO provideCategoryHibernateDAO()
+    {
+        return new CategoryHibernateDAO(hibernateBundle.getSessionFactory());
     }
 }

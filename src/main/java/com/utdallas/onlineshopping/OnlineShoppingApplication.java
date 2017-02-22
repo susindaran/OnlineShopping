@@ -16,7 +16,6 @@ import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.Configuration;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
 
 import java.util.TimeZone;
 
@@ -34,7 +33,8 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
                     TaxDetails.class,
                     Address.class,
                     CardDetail.class,
-                    Product.class
+                    Product.class,
+                    Category.class
             )
             {
                 @Override

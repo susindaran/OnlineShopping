@@ -21,13 +21,13 @@ public class HibernateUtil
                          Provider<AddressHibernateDAO> addressHibernateDAOProvider,
                          Provider<CardDetailHibernateDAO> cardDetailHibernateDAOProvider,
                          Provider<ProductHibernateDAO> productHibernateDAOProvider,
-                         Provider<CategoryHibernateDAO> categoriesHibernateDAOProvider)
+                         Provider<CategoryHibernateDAO> categoryHibernateDAOProvider)
     {
         this.customerHibernateDAO = customerHibernateDAOProvider.get();
         this.taxDetailsHibernateDAO = taxDetailsHibernateDAOProvider.get();
         this.addressHibernateDAO = addressHibernateDAOProvider.get();
         this.cardDetailHibernateDAO = cardDetailHibernateDAOProvider.get();
         this.productHibernateDAO = productHibernateDAOProvider.get();
-        this.categoryHibernateDAO = categoriesHibernateDAOProvider.get();
+        this.categoryHibernateDAO = categoryHibernateDAOProvider.get();
     }
 }

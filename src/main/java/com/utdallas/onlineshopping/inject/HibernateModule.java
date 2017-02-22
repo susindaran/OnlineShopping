@@ -68,7 +68,8 @@ public class HibernateModule extends AbstractModule
         return new ProductHibernateDAO(hibernateBundle.getSessionFactory());
     }
 
-    public CategoryHibernateDAO provideCategoriesHibernateDAO()
+    @Provides
+    public CategoryHibernateDAO provideCategoryHibernateDAO()
     {
         return new CategoryHibernateDAO(hibernateBundle.getSessionFactory());
     }

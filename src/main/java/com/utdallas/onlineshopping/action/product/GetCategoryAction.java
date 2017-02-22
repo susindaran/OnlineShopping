@@ -10,13 +10,11 @@ import com.utdallas.onlineshopping.payload.response.product.CategoryResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
 
-/**
- * Created by prathyusha on 2/21/17.
- */
-public class GetCategoryAction implements Action<CategoryResponse> {
+public class GetCategoryAction implements Action<CategoryResponse>
+{
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
-    private String id;
+    private String categoryId;
 
     @Inject
     public GetCategoryAction(Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper)
@@ -25,18 +23,18 @@ public class GetCategoryAction implements Action<CategoryResponse> {
         this.modelMapper = modelMapper;
     }
 
-    public GetCategoryAction withId(String id )
+    public GetCategoryAction withId(String id)
     {
-        this.id = id;
+        this.categoryId = id;
         return this;
     }
 
     public CategoryResponse invoke()
     {
-        Optional<Category> categoriesOptional = hibernateUtil.getCategoriesHibernateDAO().findById(id);
-        if( categoriesOptional.isPresent() )
+        Optional<Category> categoryOptional = hibernateUtil.getCategoryHibernateDAO().findById(categoryId);
+        if( categoryOptional.isPresent() )
         {
-            return modelMapper.map(categoriesOptional.get(), CategoryResponse.class);
+            return modelMapper.map(categoryOptional.get(), CategoryResponse.class);
         }
         else
         {

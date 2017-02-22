@@ -22,16 +22,16 @@ import javax.ws.rs.core.Response;
 @Path("/category")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
-public class CategoryResource {
+public class CategoryResource
+{
     private final GetCategoryAction getCategoryAction;
     private final UpdateCategoriesAction updateCategoriesAction;
     private final GetCategoriesAction getCategoriesAction;
 
     @Inject
     public CategoryResource(Provider<GetCategoryAction> getCategoryActionProvider,
-                            Provider<UpdateCategoriesAction> updateCategoriesActionProvider ,
-                            Provider<GetCategoriesAction> getCategoriesActionProvider
-                            )
+                            Provider<UpdateCategoriesAction> updateCategoriesActionProvider,
+                            Provider<GetCategoriesAction> getCategoriesActionProvider)
     {
         this.getCategoryAction = getCategoryActionProvider.get();
         this.updateCategoriesAction = updateCategoriesActionProvider.get();
@@ -47,9 +47,6 @@ public class CategoryResource {
         CategoryResponse categoryResponse = this.getCategoryAction.withId(id).invoke();
         return Response.ok().entity(categoryResponse).build();
     }
-
-
-
 
     @POST
     @Path("/update/{id}")

@@ -8,26 +8,23 @@ import org.hibernate.SessionFactory;
 
 import java.util.List;
 
-/**
- * Created by prathyusha on 2/21/17.
- */
-public class CategoriesHibernateDAO extends BaseHibernateDAO<Category> implements GenericDAO<Category>
+public class CategoryHibernateDAO extends BaseHibernateDAO<Category> implements GenericDAO<Category>
 {
-
     @Inject
-    public CategoriesHibernateDAO(SessionFactory sessionFactory)
+    public CategoryHibernateDAO(SessionFactory sessionFactory)
     {
         super(sessionFactory);
     }
 
-
     @Override
-    public Category create(Category category) {
+    public Category create(Category category)
+    {
         return persist(category);
     }
 
     @Override
-    public Optional<Category> findById(Long id) {
+    public Optional<Category> findById(Long id)
+    {
         if( id != null )
         {
             return Optional.fromNullable(get(id));
@@ -38,7 +35,8 @@ public class CategoriesHibernateDAO extends BaseHibernateDAO<Category> implement
         }
     }
 
-    public Optional<Category> findById(String id) {
+    public Optional<Category> findById(String id)
+    {
         if( id != null )
         {
             return Optional.fromNullable(get(id));
@@ -55,11 +53,11 @@ public class CategoriesHibernateDAO extends BaseHibernateDAO<Category> implement
     }
 
     @Override
-    public Category update(Category category) {
-
-Category category1 =persist(category);
-this.currentSession().flush();
-return category1;
+    public Category update(Category category)
+    {
+        Category category1 = persist(category);
+        this.currentSession().flush();
+        return category1;
     }
 
     @Override

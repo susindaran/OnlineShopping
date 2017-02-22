@@ -13,7 +13,7 @@ public class HibernateUtil
     private final AddressHibernateDAO addressHibernateDAO;
     private final CardDetailHibernateDAO cardDetailHibernateDAO;
     private final ProductHibernateDAO productHibernateDAO;
-    private final CategoriesHibernateDAO categoriesHibernateDAO;
+    private final CategoryHibernateDAO categoryHibernateDAO;
 
     @Inject
     public HibernateUtil(Provider<CustomerHibernateDAO> customerHibernateDAOProvider,
@@ -21,13 +21,13 @@ public class HibernateUtil
                          Provider<AddressHibernateDAO> addressHibernateDAOProvider,
                          Provider<CardDetailHibernateDAO> cardDetailHibernateDAOProvider,
                          Provider<ProductHibernateDAO> productHibernateDAOProvider,
-                         Provider<CategoriesHibernateDAO> categoriesHibernateDAOProvider)
+                         Provider<CategoryHibernateDAO> categoriesHibernateDAOProvider)
     {
         this.customerHibernateDAO = customerHibernateDAOProvider.get();
         this.taxDetailsHibernateDAO = taxDetailsHibernateDAOProvider.get();
         this.addressHibernateDAO = addressHibernateDAOProvider.get();
         this.cardDetailHibernateDAO = cardDetailHibernateDAOProvider.get();
         this.productHibernateDAO = productHibernateDAOProvider.get();
-        this.categoriesHibernateDAO = categoriesHibernateDAOProvider.get();
+        this.categoryHibernateDAO = categoriesHibernateDAOProvider.get();
     }
 }

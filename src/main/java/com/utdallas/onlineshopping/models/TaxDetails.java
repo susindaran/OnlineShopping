@@ -4,6 +4,7 @@ import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tax_details")
@@ -21,4 +22,8 @@ public class TaxDetails extends BaseModel
 
     @Column(name = "tax", columnDefinition = "float(6,3)")
     private Float tax;
+
+    @Getter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "taxDetails", fetch = FetchType.LAZY)
+    private List<Address> addresses;
 }

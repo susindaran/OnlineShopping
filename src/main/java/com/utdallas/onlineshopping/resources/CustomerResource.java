@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.address.AddAddressAction;
+import com.utdallas.onlineshopping.action.address.DeleteAddressAction;
 import com.utdallas.onlineshopping.action.card.AddCardDetailAction;
 import com.utdallas.onlineshopping.action.customer.ChallengeLoginAction;
 import com.utdallas.onlineshopping.action.customer.CreateCustomerAction;
@@ -38,6 +39,7 @@ public class CustomerResource
     private final ChallengeLoginAction challengeLoginAction;
     private final UpdateCustomerAction updateCustomerAction;
     private final AddAddressAction addAddressAction;
+    private final DeleteAddressAction deleteAddressAction;
     private final AddCardDetailAction addCardDetailAction;
 
     @Inject
@@ -46,13 +48,15 @@ public class CustomerResource
                             Provider<ChallengeLoginAction> challengeLoginActionProvider,
                             Provider<UpdateCustomerAction> updateCustomerActionProvider,
                             Provider<AddAddressAction> addAddressActionProvider,
-                            Provider<AddCardDetailAction> addCardDetailActionProvider)
+                            Provider<AddCardDetailAction> addCardDetailActionProvider,
+                            Provider<DeleteAddressAction> deleteAddressActionProvider)
     {
         this.getCustomerAction = getCustomerActionProvider.get();
         this.createCustomerAction = createCustomerActionProvider.get();
         this.challengeLoginAction = challengeLoginActionProvider.get();
         this.updateCustomerAction = updateCustomerActionProvider.get();
         this. addAddressAction = addAddressActionProvider.get();
+        this.deleteAddressAction = deleteAddressActionProvider.get();
         this.addCardDetailAction = addCardDetailActionProvider.get();
     }
 
@@ -95,8 +99,12 @@ public class CustomerResource
         return Response.status(Response.Status.OK).entity(customerResponse).build();
     }
 
+    /*
+    * Address APIs
+    * */
+
     @POST
-    @Path("{id}/address")
+    @Path("/address/{id}")
     @UnitOfWork
     @Timed
     public Response addAddress(@Context HttpHeaders headers, @NotNull AddAddressRequest addAddressRequest, @NotNull @PathParam("id") Long id)
@@ -104,6 +112,20 @@ public class CustomerResource
         AddressResponse addressResponse = this.addAddressAction.withRequest(addAddressRequest).forCustomerId(id).invoke();
         return Response.status(Response.Status.CREATED).entity(addressResponse).build();
     }
+
+    @DELETE
+    @Path("/address/{id}")
+    @UnitOfWork
+    @Timed
+    public Response deleteAddress(@Context HttpHeaders headers, @NotNull @PathParam("id") Long id)
+    {
+        this.deleteAddressAction.withAddressId( id ).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    /*
+    * Card APIs
+    * */
 
     @POST
     @Path("{id}/card")

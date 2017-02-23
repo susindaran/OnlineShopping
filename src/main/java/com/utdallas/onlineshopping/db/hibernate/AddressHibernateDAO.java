@@ -3,6 +3,7 @@ package com.utdallas.onlineshopping.db.hibernate;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.utdallas.onlineshopping.db.GenericDAO;
+import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Address;
 import org.hibernate.SessionFactory;
 
@@ -36,9 +37,22 @@ public class AddressHibernateDAO extends BaseHibernateDAO<Address> implements Ge
     }
 
     @Override
-    public void delete(Address obj)
+    public void delete(Address address)
     {
+        currentSession().delete(address);
+    }
 
+    public void deleteById(Long addressId)
+    {
+        Optional<Address> address = findById(addressId);
+        if( !address.isPresent() )
+        {
+            throw new NotFoundException("Unable to find the given Address ID");
+        }
+        else
+        {
+            delete( address.get());
+        }
     }
 
     @Override

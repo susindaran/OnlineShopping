@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.address.AddAddressAction;
 import com.utdallas.onlineshopping.action.address.DeleteAddressAction;
 import com.utdallas.onlineshopping.action.card.AddCardDetailAction;
+import com.utdallas.onlineshopping.action.card.DeleteCardDetailAction;
 import com.utdallas.onlineshopping.action.customer.ChallengeLoginAction;
 import com.utdallas.onlineshopping.action.customer.CreateCustomerAction;
 import com.utdallas.onlineshopping.action.customer.GetCustomerAction;
@@ -41,6 +42,7 @@ public class CustomerResource
     private final AddAddressAction addAddressAction;
     private final DeleteAddressAction deleteAddressAction;
     private final AddCardDetailAction addCardDetailAction;
+    private final DeleteCardDetailAction deleteCardDetailAction;
 
     @Inject
     public CustomerResource(Provider<GetCustomerAction> getCustomerActionProvider,
@@ -49,7 +51,8 @@ public class CustomerResource
                             Provider<UpdateCustomerAction> updateCustomerActionProvider,
                             Provider<AddAddressAction> addAddressActionProvider,
                             Provider<AddCardDetailAction> addCardDetailActionProvider,
-                            Provider<DeleteAddressAction> deleteAddressActionProvider)
+                            Provider<DeleteAddressAction> deleteAddressActionProvider,
+                            Provider<DeleteCardDetailAction> deleteCardDetailActionProvider)
     {
         this.getCustomerAction = getCustomerActionProvider.get();
         this.createCustomerAction = createCustomerActionProvider.get();
@@ -58,6 +61,7 @@ public class CustomerResource
         this. addAddressAction = addAddressActionProvider.get();
         this.deleteAddressAction = deleteAddressActionProvider.get();
         this.addCardDetailAction = addCardDetailActionProvider.get();
+        this.deleteCardDetailAction = deleteCardDetailActionProvider.get();
     }
 
     @GET
@@ -104,22 +108,22 @@ public class CustomerResource
     * */
 
     @POST
-    @Path("/address/{id}")
+    @Path("/address/{customer_id}")
     @UnitOfWork
     @Timed
-    public Response addAddress(@Context HttpHeaders headers, @NotNull AddAddressRequest addAddressRequest, @NotNull @PathParam("id") Long id)
+    public Response addAddress(@Context HttpHeaders headers, @NotNull AddAddressRequest addAddressRequest, @NotNull @PathParam("customer_id") Long customerId)
     {
-        AddressResponse addressResponse = this.addAddressAction.withRequest(addAddressRequest).forCustomerId(id).invoke();
+        AddressResponse addressResponse = this.addAddressAction.withRequest(addAddressRequest).forCustomerId(customerId).invoke();
         return Response.status(Response.Status.CREATED).entity(addressResponse).build();
     }
 
     @DELETE
-    @Path("/address/{id}")
+    @Path("/address/{address_id}")
     @UnitOfWork
     @Timed
-    public Response deleteAddress(@Context HttpHeaders headers, @NotNull @PathParam("id") Long id)
+    public Response deleteAddress(@Context HttpHeaders headers, @NotNull @PathParam("address_id") Long addressId)
     {
-        this.deleteAddressAction.withAddressId( id ).invoke();
+        this.deleteAddressAction.withAddressId( addressId ).invoke();
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
@@ -128,12 +132,22 @@ public class CustomerResource
     * */
 
     @POST
-    @Path("{id}/card")
+    @Path("/card/{customer_id}")
     @UnitOfWork
     @Timed
-    public Response addCardDetail(@Context HttpHeaders headers, @NotNull AddCardDetailRequest addCardDetailRequest, @NotNull @PathParam("id") Long id)
+    public Response addCardDetail(@Context HttpHeaders headers, @NotNull AddCardDetailRequest addCardDetailRequest, @NotNull @PathParam("customer_id") Long customerId)
     {
-        CardDetailResponse cardDetailResponse = this.addCardDetailAction.withRequest(addCardDetailRequest).forCustomerId(id).invoke();
+        CardDetailResponse cardDetailResponse = this.addCardDetailAction.withRequest(addCardDetailRequest).forCustomerId(customerId).invoke();
         return Response.status(Response.Status.CREATED).entity(cardDetailResponse).build();
+    }
+
+    @DELETE
+    @Path("/card/{card_number}")
+    @UnitOfWork
+    @Timed
+    public Response deleteCardDetail(@Context HttpHeaders headers, @NotNull @PathParam("card_number") String cardNumber)
+    {
+        this.deleteCardDetailAction.withCardNumber( cardNumber ).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

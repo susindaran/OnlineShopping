@@ -1,4 +1,4 @@
-package com.utdallas.onlineshopping.payload.response.product;
+package com.utdallas.onlineshopping.payload.response.category;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.dropwizard.jackson.JsonSnakeCase;

@@ -1,11 +1,11 @@
-package com.utdallas.onlineshopping.action.product;
+package com.utdallas.onlineshopping.action.category;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.CategoryHibernateDAO;
 import com.utdallas.onlineshopping.models.Category;
-import com.utdallas.onlineshopping.payload.response.product.CategoriesResponse;
+import com.utdallas.onlineshopping.payload.response.category.CategoriesResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
 

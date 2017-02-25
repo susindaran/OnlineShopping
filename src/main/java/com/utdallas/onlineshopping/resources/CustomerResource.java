@@ -8,6 +8,7 @@ import com.utdallas.onlineshopping.action.address.DeleteAddressAction;
 import com.utdallas.onlineshopping.action.address.EditAddressAction;
 import com.utdallas.onlineshopping.action.card.AddCardDetailAction;
 import com.utdallas.onlineshopping.action.card.DeleteCardDetailAction;
+import com.utdallas.onlineshopping.action.customer.*;
 import com.utdallas.onlineshopping.action.card.EditCardDetailAction;
 import com.utdallas.onlineshopping.action.customer.ChallengeLoginAction;
 import com.utdallas.onlineshopping.action.customer.CreateCustomerAction;
@@ -41,6 +42,7 @@ public class CustomerResource
     private final CreateCustomerAction createCustomerAction;
     private final ChallengeLoginAction challengeLoginAction;
     private final UpdateCustomerAction updateCustomerAction;
+    private final DeleteCustomerAction deleteCustomerAction;
     private final AddAddressAction addAddressAction;
     private final DeleteAddressAction deleteAddressAction;
     private final AddCardDetailAction addCardDetailAction;
@@ -53,6 +55,7 @@ public class CustomerResource
                             Provider<CreateCustomerAction> createCustomerActionProvider,
                             Provider<ChallengeLoginAction> challengeLoginActionProvider,
                             Provider<UpdateCustomerAction> updateCustomerActionProvider,
+                            Provider<DeleteCustomerAction> deleteCustomerActionProvider,
                             Provider<AddAddressAction> addAddressActionProvider,
                             Provider<AddCardDetailAction> addCardDetailActionProvider,
                             Provider<DeleteAddressAction> deleteAddressActionProvider,
@@ -64,6 +67,7 @@ public class CustomerResource
         this.createCustomerAction = createCustomerActionProvider.get();
         this.challengeLoginAction = challengeLoginActionProvider.get();
         this.updateCustomerAction = updateCustomerActionProvider.get();
+        this.deleteCustomerAction = deleteCustomerActionProvider.get();
         this. addAddressAction = addAddressActionProvider.get();
         this.deleteAddressAction = deleteAddressActionProvider.get();
         this.addCardDetailAction = addCardDetailActionProvider.get();
@@ -101,14 +105,24 @@ public class CustomerResource
         return Response.status(Response.Status.OK).entity(challengeLoginResponse).build();
     }
 
-    @POST
-    @Path("/update/{id}")
+    @PUT
+    @Path("/{id}")
     @UnitOfWork
     @Timed
     public Response update(@Context HttpHeaders headers, @NotNull UpdateCustomerRequest updateCustomerRequest, @NotNull @PathParam("id") Long id)
     {
         CustomerResponse customerResponse = this.updateCustomerAction.withId(id).withRequest(updateCustomerRequest).invoke();
         return Response.status(Response.Status.OK).entity(customerResponse).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @UnitOfWork
+    @Timed
+    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("id") Long customerId)
+    {
+        this.deleteCustomerAction.withCustomerId(customerId).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     /*

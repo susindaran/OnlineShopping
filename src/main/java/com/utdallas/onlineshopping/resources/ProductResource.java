@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.product.AddProductAction;
+import com.utdallas.onlineshopping.action.product.DeleteProductAction;
 import com.utdallas.onlineshopping.action.product.UpdateProductAction;
 import com.utdallas.onlineshopping.payload.request.product.AddProductRequest;
 import com.utdallas.onlineshopping.payload.request.product.UpdateProductRequest;
@@ -24,13 +25,17 @@ import javax.ws.rs.core.Response;
 public class ProductResource
 {
     private final AddProductAction addProductAction;
+    private final DeleteProductAction deleteProductAction;
     private final UpdateProductAction updateProductAction;
 
     @Inject
-    public ProductResource(Provider<AddProductAction> addProductActionProvider,Provider<UpdateProductAction> updateProductActionProviderActionProvider)
+    public ProductResource(Provider<AddProductAction> addProductActionProvider,
+                           Provider<UpdateProductAction> updateProductActionProvider,
+                           Provider<DeleteProductAction> deleteProductActionProvider)
     {
         this.addProductAction = addProductActionProvider.get();
-        this.updateProductAction=updateProductActionProviderActionProvider.get();
+        this.updateProductAction = updateProductActionProvider.get();
+        this.deleteProductAction = deleteProductActionProvider.get();
     }
 
     @POST
@@ -42,6 +47,16 @@ public class ProductResource
         return Response.status(Response.Status.CREATED).entity(productResponse).build();
     }
 
+    @DELETE
+    @Path("/{id}")
+    @UnitOfWork
+    @Timed
+    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("id") String productId)
+    {
+        this.deleteProductAction.withProductId(productId).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
     @PUT
     @Path("/{id}")
     @UnitOfWork
@@ -51,6 +66,4 @@ public class ProductResource
         ProductResponse productResponse = this.updateProductAction.withId(id).withRequest(updateProductRequest).invoke();
         return Response.status(Response.Status.OK).entity(productResponse).build();
     }
-
-
 }

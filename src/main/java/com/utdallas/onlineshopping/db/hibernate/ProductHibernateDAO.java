@@ -33,10 +33,24 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         }
     }
 
+    public Optional<Product> findById(String id)
+    {
+        if( id != null )
+        {
+            return Optional.fromNullable( get(id) );
+        }
+        else
+        {
+            return Optional.absent();
+        }
+    }
+
     @Override
     public Product update(Product product)
     {
-        return persist(product);
+        Product newProduct = persist(product);
+        this.currentSession().flush();
+        return newProduct;
     }
 
     @Override

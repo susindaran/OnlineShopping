@@ -3,10 +3,7 @@ package com.utdallas.onlineshopping.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.utdallas.onlineshopping.action.category.AddCategoryAction;
-import com.utdallas.onlineshopping.action.category.GetCategoriesAction;
-import com.utdallas.onlineshopping.action.category.GetCategoryAction;
-import com.utdallas.onlineshopping.action.category.UpdateCategoriesAction;
+import com.utdallas.onlineshopping.action.category.*;
 import com.utdallas.onlineshopping.payload.request.category.CategoryRequest;
 import com.utdallas.onlineshopping.payload.response.category.CategoryResponse;
 import com.utdallas.onlineshopping.payload.response.category.CategoriesResponse;
@@ -29,17 +26,20 @@ public class CategoryResource
     private final UpdateCategoriesAction updateCategoriesAction;
     private final GetCategoriesAction getCategoriesAction;
     private final AddCategoryAction addCategoryAction;
+    private final DeleteCategoryAction deleteCategoryAction;
 
     @Inject
     public CategoryResource(Provider<GetCategoryAction> getCategoryActionProvider,
                             Provider<UpdateCategoriesAction> updateCategoriesActionProvider,
                             Provider<GetCategoriesAction> getCategoriesActionProvider,
-                            Provider<AddCategoryAction> addCategoryActionProvider)
+                            Provider<AddCategoryAction> addCategoryActionProvider,
+                            Provider<DeleteCategoryAction> deleteCategoryActionProvider)
     {
         this.getCategoryAction = getCategoryActionProvider.get();
         this.updateCategoriesAction = updateCategoriesActionProvider.get();
         this.getCategoriesAction = getCategoriesActionProvider.get();
         this.addCategoryAction = addCategoryActionProvider.get();
+        this.deleteCategoryAction = deleteCategoryActionProvider.get();
     }
 
 
@@ -77,9 +77,22 @@ public class CategoryResource
     @Path("/all")
     @UnitOfWork
     @Timed
-    public Response getAllCategories(@Context HttpHeaders headers)
-    {
+    public Response getAllCategories(@Context HttpHeaders headers) {
         CategoriesResponse categoriesResponse = this.getCategoriesAction.invoke();
         return Response.status(Response.Status.OK).entity(categoriesResponse).build();
     }
+
+    @DELETE
+    @Path("/{id}")
+    @UnitOfWork
+    @Timed
+    public Response deleteCategory(@Context HttpHeaders headers,@NotNull @PathParam("id") String categoryId)
+
+    {
+        this.deleteCategoryAction.withCategoryId(categoryId).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 }
+
+

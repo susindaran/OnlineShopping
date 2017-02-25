@@ -33,7 +33,9 @@ public class AddressHibernateDAO extends BaseHibernateDAO<Address> implements Ge
     @Override
     public Address update(Address address)
     {
-        return persist(address);
+        Address newAddress = persist(address);
+        this.currentSession().flush();
+        return newAddress;
     }
 
     @Override

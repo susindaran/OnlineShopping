@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @JsonSnakeCase
 @Getter
-public class AddAddressRequest
+public class AddressRequest
 {
     private String phone;
     private String street;

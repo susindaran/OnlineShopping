@@ -1,6 +1,7 @@
 package com.utdallas.onlineshopping.db.hibernate;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.utdallas.onlineshopping.db.GenericDAO;
 import com.utdallas.onlineshopping.exceptions.NotFoundException;
@@ -27,10 +28,24 @@ public class CardDetailHibernateDAO extends BaseHibernateDAO<CardDetail> impleme
         return null;
     }
 
+    public Optional<CardDetail> findByCardNumber(String cardNumber)
+    {
+        if( Strings.isNullOrEmpty( cardNumber ) )
+        {
+            return Optional.absent();
+        }
+        else
+        {
+            return Optional.fromNullable(get(cardNumber));
+        }
+    }
+
     @Override
     public CardDetail update(CardDetail obj)
     {
-        return null;
+        CardDetail cardDetail = persist(obj);
+        this.currentSession().flush();
+        return cardDetail;
     }
 
     @Override

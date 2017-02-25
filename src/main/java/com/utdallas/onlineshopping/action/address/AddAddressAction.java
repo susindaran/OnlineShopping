@@ -9,22 +9,17 @@ import com.utdallas.onlineshopping.db.hibernate.TaxDetailsHibernateDAO;
 import com.utdallas.onlineshopping.models.Address;
 import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.models.TaxDetails;
-import com.utdallas.onlineshopping.payload.request.address.AddAddressRequest;
+import com.utdallas.onlineshopping.payload.request.address.AddressRequest;
 import com.utdallas.onlineshopping.payload.response.address.AddressResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
 
-import java.util.Collections;
-
-/**
- * Created by susindaran on 2/16/17.
- */
 public class AddAddressAction implements Action<AddressResponse>
 {
 
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
-    private AddAddressRequest addAddressRequest;
+    private AddressRequest addressRequest;
     private Long customerId;
 
     @Inject
@@ -34,9 +29,9 @@ public class AddAddressAction implements Action<AddressResponse>
         this.modelMapper = modelMapper;
     }
 
-    public AddAddressAction withRequest(AddAddressRequest addAddressRequest)
+    public AddAddressAction withRequest(AddressRequest addressRequest)
     {
-        this.addAddressRequest = addAddressRequest;
+        this.addressRequest = addressRequest;
         return this;
     }
 
@@ -54,10 +49,10 @@ public class AddAddressAction implements Action<AddressResponse>
         AddressHibernateDAO addressHibernateDAO = this.hibernateUtil.getAddressHibernateDAO();
 
         //TODO: Make validations on the state and customerId and throw exceptions accordingly
-        TaxDetails taxDetails = taxDetailsHibernateDAO.findByState(addAddressRequest.getState());
+        TaxDetails taxDetails = taxDetailsHibernateDAO.findByState(addressRequest.getState());
         Customer customer = customerHibernateDAO.findById(this.customerId).get();
 
-        Address address = modelMapper.map(addAddressRequest, Address.class);
+        Address address = modelMapper.map(addressRequest, Address.class);
         address.setTaxDetails(taxDetails);
         address.setCustomer(customer);
 

@@ -5,7 +5,9 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.product.AddProductAction;
 import com.utdallas.onlineshopping.action.product.DeleteProductAction;
+import com.utdallas.onlineshopping.action.product.UpdateProductAction;
 import com.utdallas.onlineshopping.payload.request.product.AddProductRequest;
+import com.utdallas.onlineshopping.payload.request.product.UpdateProductRequest;
 import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +26,15 @@ public class ProductResource
 {
     private final AddProductAction addProductAction;
     private final DeleteProductAction deleteProductAction;
+    private final UpdateProductAction updateProductAction;
 
     @Inject
     public ProductResource(Provider<AddProductAction> addProductActionProvider,
+                           Provider<UpdateProductAction> updateProductActionProvider,
                            Provider<DeleteProductAction> deleteProductActionProvider)
     {
         this.addProductAction = addProductActionProvider.get();
+        this.updateProductAction = updateProductActionProvider.get();
         this.deleteProductAction = deleteProductActionProvider.get();
     }
 
@@ -52,4 +57,13 @@ public class ProductResource
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    @PUT
+    @Path("/{id}")
+    @UnitOfWork
+    @Timed
+    public Response update(@Context HttpHeaders headers, @NotNull UpdateProductRequest updateProductRequest, @NotNull @PathParam("id") String id)
+    {
+        ProductResponse productResponse = this.updateProductAction.withId(id).withRequest(updateProductRequest).invoke();
+        return Response.status(Response.Status.OK).entity(productResponse).build();
+    }
 }

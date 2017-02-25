@@ -21,7 +21,7 @@ public class CardDetail extends BaseModel
     @Column(name = "card_number", unique = true, columnDefinition = "varchar(25)")
     private String cardNumber;
 
-    private LocalDateTime expiryDate = LocalDateTime.now();
+    private LocalDateTime expiryDate;
 
     private String nameOnCard;
 

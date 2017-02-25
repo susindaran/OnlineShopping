@@ -7,19 +7,17 @@ import com.utdallas.onlineshopping.db.hibernate.CardDetailHibernateDAO;
 import com.utdallas.onlineshopping.db.hibernate.CustomerHibernateDAO;
 import com.utdallas.onlineshopping.models.CardDetail;
 import com.utdallas.onlineshopping.models.Customer;
-import com.utdallas.onlineshopping.payload.request.card.AddCardDetailRequest;
+import com.utdallas.onlineshopping.payload.request.card.CardDetailRequest;
 import com.utdallas.onlineshopping.payload.response.card.CardDetailResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
+import com.utdallas.onlineshopping.util.Utility;
 import org.modelmapper.ModelMapper;
 
-/**
- * Created by susindaran on 2/17/17.
- */
 public class AddCardDetailAction implements Action<CardDetailResponse>
 {
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
-    private AddCardDetailRequest addCardDetailRequest;
+    private CardDetailRequest cardDetailRequest;
     private Long customerId;
 
     @Inject
@@ -30,9 +28,9 @@ public class AddCardDetailAction implements Action<CardDetailResponse>
         this.modelMapper = modelMapper;
     }
 
-    public AddCardDetailAction withRequest(AddCardDetailRequest addCardDetailRequest)
+    public AddCardDetailAction withRequest(CardDetailRequest cardDetailRequest)
     {
-        this.addCardDetailRequest = addCardDetailRequest;
+        this.cardDetailRequest = cardDetailRequest;
         return this;
     }
 
@@ -51,7 +49,8 @@ public class AddCardDetailAction implements Action<CardDetailResponse>
         //TODO: Validity check and corresponding exception throwing
         Customer customer = customerHibernateDAO.findById(customerId).get();
 
-        CardDetail cardDetail = modelMapper.map(addCardDetailRequest, CardDetail.class);
+        CardDetail cardDetail = modelMapper.map(cardDetailRequest, CardDetail.class);
+        cardDetail.setExpiryDate(Utility.StringToDate( cardDetailRequest.getExpiryDate() ));
         cardDetail.setCustomer(customer);
 
         CardDetail newCardDetails = cardDetailHibernateDAO.create( cardDetail );

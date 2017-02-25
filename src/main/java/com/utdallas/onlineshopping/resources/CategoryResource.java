@@ -3,12 +3,10 @@ package com.utdallas.onlineshopping.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.utdallas.onlineshopping.action.product.GetCategoriesAction;
-import com.utdallas.onlineshopping.action.product.GetCategoryAction;
-import com.utdallas.onlineshopping.action.product.UpdateCategoriesAction;
-import com.utdallas.onlineshopping.payload.request.product.UpdateCategoryRequest;
-import com.utdallas.onlineshopping.payload.response.product.CategoryResponse;
-import com.utdallas.onlineshopping.payload.response.product.CategoriesResponse;
+import com.utdallas.onlineshopping.action.category.*;
+import com.utdallas.onlineshopping.payload.request.category.CategoryRequest;
+import com.utdallas.onlineshopping.payload.response.category.CategoryResponse;
+import com.utdallas.onlineshopping.payload.response.category.CategoriesResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,16 +25,33 @@ public class CategoryResource
     private final GetCategoryAction getCategoryAction;
     private final UpdateCategoriesAction updateCategoriesAction;
     private final GetCategoriesAction getCategoriesAction;
+    private final AddCategoryAction addCategoryAction;
+    private final DeleteCategoryAction deleteCategoryAction;
 
     @Inject
     public CategoryResource(Provider<GetCategoryAction> getCategoryActionProvider,
                             Provider<UpdateCategoriesAction> updateCategoriesActionProvider,
-                            Provider<GetCategoriesAction> getCategoriesActionProvider)
+                            Provider<GetCategoriesAction> getCategoriesActionProvider,
+                            Provider<AddCategoryAction> addCategoryActionProvider,
+                            Provider<DeleteCategoryAction> deleteCategoryActionProvider)
     {
         this.getCategoryAction = getCategoryActionProvider.get();
         this.updateCategoriesAction = updateCategoriesActionProvider.get();
         this.getCategoriesAction = getCategoriesActionProvider.get();
+        this.addCategoryAction = addCategoryActionProvider.get();
+        this.deleteCategoryAction = deleteCategoryActionProvider.get();
     }
+
+
+    @POST
+    @UnitOfWork
+    @Timed
+    public Response create(@Context HttpHeaders headers, @NotNull CategoryRequest categoryRequest)
+    {
+        CategoryResponse categoryResponse = this.addCategoryAction.withRequest(categoryRequest).invoke();
+        return Response.status(Response.Status.CREATED).entity(categoryResponse).build();
+    }
+
 
     @GET
     @Path("/{id}")
@@ -52,9 +67,9 @@ public class CategoryResource
     @Path("/update/{id}")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull UpdateCategoryRequest updateCategoryRequest, @NotNull @PathParam("id") String id)
+    public Response update(@Context HttpHeaders headers, @NotNull CategoryRequest categoryRequest, @NotNull @PathParam("id") String id)
     {
-        CategoryResponse categoryResponse = this.updateCategoriesAction.withId(id).withRequest(updateCategoryRequest).invoke();
+        CategoryResponse categoryResponse = this.updateCategoriesAction.withId(id).withRequest(categoryRequest).invoke();
         return Response.status(Response.Status.OK).entity(categoryResponse).build();
     }
 
@@ -62,9 +77,22 @@ public class CategoryResource
     @Path("/all")
     @UnitOfWork
     @Timed
-    public Response getAllCategories(@Context HttpHeaders headers)
-    {
+    public Response getAllCategories(@Context HttpHeaders headers) {
         CategoriesResponse categoriesResponse = this.getCategoriesAction.invoke();
         return Response.status(Response.Status.OK).entity(categoriesResponse).build();
     }
+
+    @DELETE
+    @Path("/{id}")
+    @UnitOfWork
+    @Timed
+    public Response deleteCategory(@Context HttpHeaders headers,@NotNull @PathParam("id") String categoryId)
+
+    {
+        this.deleteCategoryAction.withCategoryId(categoryId).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
 }
+
+

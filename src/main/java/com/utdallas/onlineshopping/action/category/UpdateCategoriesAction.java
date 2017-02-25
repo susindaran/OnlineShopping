@@ -1,4 +1,4 @@
-package com.utdallas.onlineshopping.action.product;
+package com.utdallas.onlineshopping.action.category;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -10,8 +10,8 @@ import com.utdallas.onlineshopping.exceptions.ConflictingRequestException;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
 import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Category;
-import com.utdallas.onlineshopping.payload.request.product.UpdateCategoryRequest;
-import com.utdallas.onlineshopping.payload.response.product.CategoryResponse;
+import com.utdallas.onlineshopping.payload.request.category.CategoryRequest;
+import com.utdallas.onlineshopping.payload.response.category.CategoryResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
@@ -22,12 +22,12 @@ public class UpdateCategoriesAction implements Action<CategoryResponse>
 {
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
-    private UpdateCategoryRequest updateCategoryRequest;
+    private CategoryRequest categoryRequest;
     private String categoryId;
 
-    public UpdateCategoriesAction withRequest(UpdateCategoryRequest updateCategoryRequest)
+    public UpdateCategoriesAction withRequest(CategoryRequest categoryRequest)
     {
-        this.updateCategoryRequest = updateCategoryRequest;
+        this.categoryRequest = categoryRequest;
         return this;
     }
 
@@ -63,10 +63,10 @@ public class UpdateCategoriesAction implements Action<CategoryResponse>
 
         try
         {
-            if( !Strings.isNullOrEmpty(updateCategoryRequest.getCategoryName()) )
-                category.setCategoryName(updateCategoryRequest.getCategoryName());
-            if( !Strings.isNullOrEmpty(updateCategoryRequest.getCategoryId()) )
-                category.setCategoryId(updateCategoryRequest.getCategoryId());
+            if( !Strings.isNullOrEmpty(categoryRequest.getCategoryName()) )
+                category.setCategoryName(categoryRequest.getCategoryName());
+            if( !Strings.isNullOrEmpty(categoryRequest.getCategoryId()) )
+                category.setCategoryId(categoryRequest.getCategoryId());
             Category newCategory = categoryHibernateDAO.update(category);
             return modelMapper.map(newCategory, CategoryResponse.class);
         }

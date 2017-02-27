@@ -4,9 +4,12 @@ import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.utdallas.onlineshopping.db.GenericDAO;
 import com.utdallas.onlineshopping.models.TaxDetails;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 
 import java.util.Collections;
+import java.util.List;
 
 public class TaxDetailsHibernateDAO extends BaseHibernateDAO<TaxDetails> implements GenericDAO<TaxDetails>
 {
@@ -31,6 +34,12 @@ public class TaxDetailsHibernateDAO extends BaseHibernateDAO<TaxDetails> impleme
     public Optional<TaxDetails> findById(Long id)
     {
         return null;
+    }
+
+    public List<String> getAllStates()
+    {
+        Criteria criteria = currentSession().createCriteria( TaxDetails.class ).setProjection( Projections.property( "state" ) );
+        return criteria.list();
     }
 
     @Override

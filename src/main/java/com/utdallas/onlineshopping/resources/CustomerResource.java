@@ -26,6 +26,7 @@ import com.utdallas.onlineshopping.payload.response.customer.CustomerResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -133,7 +134,7 @@ public class CustomerResource
     @Path("/address/{customer_id}")
     @UnitOfWork
     @Timed
-    public Response addAddress(@Context HttpHeaders headers, @NotNull AddressRequest addressRequest, @NotNull @PathParam("customer_id") Long customerId)
+    public Response addAddress(@Context HttpHeaders headers, @NotNull @Valid AddressRequest addressRequest, @NotNull @PathParam("customer_id") Long customerId)
     {
         AddressResponse addressResponse = this.addAddressAction.withRequest(addressRequest).forCustomerId(customerId).invoke();
         return Response.status(Response.Status.CREATED).entity(addressResponse).build();

@@ -1,0 +1,1 @@
+ALTER TABLE `address` CHANGE `state` `state` VARCHAR(15) NOT NULL;

@@ -49,6 +49,11 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         }
     }
 
+    public List<Product> getAll()
+    {
+        return currentSession().createCriteria(Product.class).list();
+    }
+
     @Override
     public Product update(Product product)
     {

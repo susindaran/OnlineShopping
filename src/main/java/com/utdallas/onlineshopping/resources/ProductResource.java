@@ -3,10 +3,9 @@ package com.utdallas.onlineshopping.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.utdallas.onlineshopping.action.product.AddProductAction;
-import com.utdallas.onlineshopping.action.product.DeleteProductAction;
-import com.utdallas.onlineshopping.action.product.UpdateProductAction;
+import com.utdallas.onlineshopping.action.product.*;
 import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
+import com.utdallas.onlineshopping.payload.response.product.AllProductsResponse;
 import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +25,40 @@ public class ProductResource
     private final AddProductAction addProductAction;
     private final DeleteProductAction deleteProductAction;
     private final UpdateProductAction updateProductAction;
+    private final GetProductAction getProductAction;
+    private final GetAllProductsAction getAllProductsAction;
 
     @Inject
     public ProductResource(Provider<AddProductAction> addProductActionProvider,
                            Provider<UpdateProductAction> updateProductActionProvider,
-                           Provider<DeleteProductAction> deleteProductActionProvider)
+                           Provider<DeleteProductAction> deleteProductActionProvider,
+                           Provider<GetProductAction> getProductActionProvider,
+                           Provider<GetAllProductsAction> getAllProductsActionProvider)
     {
         this.addProductAction = addProductActionProvider.get();
         this.updateProductAction = updateProductActionProvider.get();
         this.deleteProductAction = deleteProductActionProvider.get();
+        this.getProductAction = getProductActionProvider.get();
+        this.getAllProductsAction = getAllProductsActionProvider.get();
+    }
+
+    @GET
+    @Path("/{product_id}")
+    @UnitOfWork
+    @Timed
+    public Response getProduct(@Context HttpHeaders headers, @NotNull @PathParam("product_id") String productId)
+    {
+        ProductResponse productResponse = getProductAction.forProductId(productId).invoke();
+        return Response.status(Response.Status.OK).entity(productResponse).build();
+    }
+
+    @GET
+    @UnitOfWork
+    @Timed
+    public Response getAllProducts(@Context HttpHeaders headers)
+    {
+        AllProductsResponse allProductsResponse = getAllProductsAction.invoke();
+        return Response.status(Response.Status.OK).entity(allProductsResponse).build();
     }
 
     @POST

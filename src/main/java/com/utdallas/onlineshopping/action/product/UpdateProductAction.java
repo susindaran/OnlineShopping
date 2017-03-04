@@ -22,7 +22,7 @@ public class UpdateProductAction implements Action<ProductResponse>
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
     private ProductRequest productRequest;
-    private String product_id;
+    private String productId;
 
     public UpdateProductAction withRequest(ProductRequest productRequest)
     {
@@ -32,7 +32,7 @@ public class UpdateProductAction implements Action<ProductResponse>
 
     public UpdateProductAction withId(String id)
     {
-        this.product_id = id;
+        this.productId = id;
         return this;
     }
 
@@ -47,7 +47,7 @@ public class UpdateProductAction implements Action<ProductResponse>
     public ProductResponse invoke()
     {
         ProductHibernateDAO productHibernateDAO = hibernateUtil.getProductHibernateDAO();
-        Product product = productHibernateDAO.findByParams(Collections.singletonMap("productId", product_id)).get(0);
+        Product product = productHibernateDAO.findByParams(Collections.singletonMap("productId", productId)).get(0);
 
         try
         {

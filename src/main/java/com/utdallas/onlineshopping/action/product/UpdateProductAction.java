@@ -1,16 +1,13 @@
 package com.utdallas.onlineshopping.action.product;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.ProductHibernateDAO;
-import com.utdallas.onlineshopping.exceptions.ConflictingRequestException;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
-import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Product;
-import com.utdallas.onlineshopping.payload.request.product.UpdateProductRequest;
+import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
 import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +21,12 @@ public class UpdateProductAction implements Action<ProductResponse>
 {
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
-    private UpdateProductRequest updateProductRequest;
+    private ProductRequest productRequest;
     private String product_id;
 
-    public UpdateProductAction withRequest(UpdateProductRequest updateProductRequest)
+    public UpdateProductAction withRequest(ProductRequest productRequest)
     {
-        this.updateProductRequest = updateProductRequest;
+        this.productRequest = productRequest;
         return this;
     }
 
@@ -54,15 +51,15 @@ public class UpdateProductAction implements Action<ProductResponse>
 
         try
         {
-            if( !Strings.isNullOrEmpty(updateProductRequest.getProductName()) )
-                product.setProductName(updateProductRequest.getProductName());
-            if( !Strings.isNullOrEmpty(updateProductRequest.getProductDescription()) )
-                product.setDescription(updateProductRequest.getProductDescription());
+            if( !Strings.isNullOrEmpty(productRequest.getProductName()) )
+                product.setProductName(productRequest.getProductName());
+            if( !Strings.isNullOrEmpty(productRequest.getProductDescription()) )
+                product.setDescription(productRequest.getProductDescription());
 
-            if(updateProductRequest.getQuantity()==-1){
+            if(productRequest.getQuantity()==-1){
                 product.setQuantity(0);
             }
-            if(updateProductRequest.getPrice()==-1){
+            if(productRequest.getPrice()==-1){
                 product.setPrice(0.0);
             }
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @JsonSnakeCase
 @Getter
-public class AddProductRequest
+public class ProductRequest
 {
     private String categoryPrefix;
     private String productName;

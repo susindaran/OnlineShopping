@@ -5,7 +5,7 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.ProductHibernateDAO;
 import com.utdallas.onlineshopping.models.Product;
-import com.utdallas.onlineshopping.payload.request.product.AddProductRequest;
+import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
 import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
@@ -14,11 +14,11 @@ public class AddProductAction implements Action<ProductResponse>
 {
     HibernateUtil hibernateUtil;
     ModelMapper modelMapper;
-    private AddProductRequest addProductRequest;
+    private ProductRequest productRequest;
 
-    public AddProductAction withRequest(AddProductRequest addProductRequest)
+    public AddProductAction withRequest(ProductRequest productRequest)
     {
-        this.addProductRequest = addProductRequest;
+        this.productRequest = productRequest;
         return this;
 
     }
@@ -36,12 +36,12 @@ public class AddProductAction implements Action<ProductResponse>
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
 
         //Configured modelMapper to map the productId of Product from the categoryPrefix
-        //of the AddProductRequest
-        Product product = modelMapper.map(addProductRequest, Product.class);
+        //of the ProductRequest
+        Product product = modelMapper.map(productRequest, Product.class);
         Product newProduct = productHibernateDAO.create(product);
 
         //Appending the ID to the product_id column
-        newProduct.setProductId( String.format("%s%010d", addProductRequest.getCategoryPrefix(), newProduct.getId()) );
+        newProduct.setProductId( String.format("%s%010d", productRequest.getCategoryPrefix(), newProduct.getId()) );
         productHibernateDAO.update( newProduct );
 
         return modelMapper.map(newProduct, ProductResponse.class);

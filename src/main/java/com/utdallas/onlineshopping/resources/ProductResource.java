@@ -6,8 +6,7 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.product.AddProductAction;
 import com.utdallas.onlineshopping.action.product.DeleteProductAction;
 import com.utdallas.onlineshopping.action.product.UpdateProductAction;
-import com.utdallas.onlineshopping.payload.request.product.AddProductRequest;
-import com.utdallas.onlineshopping.payload.request.product.UpdateProductRequest;
+import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
 import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
@@ -41,29 +40,29 @@ public class ProductResource
     @POST
     @UnitOfWork
     @Timed
-    public Response addProduct(@Context HttpHeaders headers, @NotNull AddProductRequest addProductRequest)
+    public Response addProduct(@Context HttpHeaders headers, @NotNull ProductRequest productRequest)
     {
-        ProductResponse productResponse = addProductAction.withRequest(addProductRequest).invoke();
+        ProductResponse productResponse = addProductAction.withRequest(productRequest).invoke();
         return Response.status(Response.Status.CREATED).entity(productResponse).build();
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{product_id}")
     @UnitOfWork
     @Timed
-    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("id") String productId)
+    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("product_id") String productId)
     {
         this.deleteProductAction.withProductId(productId).invoke();
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{product_id}")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull UpdateProductRequest updateProductRequest, @NotNull @PathParam("id") String id)
+    public Response update(@Context HttpHeaders headers, @NotNull ProductRequest productRequest, @NotNull @PathParam("product_id") String productId)
     {
-        ProductResponse productResponse = this.updateProductAction.withId(id).withRequest(updateProductRequest).invoke();
+        ProductResponse productResponse = this.updateProductAction.withId(productId).withRequest(productRequest).invoke();
         return Response.status(Response.Status.OK).entity(productResponse).build();
     }
 }

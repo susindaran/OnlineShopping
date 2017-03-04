@@ -10,7 +10,7 @@ import com.hubspot.dropwizard.guice.GuiceBundle;
 import com.utdallas.onlineshopping.OnlineShoppingApplication;
 import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
 import com.utdallas.onlineshopping.models.Product;
-import com.utdallas.onlineshopping.payload.request.product.AddProductRequest;
+import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
 import com.utdallas.onlineshopping.resources.CustomerResource;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import io.dropwizard.jackson.Jackson;
@@ -53,9 +53,9 @@ public class OnlineShoppingModule extends AbstractModule
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
 
         //Configuring modelMapper to set the productId of Product class from
-        //categoryPrefix of AddProductRequest class.
+        //categoryPrefix of ProductRequest class.
         //This is to avoid not null error when persisting the product in DB
-        modelMapper.addMappings(new PropertyMap<AddProductRequest, Product>() {
+        modelMapper.addMappings(new PropertyMap<ProductRequest, Product>() {
             @Override
             protected void configure() {
                 map().setProductId(source.getCategoryPrefix());

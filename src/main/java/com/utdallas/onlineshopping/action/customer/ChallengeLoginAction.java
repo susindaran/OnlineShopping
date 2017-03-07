@@ -25,6 +25,7 @@ public class ChallengeLoginAction implements Action<ChallengeLoginResponse>
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
     private ChallengeLoginRequest challengeLoginRequest;
+    private boolean isAdmin;
 
     @Inject
     public ChallengeLoginAction(Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper)
@@ -39,6 +40,12 @@ public class ChallengeLoginAction implements Action<ChallengeLoginResponse>
         return this;
     }
 
+    public ChallengeLoginAction isAdmin(boolean isAdmin)
+    {
+        this.isAdmin = isAdmin;
+        return this;
+    }
+
     @Override
     public ChallengeLoginResponse invoke()
     {
@@ -46,6 +53,11 @@ public class ChallengeLoginAction implements Action<ChallengeLoginResponse>
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("emailId", challengeLoginRequest.getEmailId());
         queryParams.put("password", PasswordEncipher.encryptWithMD5(challengeLoginRequest.getPassword()));
+
+        if( isAdmin )
+        {
+            queryParams.put("isAdmin", isAdmin);
+        }
 
         try
         {

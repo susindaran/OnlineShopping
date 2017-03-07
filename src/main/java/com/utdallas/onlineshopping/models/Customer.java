@@ -2,6 +2,7 @@ package com.utdallas.onlineshopping.models;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -29,6 +30,10 @@ public class Customer extends BaseModel
     private String emailId;
 
     private String password;
+
+    @Column(columnDefinition = "TINYINT")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
+    private boolean isAdmin;
 
     @OneToMany(mappedBy = "customer")
     private List<Address> addresses = new ArrayList<>();

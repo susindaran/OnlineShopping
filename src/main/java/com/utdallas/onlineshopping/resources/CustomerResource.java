@@ -90,9 +90,9 @@ public class CustomerResource
     @POST
     @UnitOfWork
     @Timed
-    public Response create(@Context HttpHeaders headers, @NotNull CreateCustomerRequest createCustomerRequest)
+    public Response create(@Context HttpHeaders headers, @NotNull CreateCustomerRequest createCustomerRequest, @QueryParam("admin") String admin)
     {
-        CustomerResponse customerResponse = this.createCustomerAction.withRequest(createCustomerRequest).invoke();
+        CustomerResponse customerResponse = this.createCustomerAction.withRequest(createCustomerRequest).isAdmin(Boolean.parseBoolean(admin)).invoke();
         return Response.status(Response.Status.CREATED).entity(customerResponse).build();
     }
 
@@ -100,9 +100,9 @@ public class CustomerResource
     @Path("/login")
     @UnitOfWork
     @Timed
-    public Response challengeLogin(@Context HttpHeaders headers, @NotNull ChallengeLoginRequest challengeLoginRequest)
+    public Response challengeLogin(@Context HttpHeaders headers, @NotNull ChallengeLoginRequest challengeLoginRequest, @QueryParam("admin") String admin)
     {
-        ChallengeLoginResponse challengeLoginResponse = this.challengeLoginAction.withRequest(challengeLoginRequest).invoke();
+        ChallengeLoginResponse challengeLoginResponse = this.challengeLoginAction.withRequest(challengeLoginRequest).isAdmin(Boolean.parseBoolean(admin)).invoke();
         return Response.status(Response.Status.OK).entity(challengeLoginResponse).build();
     }
 

@@ -21,6 +21,7 @@ public class CreateCustomerAction implements Action<CustomerResponse>
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
     private CreateCustomerRequest createCustomerRequest;
+    private boolean isAdmin;
 
     @Inject
     public CreateCustomerAction(Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper)
@@ -35,6 +36,12 @@ public class CreateCustomerAction implements Action<CustomerResponse>
         return this;
     }
 
+    public CreateCustomerAction isAdmin(boolean isAdmin)
+    {
+        this.isAdmin = isAdmin;
+        return this;
+    }
+
     @Override
     public CustomerResponse invoke()
     {
@@ -46,6 +53,7 @@ public class CreateCustomerAction implements Action<CustomerResponse>
                     .lastName(createCustomerRequest.getLastName())
                     .emailId(createCustomerRequest.getEmailId())
                     .password(PasswordEncipher.encryptWithMD5(createCustomerRequest.getPassword()))
+                    .isAdmin(isAdmin)
                     .build();
             Customer newCustomer = customerHibernateDAO.create(customer);
             return modelMapper.map(newCustomer, CustomerResponse.class);

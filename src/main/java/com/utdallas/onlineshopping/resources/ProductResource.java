@@ -55,9 +55,9 @@ public class ProductResource
     @GET
     @UnitOfWork
     @Timed
-    public Response getAllProducts(@Context HttpHeaders headers)
+    public Response getAllProducts(@Context HttpHeaders headers, @QueryParam("page") int page, @QueryParam("size") int size)
     {
-        AllProductsResponse allProductsResponse = getAllProductsAction.invoke();
+        AllProductsResponse allProductsResponse = getAllProductsAction.withPaginateDetails(page, size).invoke();
         return Response.status(Response.Status.OK).entity(allProductsResponse).build();
     }
 

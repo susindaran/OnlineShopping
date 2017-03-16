@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.utdallas.onlineshopping.db.GenericDAO;
 import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Product;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 
 import java.util.Collections;
@@ -49,9 +50,12 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         }
     }
 
-    public List<Product> getAll()
+    public List<Product> getAll(int page, int size)
     {
-        return currentSession().createCriteria(Product.class).list();
+        Criteria criteria = currentSession().createCriteria(Product.class);
+        criteria.setFirstResult( (page - 1) * size );
+        criteria.setMaxResults( page * size );
+        return criteria.list();
     }
 
     @Override

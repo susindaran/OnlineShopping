@@ -13,6 +13,6 @@ public class BadRequestException extends WebApplicationException
 
     public BadRequestException(Object object)
     {
-        super(Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("error", object)).build());
+        super(Response.status(Response.Status.BAD_REQUEST).entity(Collections.singletonMap("errors", object)).build());
     }
 }

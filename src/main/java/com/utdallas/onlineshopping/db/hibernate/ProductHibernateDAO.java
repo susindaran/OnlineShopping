@@ -7,6 +7,7 @@ import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Product;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 
 import java.util.Collections;
 import java.util.List;
@@ -54,8 +55,15 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
     {
         Criteria criteria = currentSession().createCriteria(Product.class);
         criteria.setFirstResult( (page - 1) * size );
-        criteria.setMaxResults( page * size );
+        criteria.setMaxResults( size );
         return criteria.list();
+    }
+
+    public Long getTotalCount()
+    {
+        Criteria criteria = currentSession().createCriteria(Product.class);
+        criteria.setProjection(Projections.rowCount());
+        return (Long) criteria.uniqueResult();
     }
 
     @Override

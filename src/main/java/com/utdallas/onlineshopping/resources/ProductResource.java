@@ -10,6 +10,7 @@ import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -55,9 +56,11 @@ public class ProductResource
     @GET
     @UnitOfWork
     @Timed
-    public Response getAllProducts(@Context HttpHeaders headers, @QueryParam("page") int page, @QueryParam("size") int size)
+    public Response getAllProducts(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
     {
-        AllProductsResponse allProductsResponse = getAllProductsAction.withPaginateDetails(page, size).invoke();
+        AllProductsResponse allProductsResponse = getAllProductsAction.withRequestURL(request.getRequestURL().toString())
+                .withPaginateDetails(page, size)
+                .invoke();
         return Response.status(Response.Status.OK).entity(allProductsResponse).build();
     }
 

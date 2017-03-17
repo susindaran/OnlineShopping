@@ -28,19 +28,22 @@ public class ProductResource
     private final UpdateProductAction updateProductAction;
     private final GetProductAction getProductAction;
     private final GetAllProductsAction getAllProductsAction;
+    private final GetProductCountAction getProductCountAction;
 
     @Inject
     public ProductResource(Provider<AddProductAction> addProductActionProvider,
                            Provider<UpdateProductAction> updateProductActionProvider,
                            Provider<DeleteProductAction> deleteProductActionProvider,
                            Provider<GetProductAction> getProductActionProvider,
-                           Provider<GetAllProductsAction> getAllProductsActionProvider)
+                           Provider<GetAllProductsAction> getAllProductsActionProvider,
+                           Provider<GetProductCountAction> getProductCountActionProvider)
     {
         this.addProductAction = addProductActionProvider.get();
         this.updateProductAction = updateProductActionProvider.get();
         this.deleteProductAction = deleteProductActionProvider.get();
         this.getProductAction = getProductActionProvider.get();
         this.getAllProductsAction = getAllProductsActionProvider.get();
+        this.getProductCountAction = getProductCountActionProvider.get();
     }
 
     @GET
@@ -62,6 +65,16 @@ public class ProductResource
                 .withPaginateDetails(page, size)
                 .invoke();
         return Response.status(Response.Status.OK).entity(allProductsResponse).build();
+    }
+
+    @GET
+    @Path("/count")
+    @UnitOfWork
+    @Timed
+    public Response getProductCount(@Context HttpHeaders headers)
+    {
+        AllProductsResponse allProductsResponse = this.getProductCountAction.invoke();
+        return Response.status( Response.Status.OK ).entity( allProductsResponse ).build();
     }
 
     @POST

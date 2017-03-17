@@ -16,7 +16,7 @@ import java.util.Map;
 public class AllProductsResponse
 {
     Map<String, String> links;
-    int count;
+    Integer count;
     Long totalCount;
     List<Product> products;
 }

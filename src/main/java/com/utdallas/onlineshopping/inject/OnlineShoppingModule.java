@@ -11,7 +11,10 @@ import com.utdallas.onlineshopping.OnlineShoppingApplication;
 import com.utdallas.onlineshopping.configurations.OnlineShoppingConfiguration;
 import com.utdallas.onlineshopping.models.Product;
 import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
+import com.utdallas.onlineshopping.resources.CategoryResource;
 import com.utdallas.onlineshopping.resources.CustomerResource;
+import com.utdallas.onlineshopping.resources.ProductResource;
+import com.utdallas.onlineshopping.resources.TaxDetailsResource;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import io.dropwizard.jackson.Jackson;
 import org.modelmapper.ModelMapper;
@@ -24,6 +27,9 @@ public class OnlineShoppingModule extends AbstractModule
     {
         //Bind Resource classes here
         bind(CustomerResource.class).in(Singleton.class);
+        bind(CategoryResource.class).in(Singleton.class);
+        bind(TaxDetailsResource.class).in(Singleton.class);
+        bind(ProductResource.class).in(Singleton.class);
 
         //Binding other singleton classes needed
         bind(HibernateUtil.class).in(Singleton.class);

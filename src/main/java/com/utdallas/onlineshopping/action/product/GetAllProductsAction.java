@@ -64,7 +64,7 @@ public class GetAllProductsAction implements Action<AllProductsResponse>
         AllProductsValidator.validateQueryParams(page, size);
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
         List<Product> productList = productHibernateDAO.getAll( page, size );
-        Long totalCount = productHibernateDAO.getTotalCount();
+        Long totalCount = productHibernateDAO.count();
         int count = productList.size();
 
         AllProductsResponse allProductsResponse = AllProductsResponse.builder()

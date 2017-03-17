@@ -16,18 +16,6 @@ public class CardDetailHibernateDAO extends BaseHibernateDAO<CardDetail> impleme
         super(sessionFactory);
     }
 
-    @Override
-    public CardDetail create(CardDetail cardDetail)
-    {
-        return persist(cardDetail);
-    }
-
-    @Override
-    public Optional<CardDetail> findById(Long id)
-    {
-        return null;
-    }
-
     public Optional<CardDetail> findByCardNumber(String cardNumber)
     {
         if( Strings.isNullOrEmpty( cardNumber ) )
@@ -38,20 +26,6 @@ public class CardDetailHibernateDAO extends BaseHibernateDAO<CardDetail> impleme
         {
             return Optional.fromNullable(get(cardNumber));
         }
-    }
-
-    @Override
-    public CardDetail update(CardDetail obj)
-    {
-        CardDetail cardDetail = persist(obj);
-        this.currentSession().flush();
-        return cardDetail;
-    }
-
-    @Override
-    public void delete(CardDetail cardDetail)
-    {
-        currentSession().delete( cardDetail );
     }
 
     public void deleteByCardNumber(String cardNumber)
@@ -65,11 +39,5 @@ public class CardDetailHibernateDAO extends BaseHibernateDAO<CardDetail> impleme
         {
             delete( cardDetail.get() );
         }
-    }
-
-    @Override
-    public CardDetail merge(CardDetail obj)
-    {
-        return null;
     }
 }

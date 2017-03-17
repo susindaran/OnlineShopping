@@ -15,35 +15,6 @@ public class AddressHibernateDAO extends BaseHibernateDAO<Address> implements Ge
         super(sessionFactory);
     }
 
-    @Override
-    public Address create(Address address)
-    {
-        return persist(address);
-    }
-
-    @Override
-    public Optional<Address> findById(Long id)
-    {
-        if( id != null )
-            return Optional.fromNullable( get( id ) );
-        else
-            return Optional.absent();
-    }
-
-    @Override
-    public Address update(Address address)
-    {
-        Address newAddress = persist(address);
-        this.currentSession().flush();
-        return newAddress;
-    }
-
-    @Override
-    public void delete(Address address)
-    {
-        currentSession().delete(address);
-    }
-
     public void deleteById(Long addressId)
     {
         Optional<Address> address = findById(addressId);
@@ -55,11 +26,5 @@ public class AddressHibernateDAO extends BaseHibernateDAO<Address> implements Ge
         {
             delete( address.get());
         }
-    }
-
-    @Override
-    public Address merge(Address obj)
-    {
-        return null;
     }
 }

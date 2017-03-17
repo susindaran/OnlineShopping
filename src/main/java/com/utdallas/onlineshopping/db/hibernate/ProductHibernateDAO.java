@@ -20,25 +20,6 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         super(sessionFactory);
     }
 
-    @Override
-    public Product create(Product product)
-    {
-        return persist(product);
-    }
-
-    @Override
-    public Optional<Product> findById(Long id)
-    {
-        if( id != null )
-        {
-            return Optional.fromNullable( get(id) );
-        }
-        else
-        {
-            return Optional.absent();
-        }
-    }
-
     public Optional<Product> findById(String id)
     {
         if( id != null )
@@ -59,27 +40,6 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         return criteria.list();
     }
 
-    public Long getTotalCount()
-    {
-        Criteria criteria = currentSession().createCriteria(Product.class);
-        criteria.setProjection(Projections.rowCount());
-        return (Long) criteria.uniqueResult();
-    }
-
-    @Override
-    public Product update(Product product)
-    {
-        Product newProduct = persist(product);
-        this.currentSession().flush();
-        return newProduct;
-    }
-
-    @Override
-    public void delete(Product product)
-    {
-        currentSession().delete( product );
-    }
-
     public void deleteByProductId(String productId)
     {
         List<Product> productList = findByParams(Collections.singletonMap("productId", productId));
@@ -91,10 +51,5 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         {
             delete( productList.get( 0 ) );
         }
-    }
-
-    @Override
-    public Product merge(Product obj) {
-        return null;
     }
 }

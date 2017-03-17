@@ -18,25 +18,6 @@ public class CategoryHibernateDAO extends BaseHibernateDAO<Category> implements 
         super(sessionFactory);
     }
 
-    @Override
-    public Category create(Category category)
-    {
-        return persist(category);
-    }
-
-    @Override
-    public Optional<Category> findById(Long id)
-    {
-        if( id != null )
-        {
-            return Optional.fromNullable(get(id));
-        }
-        else
-        {
-            return Optional.absent();
-        }
-    }
-
     public Optional<Category> findById(String id)
     {
         if( id != null )
@@ -54,20 +35,6 @@ public class CategoryHibernateDAO extends BaseHibernateDAO<Category> implements 
         return currentSession().createCriteria(Category.class).list();
     }
 
-    @Override
-    public Category update(Category category)
-    {
-        Category category1 = persist(category);
-        this.currentSession().flush();
-        return category1;
-    }
-
-    @Override
-    public void delete(Category category) {
-        currentSession().delete(category);
-
-    }
-
     public void deleteByCategoryId(String categoryId)
     {
         Optional<Category> categoryOptional = Optional.fromNullable(get(categoryId));
@@ -79,10 +46,5 @@ public class CategoryHibernateDAO extends BaseHibernateDAO<Category> implements 
         {
             delete( categoryOptional.get() );
         }
-    }
-
-    @Override
-    public Category merge(Category category) {
-        return null;
     }
 }

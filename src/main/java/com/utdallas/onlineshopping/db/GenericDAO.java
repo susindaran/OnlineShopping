@@ -18,7 +18,5 @@ public interface GenericDAO<T extends BaseModel>
 
     void delete(T obj);
 
-    long count();
-
-    T merge(T obj);
+    Long count();
 }

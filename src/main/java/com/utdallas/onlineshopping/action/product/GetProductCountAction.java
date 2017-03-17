@@ -21,7 +21,7 @@ public class GetProductCountAction implements Action<AllProductsResponse>
     public AllProductsResponse invoke()
     {
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
-        Long totalCount = productHibernateDAO.getTotalCount();
+        Long totalCount = productHibernateDAO.count();
         return AllProductsResponse.builder().totalCount( totalCount ).build();
     }
 }

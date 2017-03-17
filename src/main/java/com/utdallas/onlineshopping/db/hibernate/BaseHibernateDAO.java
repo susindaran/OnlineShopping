@@ -14,16 +14,27 @@ import java.util.Map;
 @Slf4j
 public abstract class BaseHibernateDAO<T> extends AbstractDAO<T>
 {
-    private SessionFactory sessionFactory;
     BaseHibernateDAO(SessionFactory sessionFactory)
     {
         super(sessionFactory);
-        this.sessionFactory = sessionFactory;
     }
 
-    public abstract T create(T obj);
+    public T create(T obj)
+    {
+        return persist( obj );
+    }
 
-    public abstract Optional<T> findById(Long id);
+    public Optional<T> findById(Long id)
+    {
+        if( id != null )
+        {
+            return Optional.fromNullable( get( id ) );
+        }
+        else
+        {
+            return Optional.absent();
+        }
+    }
 
     public List<T> findByParams(Map<String, Object>params)
     {
@@ -39,14 +50,23 @@ public abstract class BaseHibernateDAO<T> extends AbstractDAO<T>
         return criteria.list();
     }
 
-    public abstract T update(T obj);
+    public T update(T obj)
+    {
+        T persisted = persist(obj);
+        //Flushing the session explicitly here because hibernate sometimes decides not to
+        //update the entity immediately, which causes any exception not to be thrown until
+        //the transaction is committed.
+        currentSession().flush();
+        return persisted;
+    }
 
-    public abstract void delete(T obj);
+    public void delete(T obj)
+    {
+        currentSession().delete( obj );
+    }
 
-    public long count()
+    public Long count()
     {
         return (Long) criteria().setProjection(Projections.rowCount()).uniqueResult();
     }
-
-    public abstract T merge(T obj);
 }

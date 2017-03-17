@@ -2,13 +2,13 @@ package com.utdallas.onlineshopping.enumerations;
 
 import lombok.Getter;
 
-public enum OrderStatus
+public enum ShipmentStatus
 {
-    PENDING("PENDING"), SHIPPED("SHIPPED"), INVOICED("INVOICED");
+    PICKED("PICKED"), PACKED("PACKED"), SHIPPED("SHIPPED");
 
     @Getter
     private final String status;
-    OrderStatus(String status)
+    ShipmentStatus(String status)
     {
         this.status = status;
     }

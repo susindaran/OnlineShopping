@@ -17,7 +17,8 @@ public class HibernateModule extends AbstractModule
                     TaxDetails.class,
                     Address.class,
                     CardDetail.class,
-                    Product.class
+                    Product.class,
+                    Order.class
             };
 
     private final HibernateBundle<OnlineShoppingConfiguration> hibernateBundle;

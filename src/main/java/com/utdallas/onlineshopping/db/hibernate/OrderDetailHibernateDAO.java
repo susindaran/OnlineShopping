@@ -2,13 +2,13 @@ package com.utdallas.onlineshopping.db.hibernate;
 
 import com.google.inject.Inject;
 import com.utdallas.onlineshopping.db.GenericDAO;
-import com.utdallas.onlineshopping.models.Shipment;
+import com.utdallas.onlineshopping.models.OrderDetail;
 import org.hibernate.SessionFactory;
 
-public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements GenericDAO<Shipment>
+public class OrderDetailHibernateDAO extends BaseHibernateDAO<OrderDetail> implements GenericDAO<OrderDetail>
 {
     @Inject
-    public ShipmentHibernateDAO(SessionFactory sessionFactory)
+    public OrderDetailHibernateDAO(SessionFactory sessionFactory)
     {
         super(sessionFactory);
     }

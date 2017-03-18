@@ -38,10 +38,10 @@ public class ShipmentResource
     @Path("/")
     @UnitOfWork
     @Timed
-    public Response getAllShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") String status)
+    public Response getAllShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
     {
         AllShipmentsResponse allShipmentsResponse = getShipmentAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size)
+                .withPaginateDetails(page, size, null)
                 .invoke();
         return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
     }
@@ -54,7 +54,7 @@ public class ShipmentResource
     public Response getShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") String status)
     {
         AllShipmentsResponse allShipmentsResponse = getShipmentAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size)
+                .withPaginateDetails(page, size, status)
                 .invoke();
         return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
     }

@@ -38,10 +38,11 @@ public class GetShipmentAction implements Action<AllShipmentsResponse>
         return this;
     }
 
-    public GetShipmentAction withPaginateDetails(int page, int size)
+    public GetShipmentAction withPaginateDetails(int page, int size, String status)
     {
         this.page = page;
         this.size = size;
+        this.status=status;
         return this;
     }
 

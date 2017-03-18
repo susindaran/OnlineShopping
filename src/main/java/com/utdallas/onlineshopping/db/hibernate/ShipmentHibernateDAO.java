@@ -23,12 +23,12 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
     {
         Criteria criteria = currentSession().createCriteria(Shipment.class);
 
-        if(status!=null || status!="")
+        if(status!=null && !"".equals(status))
         criteria.add(Restrictions.eq("status",status));
 
         criteria.setFirstResult( (page - 1) * size );
         criteria.setMaxResults( size );
-        System.out.println("SIZE OF LIST IS "+criteria.list().size());
+        System.out.println("SIZE OF LIST IS "+criteria.list().size()+status);
         return criteria.list();
     }
 

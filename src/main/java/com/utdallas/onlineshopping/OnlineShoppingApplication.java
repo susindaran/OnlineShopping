@@ -37,7 +37,9 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
                     Category.class,
                     Order.class,
                     Shipment.class,
-                    OrderDetail.class
+                    OrderDetail.class,
+                    Cart.class,
+                    Offer.class
             )
             {
                 @Override

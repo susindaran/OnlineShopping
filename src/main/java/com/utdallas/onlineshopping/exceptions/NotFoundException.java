@@ -13,6 +13,6 @@ public class NotFoundException extends WebApplicationException
 
     public NotFoundException(Object object)
     {
-        super(Response.status(Response.Status.NOT_FOUND).entity(Collections.singletonMap("error", object)).build());
+        super(Response.status(Response.Status.NOT_FOUND).entity(Collections.singletonMap("errors", object)).build());
     }
 }

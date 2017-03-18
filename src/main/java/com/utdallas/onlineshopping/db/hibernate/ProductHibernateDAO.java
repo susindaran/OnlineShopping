@@ -22,9 +22,10 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
 
     public Optional<Product> findById(String id)
     {
-        if( id != null )
+        List<Product> productList = findByParams(Collections.singletonMap("productId", id));
+        if( productList.size() > 0 )
         {
-            return Optional.fromNullable( get(id) );
+            return Optional.fromNullable( productList.get(0) );
         }
         else
         {

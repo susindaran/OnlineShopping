@@ -9,3 +9,5 @@ ALTER TABLE shopping.cart DROP PRIMARY KEY;
 ALTER TABLE shopping.cart ADD PRIMARY KEY (cart_id);
 ALTER TABLE shopping.cart CHANGE cart_id cart_id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 ALTER TABLE shopping.cart ADD CONSTRAINT customer_product_UK_cart UNIQUE (customer_id, product_id);
+
+ALTER TABLE shopping.product ADD CONSTRAINT product_id_UK_product UNIQUE KEY (product_id);

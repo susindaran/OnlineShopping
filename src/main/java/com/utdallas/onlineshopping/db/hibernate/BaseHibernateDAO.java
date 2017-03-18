@@ -65,6 +65,19 @@ public abstract class BaseHibernateDAO<T> extends AbstractDAO<T>
         currentSession().delete( obj );
     }
 
+    /**
+    * Delete a list of entities based on the ids
+    *
+    * @param    ids     List of ids to be deleted
+    * @param    idName  Name of the ID column to be used in the <code>WHERE</code> clause of the query
+    * @return   Count of affected rows
+    **/
+    public int deleteByIDs( List<Long> ids, String idName )
+    {
+        String query = String.format("DELETE from %s WHERE %s IN :ids", getEntityClass().getSimpleName(), idName);
+        return currentSession().createQuery(query).setParameterList("ids", ids).executeUpdate();
+    }
+
     public Long count()
     {
         return (Long) criteria().setProjection(Projections.rowCount()).uniqueResult();

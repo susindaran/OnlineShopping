@@ -1,6 +1,7 @@
 package com.utdallas.onlineshopping.action.order;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
@@ -17,6 +18,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlaceOrderFromCartAction implements Action<OrderResponse>
 {
@@ -85,17 +87,15 @@ public class PlaceOrderFromCartAction implements Action<OrderResponse>
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now()).build());
 
-            List<OrderDetail> orderDetails = new ArrayList<>();
-
             List<Cart> cartItems = cartHibernateDAO.getCartItemsOfCustomer(customer);
-            for(Cart cartItem : cartItems)
-            {
-                orderDetails.add(orderDetailHibernateDAO.create( OrderDetail.builder()
-                        .order( order )
-                        .product( cartItem.getProduct() )
-                        .shipment( shipment )
-                        .quantity( cartItem.getQuantity() ).build() ));
-            }
+            cartItems.forEach( cartItem -> orderDetailHibernateDAO.create( OrderDetail.builder()
+                    .order( order )
+                    .product( cartItem.getProduct() )
+                    .shipment( shipment )
+                    .quantity( cartItem.getQuantity() ).build() ));
+
+            List<Long> cartIds = cartItems.stream().map(Cart::getCartId).collect(Collectors.toList());
+            cartHibernateDAO.deleteByIDs( cartIds, "cartId");
 
             shipmentHibernateDAO.reloadShipment( shipment );
             orderHibernateDAO.reloadOrder( order );

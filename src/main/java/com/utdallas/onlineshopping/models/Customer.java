@@ -35,9 +35,9 @@ public class Customer extends BaseModel
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private boolean isAdmin;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<CardDetail> cardDetails = new ArrayList<>();
 }

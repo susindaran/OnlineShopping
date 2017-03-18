@@ -23,7 +23,6 @@ public class Order extends BaseModel
     @Column(name = "order_id", columnDefinition = "INT(11) UNSIGNED")
     private Long orderId;
 
-    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "customer_id", nullable = false)

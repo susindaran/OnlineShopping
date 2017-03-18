@@ -17,6 +17,7 @@ import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,12 @@ public class PlaceOrderFromCartAction implements Action<OrderResponse>
             Address billingAddress = billingAddressOptional.get();
             Address shippingAddress = shippingAddressOptional.get();
 
+            List<Cart> cartItems = cartHibernateDAO.getCartItemsOfCustomer(customer);
+            if( cartItems.size() < 1 )
+            {
+                throw new NotFoundException(Collections.singletonList("No items found in the cart"));
+            }
+
             //Create order
             Order order = orderHibernateDAO.create(Order.builder()
                     .customer(customer)
@@ -87,7 +94,6 @@ public class PlaceOrderFromCartAction implements Action<OrderResponse>
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now()).build());
 
-            List<Cart> cartItems = cartHibernateDAO.getCartItemsOfCustomer(customer);
             cartItems.forEach( cartItem -> orderDetailHibernateDAO.create( OrderDetail.builder()
                     .order( order )
                     .product( cartItem.getProduct() )

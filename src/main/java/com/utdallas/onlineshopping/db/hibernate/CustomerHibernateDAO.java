@@ -27,4 +27,10 @@ public class CustomerHibernateDAO extends BaseHibernateDAO<Customer> implements 
             delete( customerOptional.get() );
         }
     }
+
+    public void reloadCustomer( Customer customer )
+    {
+        currentSession().flush();
+        currentSession().refresh( customer );
+    }
 }

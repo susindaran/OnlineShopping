@@ -11,3 +11,6 @@ ALTER TABLE shopping.cart CHANGE cart_id cart_id INT(11) UNSIGNED NOT NULL AUTO_
 ALTER TABLE shopping.cart ADD CONSTRAINT customer_product_UK_cart UNIQUE (customer_id, product_id);
 
 ALTER TABLE shopping.product ADD CONSTRAINT product_id_UK_product UNIQUE KEY (product_id);
+
+ALTER TABLE shopping.shipment ADD order_id INT(11) UNSIGNED NOT NULL;
+ALTER TABLE shopping.shipment ADD CONSTRAINT order_id_FK_shipment FOREIGN KEY (order_id) REFERENCES `order` (order_id) ON DELETE CASCADE ON UPDATE CASCADE;

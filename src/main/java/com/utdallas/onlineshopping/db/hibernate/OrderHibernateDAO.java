@@ -12,4 +12,10 @@ public class OrderHibernateDAO extends BaseHibernateDAO<Order> implements Generi
     {
         super(sessionFactory);
     }
+
+    public void reloadOrder( Order order )
+    {
+        currentSession().flush();
+        currentSession().refresh( order );
+    }
 }

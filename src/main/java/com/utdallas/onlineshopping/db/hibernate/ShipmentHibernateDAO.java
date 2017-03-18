@@ -12,4 +12,10 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
     {
         super(sessionFactory);
     }
+
+    public void reloadShipment(Shipment shipment)
+    {
+        currentSession().flush();
+        currentSession().refresh( shipment );
+    }
 }

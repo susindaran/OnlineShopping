@@ -28,7 +28,7 @@ public class OrderDetail extends BaseModel
 
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)

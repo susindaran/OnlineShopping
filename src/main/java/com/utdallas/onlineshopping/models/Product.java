@@ -4,6 +4,8 @@ import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -19,6 +21,7 @@ public class Product extends BaseModel
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "INT(10) UNSIGNED ZEROFILL")
     private Long id;
+    @Column(name = "product_id", unique = true, nullable = false)
     private String productId;
     private String productName;
     private int quantity;

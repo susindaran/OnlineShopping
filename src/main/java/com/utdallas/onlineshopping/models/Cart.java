@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "cart")
+@Table(name = "cart", uniqueConstraints = @UniqueConstraint(columnNames = {"customer_id", "product_id"}))
 @Getter
 @Setter
 @Builder
@@ -28,12 +28,11 @@ public class Cart extends BaseModel
 
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @NotNull
-    @JoinColumn(name = "coupon_id", nullable = false)
+    @JoinColumn(name = "coupon_id")
     private Offer offer;
 
     private int quantity;

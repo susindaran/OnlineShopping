@@ -2,6 +2,7 @@ package com.utdallas.onlineshopping.payload.response.order;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.utdallas.onlineshopping.enumerations.OrderStatus;
 import com.utdallas.onlineshopping.models.Address;
 import com.utdallas.onlineshopping.payload.response.customer.CustomerResponse;
 import com.utdallas.onlineshopping.payload.response.shipment.ShipmentResponse;
@@ -19,7 +20,7 @@ public class OrderResponse
     private int orderId;
     @JsonIgnoreProperties(value = {"addresses", "card_details"})
     private CustomerResponse customer;
-    private String orderStatus;
+    private OrderStatus orderStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Address shippingAddress;

@@ -95,10 +95,11 @@ public class PlaceOrderFromCartAction implements Action<OrderResponse>
                     .updatedAt(LocalDateTime.now()).build());
 
             cartItems.forEach( cartItem -> orderDetailHibernateDAO.create( OrderDetail.builder()
-                    .order( order )
-                    .product( cartItem.getProduct() )
-                    .shipment( shipment )
-                    .quantity( cartItem.getQuantity() ).build() ));
+                                                                                      .order( order )
+                                                                                      .product( cartItem.getProduct() )
+                                                                                      .shipment( shipment )
+                                                                                      .orderDetailStatus( OrderStatus.PENDING.getStatus() )
+                                                                                      .quantity( cartItem.getQuantity() ).build() ));
 
             List<Long> cartIds = cartItems.stream().map(Cart::getCartId).collect(Collectors.toList());
             cartHibernateDAO.deleteByIDs( cartIds, "cartId");

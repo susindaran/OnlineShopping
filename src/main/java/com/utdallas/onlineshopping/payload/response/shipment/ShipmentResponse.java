@@ -2,6 +2,7 @@ package com.utdallas.onlineshopping.payload.response.shipment;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.utdallas.onlineshopping.enumerations.ShipmentStatus;
 import com.utdallas.onlineshopping.payload.response.order.OrderResponse;
 import com.utdallas.onlineshopping.payload.response.orderdetail.OrderDetailResponse;
 import io.dropwizard.jackson.JsonSnakeCase;
@@ -21,7 +22,7 @@ public class ShipmentResponse
     @JsonIgnoreProperties(value = {"shipment"})
     private List<OrderDetailResponse> orderDetails;
     private LocalDateTime deliveryDueDate;
-    private String status;
+    private ShipmentStatus status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

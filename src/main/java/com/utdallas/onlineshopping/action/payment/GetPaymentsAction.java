@@ -9,41 +9,37 @@ import com.utdallas.onlineshopping.db.hibernate.PaymentHibernateDAO;
 import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Order;
 import com.utdallas.onlineshopping.models.Payment;
-import com.utdallas.onlineshopping.payload.request.payment.CreatePaymentRequest;
+import com.utdallas.onlineshopping.payload.response.order.OrderResponse;
 import com.utdallas.onlineshopping.payload.response.payment.PaymentResponse;
+import com.utdallas.onlineshopping.payload.response.payment.PaymentsListResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class CreatePaymentAction implements Action<PaymentResponse>
+public class GetPaymentsAction implements Action<PaymentsListResponse>
 {
 	private final HibernateUtil hibernateUtil;
 	private ModelMapper modelMapper;
-	private CreatePaymentRequest createPaymentRequest;
 	private Long orderId;
 
 	@Inject
-	public CreatePaymentAction( Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper )
+	public GetPaymentsAction( Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper )
 	{
 		this.hibernateUtil = hibernateUtilProvider.get();
 		this.modelMapper = modelMapper;
 	}
 
-	public CreatePaymentAction withRequest(CreatePaymentRequest request)
-	{
-		this.createPaymentRequest = request;
-		return this;
-	}
-
-	public CreatePaymentAction forOrderId( Long orderId )
+	public GetPaymentsAction forOrderId( Long orderId )
 	{
 		this.orderId = orderId;
 		return this;
 	}
 
 	@Override
-	public PaymentResponse invoke()
+	public PaymentsListResponse invoke()
 	{
 		OrderHibernateDAO orderHibernateDAO = this.hibernateUtil.getOrderHibernateDAO();
 		PaymentHibernateDAO paymentHibernateDAO = this.hibernateUtil.getPaymentHibernateDAO();
@@ -52,16 +48,15 @@ public class CreatePaymentAction implements Action<PaymentResponse>
 		if( orderOptional.isPresent() )
 		{
 			Order order = orderOptional.get();
-			Payment payment = paymentHibernateDAO.create( Payment.builder()
-			                                                     .order( order )
-			                                                     .amount( createPaymentRequest.getAmount() )
-			                                                     .reason( createPaymentRequest.getReason() )
-			                                                     .ref1( createPaymentRequest.getRef1() )
-			                                                     .transactionType(
-					                                                     createPaymentRequest.getTransactionType()
-					                                                                         .getType() )
-			                                                     .build() );
-			return modelMapper.map( payment, PaymentResponse.class );
+			List<Payment> payments = paymentHibernateDAO.getPaymentsOfOrder( order );
+
+			PaymentsListResponse response = new PaymentsListResponse();
+			response.setPayments( payments.stream()
+			                              .map( payment -> modelMapper.map( payment, PaymentResponse.class ))
+			                              .collect( Collectors.toList() ) );
+			response.setOrder( modelMapper.map( order, OrderResponse.class ) );
+
+			return response;
 		}
 		throw new NotFoundException( Collections.singletonList("No order matching the given order_id") );
 	}

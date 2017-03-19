@@ -4,7 +4,11 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.shipment.GetShipmentAction;
+import com.utdallas.onlineshopping.action.shipment.UpdateShipmentStatusAction;
+import com.utdallas.onlineshopping.models.Shipment;
+import com.utdallas.onlineshopping.payload.request.shipment.ShipmentRequest;
 import com.utdallas.onlineshopping.payload.response.shipment.AllShipmentsResponse;
+import com.utdallas.onlineshopping.payload.response.shipment.ShipmentResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,11 +30,14 @@ import javax.ws.rs.core.Response;
 public class ShipmentResource
 {
     private final GetShipmentAction getShipmentAction;
+    private final UpdateShipmentStatusAction updateShipmentStatusAction;
 
     @Inject
-    public ShipmentResource(Provider<GetShipmentAction> getShipmentActionProvider)
+    public ShipmentResource(Provider<GetShipmentAction> getShipmentActionProvider,
+                            Provider<UpdateShipmentStatusAction> updateShipmentStatusActionProvider)
     {
         this.getShipmentAction=getShipmentActionProvider.get();
+        this.updateShipmentStatusAction=updateShipmentStatusActionProvider.get();
     }
 
 
@@ -59,7 +66,15 @@ public class ShipmentResource
         return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
     }
 
-
+    @PUT
+    @Path("/{shipment_id}")
+    @UnitOfWork
+    @Timed
+    public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest, @NotNull @PathParam("shipment_id") Long shipmentId)
+    {
+        ShipmentResponse shipmentResponse = this.updateShipmentStatusAction.withId(shipmentId).withRequest(shipmentRequest).invoke();
+        return Response.status(Response.Status.OK).entity(shipmentResponse).build();
+    }
 
 
 }

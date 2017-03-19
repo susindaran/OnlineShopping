@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 public class ShipmentRequest
 {
     private Long shipmentId;
-    private org.joda.time.LocalDateTime deliveryDueDate;
     private String status;
-    private org.joda.time.LocalDateTime createdAt;
     private org.joda.time.LocalDateTime updatedAt;
 }

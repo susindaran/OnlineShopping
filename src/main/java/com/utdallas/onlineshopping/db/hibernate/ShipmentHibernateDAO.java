@@ -28,7 +28,6 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
 
         criteria.setFirstResult( (page - 1) * size );
         criteria.setMaxResults( size );
-        System.out.println("SIZE OF LIST IS "+criteria.list().size()+status);
         return criteria.list();
     }
 

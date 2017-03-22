@@ -6,13 +6,13 @@ import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.ShipmentHibernateDAO;
 import com.utdallas.onlineshopping.models.Shipment;
 import com.utdallas.onlineshopping.payload.response.shipment.AllShipmentsResponse;
+import com.utdallas.onlineshopping.payload.response.shipment.ShipmentResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import com.utdallas.onlineshopping.validators.shipment.ShipmentsValidator;
 import org.modelmapper.ModelMapper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by prathyusha on 3/18/17.
@@ -72,13 +72,26 @@ public class GetShipmentAction implements Action<AllShipmentsResponse>
         Long totalCount = shipmentHibernateDAO.count();
         int count = shipmentList.size();
 
-        AllShipmentsResponse allShipmentsResponse = AllShipmentsResponse.builder()
+        /*AllShipmentsResponse allShipmentsResponse = AllShipmentsResponse.builder()
                 .shipments(shipmentList)
                 .count(count)
                 .totalCount(totalCount)
                 .links( preparePaginationLinks( totalCount ))
                 .build();
 
-        return allShipmentsResponse;
+        return allShipmentsResponse;*/
+
+
+       /* if( customerOptional.isPresent() )
+        {
+            Customer customer = customerOptional.get();
+            List<Cart> cartItems = cartHibernateDAO.getCartItemsOfCustomer(customer);*/
+
+            List<ShipmentResponse> shipmentResponses = shipmentList.stream().map(shipment -> modelMapper.map(shipmentList, ShipmentResponse.class)).collect(Collectors.toList());
+
+            AllShipmentsResponse allShipmentsResponse = new AllShipmentsResponse();
+            allShipmentsResponse.setShipments( shipmentList );
+            return allShipmentsResponse;
+        }
     }
-}
+

@@ -5,6 +5,7 @@ import com.utdallas.onlineshopping.models.Shipment;
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,6 @@ import java.util.Map;
  */
 @JsonSnakeCase
 @Data
-@Builder
 @JsonInclude( JsonInclude.Include.NON_NULL)
 public class AllShipmentsResponse
 {
@@ -22,5 +22,5 @@ public class AllShipmentsResponse
     Integer count;
     Long totalCount;
     private List<Shipment> shipments;
-
+    private List<ShipmentResponse> shipmentResponses;
 }

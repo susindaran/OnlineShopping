@@ -67,13 +67,13 @@ public class ShipmentResource
     }
 
     @PUT
-    @Path("/{shipment_id}")
+    @Path("/changeStatus")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest, @NotNull @PathParam("shipment_id") Long shipmentId)
+    public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest,@QueryParam("page") int page, @QueryParam("size") int size)
     {
-        ShipmentResponse shipmentResponse = this.updateShipmentStatusAction.withId(shipmentId).withRequest(shipmentRequest).invoke();
-        return Response.status(Response.Status.OK).entity(shipmentResponse).build();
+        AllShipmentsResponse allShipmentsResponse  = this.updateShipmentStatusAction.withPaginateDetails(page,size).withRequest(shipmentRequest).invoke();
+        return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
     }
 
 

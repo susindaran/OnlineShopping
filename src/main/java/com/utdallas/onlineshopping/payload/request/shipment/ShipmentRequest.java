@@ -4,6 +4,7 @@ import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by prathyusha on 3/18/17.
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ShipmentRequest
 {
-    private Long shipmentId;
+    private List<Integer> shipmentId;
     private String status;
     private org.joda.time.LocalDateTime updatedAt;
 }

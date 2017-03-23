@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.ShipmentHibernateDAO;
+import com.utdallas.onlineshopping.enumerations.ShipmentStatus;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
 import com.utdallas.onlineshopping.models.Shipment;
 import com.utdallas.onlineshopping.payload.request.shipment.ShipmentRequest;
@@ -43,21 +44,22 @@ public class UpdateShipmentStatusAction implements Action<AllShipmentsResponse>
     public AllShipmentsResponse invoke()
     {
         ShipmentHibernateDAO shipmentHibernateDAO = hibernateUtil.getShipmentHibernateDAO();
-        List<Shipment> shipments = shipmentHibernateDAO.getShipmentsByIds(shipmentRequest.getShipmentId());
+        List<Shipment> shipments = shipmentHibernateDAO.getShipmentsByIds(shipmentRequest.getShipmentIds());
         Shipment newShipment;
-        List<ShipmentResponse> listOfShip=new ArrayList<ShipmentResponse>();
+        List<ShipmentResponse> listOfShip=new ArrayList<>();
+
         try {
 
                 for(int i=0;i<shipments.size();i++) {
 
-                    if (!Strings.isNullOrEmpty(shipmentRequest.getStatus()) && shipments.get(i).getStatus().equals("pick") && shipmentRequest.getStatus().equals("pack")) {
+                    if ( shipments.get(i).getStatus().equals(ShipmentStatus.PICKED.getStatus()) && shipmentRequest.getStatus() == ShipmentStatus.PACKED) {
 
-                        shipments.get(i).setStatus(shipmentRequest.getStatus());
+                        shipments.get(i).setStatus(shipmentRequest.getStatus().getStatus());
                     }
 
-                    if (!Strings.isNullOrEmpty(shipmentRequest.getStatus()) && shipments.get(i).getStatus().equals("pack") && shipmentRequest.getStatus().equals("ship")) {
+                    if (shipments.get(i).getStatus().equals(ShipmentStatus.PACKED.getStatus()) && shipmentRequest.getStatus() == ShipmentStatus.SHIPPED) {
 
-                        shipments.get(i).setStatus(shipmentRequest.getStatus());
+                        shipments.get(i).setStatus(shipmentRequest.getStatus().getStatus());
                     }
 
                     shipments.get(i).setUpdatedAt(LocalDateTime.now());

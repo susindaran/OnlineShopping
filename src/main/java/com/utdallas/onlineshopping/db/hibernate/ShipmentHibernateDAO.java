@@ -29,7 +29,7 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
         return criteria.list();
     }
 
-    public List<Shipment> getShipmentsByIds(List<Integer> shipmentIds)
+    public List<Shipment> getShipmentsByIds(List<Long> shipmentIds)
     {
         Criteria criteria = currentSession().createCriteria(Shipment.class);
         criteria.add(Restrictions.in("shipmentId",shipmentIds));

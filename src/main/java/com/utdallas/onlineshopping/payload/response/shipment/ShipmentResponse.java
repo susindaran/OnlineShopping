@@ -23,7 +23,7 @@ public class ShipmentResponse
     @JsonIgnoreProperties(value = {"shipment"})
     private List<OrderDetailResponse> orderDetails;
     private LocalDateTime deliveryDueDate;
-    private ShipmentStatus status;
+    private String status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

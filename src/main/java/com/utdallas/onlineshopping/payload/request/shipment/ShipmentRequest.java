@@ -1,9 +1,9 @@
 package com.utdallas.onlineshopping.payload.request.shipment;
 
+import com.utdallas.onlineshopping.enumerations.ShipmentStatus;
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 public class ShipmentRequest
 {
-    private List<Integer> shipmentId;
-    private String status;
-    private org.joda.time.LocalDateTime updatedAt;
+    private List<Long> shipmentIds;
+    private ShipmentStatus status;
 }

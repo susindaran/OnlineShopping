@@ -11,12 +11,11 @@ import lombok.Data;
 @JsonSnakeCase
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OrderDetailResponse
-{
+public class OrderDetailResponse {
     @JsonIgnoreProperties(value = {"quantity"})
     private ProductResponse product;
     @JsonIgnoreProperties(value = {"order", "orderDetails"})
     private ShipmentResponse shipment;
     private Integer quantity;
-    private OrderStatus orderDetailStatus;
+    private String orderDetailStatus;
 }

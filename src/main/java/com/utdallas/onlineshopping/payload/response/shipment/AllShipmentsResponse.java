@@ -21,6 +21,5 @@ public class AllShipmentsResponse
     Map<String, String> links;
     Integer count;
     Long totalCount;
-    private List<Shipment> shipments;
     private List<ShipmentResponse> shipmentResponses;
 }

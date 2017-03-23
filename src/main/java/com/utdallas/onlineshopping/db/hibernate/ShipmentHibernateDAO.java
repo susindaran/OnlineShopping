@@ -30,11 +30,11 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
         criteria.setMaxResults( size );
         return criteria.list();
     }
-    public List<Shipment> getAllShipments(int page, int size)
+
+    public List<Shipment> getShipmentsByIds(List<Integer> shipmentIds)
     {
         Criteria criteria = currentSession().createCriteria(Shipment.class);
-        criteria.setFirstResult( (page - 1) * size );
-        criteria.setMaxResults( size );
+        criteria.add(Restrictions.in("shipmentId",shipmentIds));
         return criteria.list();
     }
 

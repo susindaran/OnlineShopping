@@ -71,27 +71,14 @@ public class GetShipmentAction implements Action<AllShipmentsResponse>
         List<Shipment> shipmentList = shipmentHibernateDAO.getAll(page,size,status);
         Long totalCount = shipmentHibernateDAO.count();
         int count = shipmentList.size();
+        List<ShipmentResponse> shipmentResponses = shipmentList.stream().map(shipment -> modelMapper.map(shipment, ShipmentResponse.class)).collect(Collectors.toList());
 
-        /*AllShipmentsResponse allShipmentsResponse = AllShipmentsResponse.builder()
-                .shipments(shipmentList)
-                .count(count)
-                .totalCount(totalCount)
-                .links( preparePaginationLinks( totalCount ))
-                .build();
-
-        return allShipmentsResponse;*/
-
-
-       /* if( customerOptional.isPresent() )
-        {
-            Customer customer = customerOptional.get();
-            List<Cart> cartItems = cartHibernateDAO.getCartItemsOfCustomer(customer);*/
-
-            List<ShipmentResponse> shipmentResponses = shipmentList.stream().map(shipment -> modelMapper.map(shipmentList, ShipmentResponse.class)).collect(Collectors.toList());
-
-            AllShipmentsResponse allShipmentsResponse = new AllShipmentsResponse();
-            allShipmentsResponse.setShipments( shipmentList );
-            return allShipmentsResponse;
-        }
+        AllShipmentsResponse allShipmentsResponse = new AllShipmentsResponse();
+        allShipmentsResponse.setShipmentResponses( shipmentResponses );
+        allShipmentsResponse.setCount(count);
+        allShipmentsResponse.setTotalCount(totalCount);
+        allShipmentsResponse.setLinks(preparePaginationLinks(totalCount));
+        return allShipmentsResponse;
     }
+}
 

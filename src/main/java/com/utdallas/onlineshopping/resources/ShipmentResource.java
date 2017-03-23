@@ -72,7 +72,7 @@ public class ShipmentResource
     @Timed
     public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest,@QueryParam("page") int page, @QueryParam("size") int size)
     {
-        AllShipmentsResponse allShipmentsResponse  = this.updateShipmentStatusAction.withPaginateDetails(page,size).withRequest(shipmentRequest).invoke();
+        AllShipmentsResponse allShipmentsResponse  = this.updateShipmentStatusAction.withRequest(shipmentRequest).invoke();
         return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
     }
 

@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.ProductHibernateDAO;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
+import com.utdallas.onlineshopping.exceptions.NotFoundException;
 import com.utdallas.onlineshopping.models.Product;
 import com.utdallas.onlineshopping.payload.request.product.ProductRequest;
 import com.utdallas.onlineshopping.payload.response.product.ProductResponse;
@@ -15,6 +16,7 @@ import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class UpdateProductAction implements Action<ProductResponse>
@@ -47,21 +49,26 @@ public class UpdateProductAction implements Action<ProductResponse>
     public ProductResponse invoke()
     {
         ProductHibernateDAO productHibernateDAO = hibernateUtil.getProductHibernateDAO();
-        Product product = productHibernateDAO.findByParams(Collections.singletonMap("productId", productId)).get(0);
+	    List<Product> productList = productHibernateDAO.findByParams( Collections.singletonMap( "productId", this.productId ) );
 
-        try
+	    if( productList.size() < 1 )
+	    {
+	    	throw new NotFoundException( Collections.singletonList( "No product matching the given product_id" ) );
+	    }
+
+	    Product product = productList.get( 0 );
+	    try
         {
+        	if( !Strings.isNullOrEmpty( productRequest.getCategoryPrefix() ) )
+        		product.setProductId( String.format("%s%010d", productRequest.getCategoryPrefix(), product.getId()) );
             if( !Strings.isNullOrEmpty(productRequest.getProductName()) )
                 product.setProductName(productRequest.getProductName());
             if( !Strings.isNullOrEmpty(productRequest.getProductDescription()) )
                 product.setDescription(productRequest.getProductDescription());
-
-            if(productRequest.getQuantity()==-1){
-                product.setQuantity(0);
-            }
-            if(productRequest.getPrice()==-1){
-                product.setPrice(0.0);
-            }
+            if( productRequest.getQuantity()!=null )
+                product.setQuantity(productRequest.getQuantity());
+            if( productRequest.getPrice()!=null )
+                product.setPrice(productRequest.getPrice());
 
             Product newProduct = productHibernateDAO.update(product);
             return modelMapper.map(newProduct, ProductResponse.class);

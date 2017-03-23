@@ -10,6 +10,6 @@ public class ProductRequest
     private String categoryPrefix;
     private String productName;
     private String productDescription;
-    private int quantity;
-    private double price;
+    private Integer quantity;
+    private Double price;
 }

@@ -6,9 +6,10 @@ import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
-@Table(name = "order")
+@Table(name = "`order`")
 @Getter
 @Setter
 @Builder
@@ -22,7 +23,6 @@ public class Order extends BaseModel
     @Column(name = "order_id", columnDefinition = "INT(11) UNSIGNED")
     private Long orderId;
 
-    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "customer_id", nullable = false)
@@ -30,8 +30,8 @@ public class Order extends BaseModel
 
     private String orderStatus;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @NotNull
@@ -42,4 +42,10 @@ public class Order extends BaseModel
     @NotNull
     @JoinColumn(name = "billing_address_id", nullable = false)
     private Address billingAddress;
+
+    @OneToMany(mappedBy = "order")
+    List<Shipment> shipments;
+
+    @OneToMany(mappedBy = "order")
+    List<OrderDetail> orderDetails;
 }

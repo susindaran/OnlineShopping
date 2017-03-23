@@ -36,5 +36,6 @@ public class OrderDetail extends BaseModel
     @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
 
+    private String orderDetailStatus;
     private Integer quantity;
 }

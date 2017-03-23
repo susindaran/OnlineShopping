@@ -5,6 +5,8 @@ import lombok.*;
 import org.joda.time.LocalDateTime;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Table(name = "shipment")
@@ -21,9 +23,18 @@ public class Shipment extends BaseModel
     @Column(name = "shipment_id", columnDefinition = "INT(11) UNSIGNED")
     private Long shipmentId;
 
+    @Getter(AccessLevel.NONE)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
+    @OneToMany(mappedBy = "shipment")
+    private List<OrderDetail> orderDetails;
+
     private LocalDateTime deliveryDueDate;
     private String status;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

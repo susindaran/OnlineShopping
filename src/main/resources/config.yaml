@@ -7,7 +7,7 @@ databaseConfiguration:
   # the username
   user: root
   # the password
-  password: root
+  password: mysql123
   # the JDBC URL
   url: jdbc:mysql://localhost:3306/shopping?useSSL=false
   # any properties specific to your JDBC driver:

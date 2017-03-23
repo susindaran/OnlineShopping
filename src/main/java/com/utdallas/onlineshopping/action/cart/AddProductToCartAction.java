@@ -71,9 +71,7 @@ public class AddProductToCartAction implements Action<CartResponse>
             product.setQuantity( product.getQuantity() - request.getQuantity() );
             productHibernateDAO.update( product );
 
-            CartResponse cartResponse = modelMapper.map(newCart, CartResponse.class);
-            cartResponse.setCustomerId( newCart.getCustomer().getCustomerId() );
-            return cartResponse;
+            return modelMapper.map(newCart, CartResponse.class);
         }
 
         List<String> errors = new ArrayList<>();

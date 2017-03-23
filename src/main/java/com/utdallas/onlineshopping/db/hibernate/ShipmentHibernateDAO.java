@@ -1,6 +1,5 @@
 package com.utdallas.onlineshopping.db.hibernate;
 
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.utdallas.onlineshopping.db.GenericDAO;
 import com.utdallas.onlineshopping.models.Shipment;
@@ -8,7 +7,6 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements GenericDAO<Shipment>
@@ -38,5 +36,9 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
         return criteria.list();
     }
 
-
+    public void reloadShipment(Shipment shipment)
+    {
+        currentSession().flush();
+        currentSession().refresh( shipment );
+    }
 }

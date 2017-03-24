@@ -10,9 +10,9 @@ import com.utdallas.onlineshopping.util.HibernateUtil;
 import com.utdallas.onlineshopping.validators.product.AllProductsValidator;
 import org.modelmapper.ModelMapper;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import static com.utdallas.onlineshopping.util.Utility.preparePaginationLinks;
 
 public class GetAllProductsAction implements Action<AllProductsResponse>
 {
@@ -41,39 +41,20 @@ public class GetAllProductsAction implements Action<AllProductsResponse>
         return this;
     }
 
-    private String createLink(int page, int size)
-    {
-        return requestURL + "?page=" + page + "&size=" + size;
-    }
-
-    private Map<String, String> preparePaginationLinks(Long totalCount)
-    {
-        Map<String, String> linksMap = new HashMap<>();
-        int pages = Math.toIntExact((totalCount / this.size) + (totalCount % this.size == 0 ? 0 : 1));
-        linksMap.put("first", createLink(1, this.size));
-        linksMap.put("prev", this.page > 1 ? createLink(this.page - 1, this.size) : null);
-        linksMap.put("next", this.page * this.size < totalCount ? createLink( this.page + 1, this.size ) : null);
-        linksMap.put("last", createLink(pages, size));
-
-        return linksMap;
-    }
-
     @Override
     public AllProductsResponse invoke()
     {
-        AllProductsValidator.validateQueryParams(page, size);
+        AllProductsValidator.validatePaginateParameters(page, size);
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
         List<Product> productList = productHibernateDAO.getAll( page, size );
         Long totalCount = productHibernateDAO.count();
         int count = productList.size();
 
-        AllProductsResponse allProductsResponse = AllProductsResponse.builder()
-                .products(productList)
-                .count(count)
-                .totalCount(totalCount)
-                .links( preparePaginationLinks( totalCount ))
-                .build();
-
-        return allProductsResponse;
+        return AllProductsResponse.builder()
+                                  .products(productList)
+                                  .count(count)
+                                  .totalCount(totalCount)
+                                  .links( preparePaginationLinks( totalCount, size, page, requestURL ))
+                                  .build();
     }
 }

@@ -3,11 +3,13 @@ package com.utdallas.onlineshopping.action.shipment;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
+import com.utdallas.onlineshopping.db.hibernate.OrderDetailHibernateDAO;
 import com.utdallas.onlineshopping.db.hibernate.ShipmentHibernateDAO;
+import com.utdallas.onlineshopping.enumerations.OrderStatus;
 import com.utdallas.onlineshopping.enumerations.ShipmentStatus;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
 import com.utdallas.onlineshopping.models.Shipment;
-import com.utdallas.onlineshopping.payload.request.shipment.ShipmentRequest;
+import com.utdallas.onlineshopping.payload.request.shipment.UpdateShipmentsStatusRequest;
 import com.utdallas.onlineshopping.payload.response.shipment.AllShipmentsResponse;
 import com.utdallas.onlineshopping.payload.response.shipment.ShipmentResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
@@ -24,11 +26,11 @@ public class UpdateShipmentStatusAction implements Action<AllShipmentsResponse>
 {
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
-    private ShipmentRequest shipmentRequest;
+    private UpdateShipmentsStatusRequest updateShipmentsStatusRequest;
 
-    public UpdateShipmentStatusAction withRequest(ShipmentRequest shipmentRequest)
+    public UpdateShipmentStatusAction withRequest(UpdateShipmentsStatusRequest updateShipmentsStatusRequest )
     {
-        this.shipmentRequest = shipmentRequest;
+        this.updateShipmentsStatusRequest = updateShipmentsStatusRequest;
         return this;
     }
 
@@ -43,23 +45,25 @@ public class UpdateShipmentStatusAction implements Action<AllShipmentsResponse>
     public AllShipmentsResponse invoke()
     {
         ShipmentHibernateDAO shipmentHibernateDAO = hibernateUtil.getShipmentHibernateDAO();
-        List<Shipment> shipments = shipmentHibernateDAO.getShipmentsByIds(shipmentRequest.getShipmentIds());
+	    OrderDetailHibernateDAO orderDetailHibernateDAO = hibernateUtil.getOrderDetailHibernateDAO();
+	    List<Shipment> shipments = shipmentHibernateDAO.getShipmentsByIds( updateShipmentsStatusRequest.getShipmentIds() );
         List<ShipmentResponse> shipmentResponses = new ArrayList<>();
 
         try
         {
 	        shipments.forEach( shipment ->
             {
-
-                if( shipmentRequest.getStatus() == ShipmentStatus.PACKED  && shipment.getStatus().equals( ShipmentStatus.PICKED.getStatus() ) )
+                if( updateShipmentsStatusRequest.getStatus() == ShipmentStatus.PACKED  && shipment.getStatus().equals( ShipmentStatus.PICKED.getStatus() ) )
                 {
-
-                    shipment.setStatus( shipmentRequest.getStatus().getStatus() );
+                    shipment.setStatus( updateShipmentsStatusRequest.getStatus().getStatus() );
                 }
-                else if( shipmentRequest.getStatus() == ShipmentStatus.SHIPPED && shipment.getStatus().equals( ShipmentStatus.PACKED.getStatus() ) )
+                else if( updateShipmentsStatusRequest.getStatus() == ShipmentStatus.SHIPPED && shipment.getStatus().equals( ShipmentStatus.PACKED.getStatus() ) )
                 {
-
-                    shipment.setStatus( shipmentRequest.getStatus().getStatus() );
+                    shipment.getOrderDetails().forEach( orderDetail -> {
+                    	orderDetail.setOrderDetailStatus( OrderStatus.SHIPPED.getStatus() );
+                    	orderDetailHibernateDAO.update( orderDetail );
+                    } );
+                    shipment.setStatus( updateShipmentsStatusRequest.getStatus().getStatus() );
                 }
 
                 shipment.setUpdatedAt( LocalDateTime.now() );

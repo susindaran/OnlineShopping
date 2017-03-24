@@ -21,6 +21,7 @@ public class OrderDetail extends BaseModel
     @Column(name = "order_detail_id", columnDefinition = "INT(11) UNSIGNED")
     private Long orderDetailId;
 
+    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "order_id", nullable = false)
@@ -31,6 +32,7 @@ public class OrderDetail extends BaseModel
     @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     private Product product;
 
+    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "shipment_id", nullable = false)

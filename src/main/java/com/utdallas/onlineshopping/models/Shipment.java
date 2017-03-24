@@ -23,7 +23,7 @@ public class Shipment extends BaseModel
     @Column(name = "shipment_id", columnDefinition = "INT(11) UNSIGNED")
     private Long shipmentId;
 
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PRIVATE)
     @ManyToOne(fetch = FetchType.LAZY)
     @NotNull
     @JoinColumn(name = "order_id", nullable = false)
@@ -37,4 +37,9 @@ public class Shipment extends BaseModel
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public Order getOrderItem()
+    {
+        return this.order;
+    }
 }

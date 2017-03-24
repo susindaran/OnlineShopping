@@ -8,7 +8,7 @@ import java.util.List;
 
 @JsonSnakeCase
 @Getter
-public class ShipmentRequest
+public class UpdateShipmentsStatusRequest
 {
     private List<Long> shipmentIds;
     private ShipmentStatus status;

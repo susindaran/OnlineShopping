@@ -6,7 +6,7 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.shipment.GetAllShipmentsAction;
 import com.utdallas.onlineshopping.action.shipment.UpdateShipmentStatusAction;
 import com.utdallas.onlineshopping.enumerations.ShipmentStatus;
-import com.utdallas.onlineshopping.payload.request.shipment.ShipmentRequest;
+import com.utdallas.onlineshopping.payload.request.shipment.UpdateShipmentsStatusRequest;
 import com.utdallas.onlineshopping.payload.response.shipment.AllShipmentsResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class ShipmentResource
     @Path("/all")
     @UnitOfWork
     @Timed
-    public Response getAllShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
+    public Response getAllShipments( @Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size )
     {
         AllShipmentsResponse allShipmentsResponse = getAllShipmentsAction
                 .withRequestURL(request.getRequestURL().toString() )
@@ -54,7 +54,7 @@ public class ShipmentResource
     @Path("/{status}")
     @UnitOfWork
     @Timed
-    public Response getShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") ShipmentStatus status )
+    public Response getAllShipmentsByStatus( @Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") ShipmentStatus status )
     {
         AllShipmentsResponse allShipmentsResponse = getAllShipmentsAction
                 .withRequestURL(request.getRequestURL().toString() )
@@ -68,9 +68,10 @@ public class ShipmentResource
     @Path("/status")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest)
+    public Response updateStatus( @Context HttpHeaders headers, @NotNull UpdateShipmentsStatusRequest updateShipmentsStatusRequest )
     {
-        AllShipmentsResponse allShipmentsResponse = this.updateShipmentStatusAction.withRequest(shipmentRequest ).invoke();
+        AllShipmentsResponse allShipmentsResponse = this.updateShipmentStatusAction.withRequest(
+                updateShipmentsStatusRequest ).invoke();
         return Response.status(Response.Status.OK).entity( allShipmentsResponse ).build();
     }
 

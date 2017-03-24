@@ -104,8 +104,8 @@ public class PlaceOrderFromCartAction implements Action<OrderResponse>
             List<Long> cartIds = cartItems.stream().map(Cart::getCartId).collect(Collectors.toList());
             cartHibernateDAO.deleteByIDs( cartIds, "cartId");
 
-            shipmentHibernateDAO.reloadShipment( shipment );
-            orderHibernateDAO.reloadOrder( order );
+            shipmentHibernateDAO.reload( shipment );
+            orderHibernateDAO.reload( order );
 
             return modelMapper.map( order, OrderResponse.class );
         }

@@ -3,10 +3,11 @@ package com.utdallas.onlineshopping.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.utdallas.onlineshopping.action.orderDetail.GetOrderDetailAction;
-import com.utdallas.onlineshopping.action.orderDetail.UpdateOrderDetailAction;
-import com.utdallas.onlineshopping.payload.request.orderDetail.GetOrderDetailRequest;
-import com.utdallas.onlineshopping.payload.response.orderdetail.GetAllOrderDetailsResponse;
+import com.utdallas.onlineshopping.action.orderdetail.GetAllOrderDetailsActions;
+import com.utdallas.onlineshopping.action.orderdetail.UpdateOrderDetailAction;
+import com.utdallas.onlineshopping.enumerations.OrderStatus;
+import com.utdallas.onlineshopping.payload.request.orderdetail.UpdateOrderDetailsStatusRequest;
+import com.utdallas.onlineshopping.payload.response.orderdetail.AllOrderDetailsResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,35 +19,32 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * Created by vidya on 3/22/17.
- */
-
-@Path("/orderdetails")
+@Path("/order_detail")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
 public class OrderDetailResource {
 
 
-    private final GetOrderDetailAction getOrderDetailAction;
+    private final GetAllOrderDetailsActions getAllOrderDetailsActions;
     private final UpdateOrderDetailAction updateOrderDetailAction;
 
     @Inject
-    public OrderDetailResource(Provider<GetOrderDetailAction> getOrderDetailActionProvider, Provider<UpdateOrderDetailAction> updateOrderDetailActionProvider)
+    public OrderDetailResource( Provider<GetAllOrderDetailsActions> getOrderDetailActionProvider, Provider<UpdateOrderDetailAction> updateOrderDetailActionProvider )
     {
-        this.getOrderDetailAction=getOrderDetailActionProvider.get();
+        this.getAllOrderDetailsActions =getOrderDetailActionProvider.get();
         this.updateOrderDetailAction=updateOrderDetailActionProvider.get();
 
     }
 
     @GET
-    @Path("/")
+    @Path("/all")
     @UnitOfWork
     @Timed
     public Response getAllOrderDetails(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
     {
-        GetAllOrderDetailsResponse allOrderDetailsResponse = getOrderDetailAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size, null)
+        AllOrderDetailsResponse allOrderDetailsResponse = getAllOrderDetailsActions
+                .withRequestURL(request.getRequestURL().toString() )
+                .withPaginateDetails(page, size)
                 .invoke();
         return Response.status(Response.Status.OK).entity(allOrderDetailsResponse).build();
     }
@@ -56,23 +54,26 @@ public class OrderDetailResource {
     @Path("/{status}")
     @UnitOfWork
     @Timed
-    public Response getOrderDetail(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") String status)
+    public Response getAllOrderDetailsByStatus( @Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") OrderStatus status )
     {
-        GetAllOrderDetailsResponse getAllOrderDetailsResponse = getOrderDetailAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size, status)
+        AllOrderDetailsResponse allOrderDetailsResponse = getAllOrderDetailsActions
+                .withRequestURL(request.getRequestURL().toString() )
+                .withPaginateDetails(page, size)
+                .withStatus( status.toString() )
                 .invoke();
-        return Response.status(Response.Status.OK).entity(getAllOrderDetailsResponse).build();
+        return Response.status(Response.Status.OK).entity( allOrderDetailsResponse ).build();
     }
 
 
     @PUT
-    @Path("/changeStatus")
+    @Path("/status")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull GetOrderDetailRequest getOrderDetailRequest, @QueryParam("page") int page, @QueryParam("size") int size)
+    public Response update(@Context HttpHeaders headers, @NotNull UpdateOrderDetailsStatusRequest updateOrderDetailsStatusRequest )
     {
-         GetAllOrderDetailsResponse  getAllOrderDetailsResponse= this.updateOrderDetailAction.withRequest(getOrderDetailRequest).invoke();
-        return Response.status(Response.Status.OK).entity(getAllOrderDetailsResponse).build();
+         AllOrderDetailsResponse allOrderDetailsResponse = this.updateOrderDetailAction.withRequest(
+		         updateOrderDetailsStatusRequest ).invoke();
+        return Response.status(Response.Status.OK).entity( allOrderDetailsResponse ).build();
     }
 
 }

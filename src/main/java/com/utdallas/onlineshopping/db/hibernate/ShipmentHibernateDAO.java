@@ -42,12 +42,6 @@ public class ShipmentHibernateDAO extends BaseHibernateDAO<Shipment> implements 
         return criteria.list();
     }
 
-    public void reloadShipment(Shipment shipment)
-    {
-        currentSession().flush();
-        currentSession().refresh( shipment );
-    }
-
     public Long countWithStatus(String status)
     {
     	if( !Strings.isNullOrEmpty( status ))

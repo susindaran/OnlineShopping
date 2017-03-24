@@ -82,4 +82,10 @@ public abstract class BaseHibernateDAO<T> extends AbstractDAO<T>
     {
         return (Long) criteria().setProjection(Projections.rowCount()).uniqueResult();
     }
+
+    public void reload(T object)
+    {
+        currentSession().flush();
+        currentSession().refresh( object );
+    }
 }

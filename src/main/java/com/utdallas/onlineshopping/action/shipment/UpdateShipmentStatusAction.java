@@ -1,6 +1,5 @@
 package com.utdallas.onlineshopping.action.shipment;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
@@ -45,40 +44,35 @@ public class UpdateShipmentStatusAction implements Action<AllShipmentsResponse>
     {
         ShipmentHibernateDAO shipmentHibernateDAO = hibernateUtil.getShipmentHibernateDAO();
         List<Shipment> shipments = shipmentHibernateDAO.getShipmentsByIds(shipmentRequest.getShipmentIds());
-        Shipment newShipment;
-        List<ShipmentResponse> listOfShip=new ArrayList<>();
+        List<ShipmentResponse> shipmentResponses = new ArrayList<>();
 
-        try {
+        try
+        {
+	        shipments.forEach( shipment ->
+            {
 
-                for(int i=0;i<shipments.size();i++) {
+                if( shipmentRequest.getStatus() == ShipmentStatus.PACKED  && shipment.getStatus().equals( ShipmentStatus.PICKED.getStatus() ) )
+                {
 
-                    if ( shipments.get(i).getStatus().equals(ShipmentStatus.PICKED.getStatus()) && shipmentRequest.getStatus() == ShipmentStatus.PACKED) {
+                    shipment.setStatus( shipmentRequest.getStatus().getStatus() );
+                }
+                else if( shipmentRequest.getStatus() == ShipmentStatus.SHIPPED && shipment.getStatus().equals( ShipmentStatus.PACKED.getStatus() ) )
+                {
 
-                        shipments.get(i).setStatus(shipmentRequest.getStatus().getStatus());
-                    }
-
-                    if (shipments.get(i).getStatus().equals(ShipmentStatus.PACKED.getStatus()) && shipmentRequest.getStatus() == ShipmentStatus.SHIPPED) {
-
-                        shipments.get(i).setStatus(shipmentRequest.getStatus().getStatus());
-                    }
-
-                    shipments.get(i).setUpdatedAt(LocalDateTime.now());
-                    newShipment = shipmentHibernateDAO.update(shipments.get(i));
-                    listOfShip.add(modelMapper.map(newShipment,ShipmentResponse.class));
+                    shipment.setStatus( shipmentRequest.getStatus().getStatus() );
                 }
 
-
+                shipment.setUpdatedAt( LocalDateTime.now() );
+                shipmentResponses.add( modelMapper.map( shipmentHibernateDAO.update( shipment ), ShipmentResponse.class ) );
+            });
             AllShipmentsResponse allShipmentsResponse = new AllShipmentsResponse();
-            allShipmentsResponse.setShipmentResponses(listOfShip);
+            allShipmentsResponse.setShipments(shipmentResponses );
             return allShipmentsResponse;
-
         }
-
         catch( HibernateException e )
         {
             log.error(String.valueOf(e.getCause()));
             throw new InternalErrorException(e.getMessage());
         }
-
     }
 }

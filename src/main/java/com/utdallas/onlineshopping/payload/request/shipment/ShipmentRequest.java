@@ -6,10 +6,6 @@ import lombok.Getter;
 
 import java.util.List;
 
-/**
- * Created by prathyusha on 3/18/17.
- */
-
 @JsonSnakeCase
 @Getter
 public class ShipmentRequest

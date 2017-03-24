@@ -14,10 +14,9 @@ import org.modelmapper.ModelMapper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by prathyusha on 3/18/17.
- */
-public class GetShipmentAction implements Action<AllShipmentsResponse>
+import static com.utdallas.onlineshopping.util.Utility.preparePaginationLinks;
+
+public class GetAllShipmentsAction implements Action<AllShipmentsResponse>
 {
     private HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
@@ -26,58 +25,46 @@ public class GetShipmentAction implements Action<AllShipmentsResponse>
     private String status;
 
     @Inject
-    public GetShipmentAction(Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper)
+    public GetAllShipmentsAction( Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper )
     {
         this.hibernateUtil = hibernateUtilProvider.get();
         this.modelMapper = modelMapper;
     }
 
-    public GetShipmentAction withRequestURL(String requestURL)
+    public GetAllShipmentsAction withRequestURL( String requestURL )
     {
         this.requestURL = requestURL;
         return this;
     }
 
-    public GetShipmentAction withPaginateDetails(int page, int size, String status)
+    public GetAllShipmentsAction withPaginateDetails( int page, int size )
     {
         this.page = page;
         this.size = size;
-        this.status=status;
         return this;
     }
 
-    private String createLink(int page, int size)
+    public GetAllShipmentsAction withStatus(String status)
     {
-        return requestURL + "?page=" + page + "&size=" + size;
-    }
-
-    private Map<String, String> preparePaginationLinks(Long totalCount)
-    {
-        Map<String, String> linksMap = new HashMap<>();
-        int pages = Math.toIntExact((totalCount / this.size) + (totalCount % this.size == 0 ? 0 : 1));
-        linksMap.put("first", createLink(1, this.size));
-        linksMap.put("prev", this.page > 1 ? createLink(this.page - 1, this.size) : null);
-        linksMap.put("next", this.page * this.size < totalCount ? createLink( this.page + 1, this.size ) : null);
-        linksMap.put("last", createLink(pages, size));
-
-        return linksMap;
+        this.status = status;
+        return this;
     }
 
     @Override
     public AllShipmentsResponse invoke()
     {
-        ShipmentsValidator.validateQueryParams(page, size);
+        ShipmentsValidator.validatePaginateParameters(page, size);
         ShipmentHibernateDAO shipmentHibernateDAO = this.hibernateUtil.getShipmentHibernateDAO();
         List<Shipment> shipmentList = shipmentHibernateDAO.getAll(page,size,status);
-        Long totalCount = shipmentHibernateDAO.count();
+        Long totalCount = shipmentHibernateDAO.countWithStatus( status );
         int count = shipmentList.size();
         List<ShipmentResponse> shipmentResponses = shipmentList.stream().map(shipment -> modelMapper.map(shipment, ShipmentResponse.class)).collect(Collectors.toList());
 
         AllShipmentsResponse allShipmentsResponse = new AllShipmentsResponse();
-        allShipmentsResponse.setShipmentResponses( shipmentResponses );
+        allShipmentsResponse.setShipments( shipmentResponses );
         allShipmentsResponse.setCount(count);
         allShipmentsResponse.setTotalCount(totalCount);
-        allShipmentsResponse.setLinks(preparePaginationLinks(totalCount));
+        allShipmentsResponse.setLinks(preparePaginationLinks(totalCount, size, page, requestURL));
         return allShipmentsResponse;
     }
 }

@@ -3,12 +3,11 @@ package com.utdallas.onlineshopping.resources;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.utdallas.onlineshopping.action.shipment.GetShipmentAction;
+import com.utdallas.onlineshopping.action.shipment.GetAllShipmentsAction;
 import com.utdallas.onlineshopping.action.shipment.UpdateShipmentStatusAction;
-import com.utdallas.onlineshopping.models.Shipment;
+import com.utdallas.onlineshopping.enumerations.ShipmentStatus;
 import com.utdallas.onlineshopping.payload.request.shipment.ShipmentRequest;
 import com.utdallas.onlineshopping.payload.response.shipment.AllShipmentsResponse;
-import com.utdallas.onlineshopping.payload.response.shipment.ShipmentResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,37 +19,34 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * Created by prathyusha on 3/18/17.
- */
-
-@Path("/shipments")
+@Path("/shipment")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
 public class ShipmentResource
 {
-    private final GetShipmentAction getShipmentAction;
+    private final GetAllShipmentsAction getAllShipmentsAction;
     private final UpdateShipmentStatusAction updateShipmentStatusAction;
 
     @Inject
-    public ShipmentResource(Provider<GetShipmentAction> getShipmentActionProvider,
+    public ShipmentResource(Provider<GetAllShipmentsAction> getShipmentActionProvider,
                             Provider<UpdateShipmentStatusAction> updateShipmentStatusActionProvider)
     {
-        this.getShipmentAction=getShipmentActionProvider.get();
+        this.getAllShipmentsAction =getShipmentActionProvider.get();
         this.updateShipmentStatusAction=updateShipmentStatusActionProvider.get();
     }
 
 
     @GET
-    @Path("/")
+    @Path("/all")
     @UnitOfWork
     @Timed
     public Response getAllShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
     {
-        AllShipmentsResponse allShipmentsResponse = getShipmentAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size, null)
+        AllShipmentsResponse allShipmentsResponse = getAllShipmentsAction
+                .withRequestURL(request.getRequestURL().toString() )
+                .withPaginateDetails(page, size)
                 .invoke();
-        return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
+        return Response.status(Response.Status.OK).entity( allShipmentsResponse ).build();
     }
 
 
@@ -58,22 +54,24 @@ public class ShipmentResource
     @Path("/{status}")
     @UnitOfWork
     @Timed
-    public Response getShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") String status)
+    public Response getShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") ShipmentStatus status )
     {
-        AllShipmentsResponse allShipmentsResponse = getShipmentAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size, status)
+        AllShipmentsResponse allShipmentsResponse = getAllShipmentsAction
+                .withRequestURL(request.getRequestURL().toString() )
+                .withPaginateDetails(page, size)
+                .withStatus( status.getStatus() )
                 .invoke();
-        return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
+        return Response.status(Response.Status.OK).entity( allShipmentsResponse ).build();
     }
 
     @PUT
-    @Path("/changeStatus")
+    @Path("/status")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest,@QueryParam("page") int page, @QueryParam("size") int size)
+    public Response update(@Context HttpHeaders headers, @NotNull ShipmentRequest shipmentRequest)
     {
-        AllShipmentsResponse allShipmentsResponse  = this.updateShipmentStatusAction.withRequest(shipmentRequest).invoke();
-        return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
+        AllShipmentsResponse allShipmentsResponse = this.updateShipmentStatusAction.withRequest(shipmentRequest ).invoke();
+        return Response.status(Response.Status.OK).entity( allShipmentsResponse ).build();
     }
 
 

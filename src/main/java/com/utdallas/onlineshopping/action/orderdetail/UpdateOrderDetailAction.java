@@ -4,8 +4,12 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.OrderDetailHibernateDAO;
+import com.utdallas.onlineshopping.db.hibernate.PaymentHibernateDAO;
+import com.utdallas.onlineshopping.enumerations.TransactionType;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
+import com.utdallas.onlineshopping.models.Order;
 import com.utdallas.onlineshopping.models.OrderDetail;
+import com.utdallas.onlineshopping.models.Payment;
 import com.utdallas.onlineshopping.payload.request.orderdetail.UpdateOrderDetailsStatusRequest;
 import com.utdallas.onlineshopping.payload.response.orderdetail.AllOrderDetailsResponse;
 import com.utdallas.onlineshopping.payload.response.orderdetail.OrderDetailResponse;
@@ -46,7 +50,8 @@ public class UpdateOrderDetailAction implements Action<AllOrderDetailsResponse>
     public AllOrderDetailsResponse invoke()
     {
         OrderDetailHibernateDAO orderDetailHibernateDAO = hibernateUtil.getOrderDetailHibernateDAO();
-        List<OrderDetail> orderDetails = orderDetailHibernateDAO.getOrderDetailsByIds(orderDetailRequest.getOrderDetailIds() );
+	    PaymentHibernateDAO paymentHibernateDAO = hibernateUtil.getPaymentHibernateDAO();
+	    List<OrderDetail> orderDetails = orderDetailHibernateDAO.getOrderDetailsByIds(orderDetailRequest.getOrderDetailIds() );
         List<OrderDetailResponse> orderDetailResponses = new ArrayList<>();
         try
         {
@@ -76,6 +81,17 @@ public class UpdateOrderDetailAction implements Action<AllOrderDetailsResponse>
 				        if( orderDetail.getOrderDetailStatus().equals( RETURN_INITIATED.getStatus() ) )
 				        {
 					        orderDetail.setOrderDetailStatus( RETURN_RECEIVED.getStatus() );
+					        Order order = orderDetail.getOrderObject();
+					        Payment payment = paymentHibernateDAO
+							        .getPaymentOfOrderDetail( order, orderDetail.getProduct().getProductId(), TransactionType.DEBIT, "PRICE" );
+					        double tax = order.getShippingAddress().getTaxDetails().getTax() * payment.getAmount() / 100;
+					        Payment returnPayment = Payment.builder()
+					                                 .order( order )
+					                                 .reason( "RETURN" )
+					                                 .amount( payment.getAmount() + tax )
+					                                 .ref1( orderDetail.getProduct().getProductId() )
+					                                 .transactionType( TransactionType.CREDIT.getType() ).build();
+					        paymentHibernateDAO.create( returnPayment );
 				        }
 				        break;
 		        }

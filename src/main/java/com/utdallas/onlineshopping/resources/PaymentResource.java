@@ -41,8 +41,8 @@ public class PaymentResource
 	public Response createPayment( @Context HttpHeaders headers, @NotNull CreatePaymentRequest createPaymentRequest,
 	                               @NotNull @PathParam( "order_id" ) Long orderId )
 	{
-		PaymentResponse paymentResponse = this.createPaymentAction.withRequest( createPaymentRequest ).forOrderId( orderId ).invoke();
-		return Response.status( Response.Status.CREATED ).entity( paymentResponse ).build();
+		PaymentsListResponse paymentsListResponse = this.createPaymentAction.withRequest( createPaymentRequest ).forOrderId( orderId ).invoke();
+		return Response.status( Response.Status.CREATED ).entity( paymentsListResponse ).build();
 	}
 
 	@GET

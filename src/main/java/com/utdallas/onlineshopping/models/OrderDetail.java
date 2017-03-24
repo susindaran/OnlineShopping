@@ -40,4 +40,9 @@ public class OrderDetail extends BaseModel
 
     private String orderDetailStatus;
     private Integer quantity;
+
+    public Order getOrderObject()
+    {
+        return this.order;
+    }
 }

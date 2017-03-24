@@ -41,7 +41,7 @@ public class OrderDetailResource
     }
 
     @GET
-    @Path("/all")
+    @Path("/ALL")
     @UnitOfWork
     @Timed
     public Response getAllOrderDetails(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)

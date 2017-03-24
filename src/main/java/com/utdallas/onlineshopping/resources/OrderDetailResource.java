@@ -43,7 +43,7 @@ public class OrderDetailResource {
     @Path("/")
     @UnitOfWork
     @Timed
-    public Response getAllShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
+    public Response getAllOrderDetails(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
     {
         GetAllOrderDetailsResponse allOrderDetailsResponse = getOrderDetailAction.withRequestURL(request.getRequestURL().toString())
                 .withPaginateDetails(page, size, null)
@@ -56,12 +56,12 @@ public class OrderDetailResource {
     @Path("/{status}")
     @UnitOfWork
     @Timed
-    public Response getShipment(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") String status)
+    public Response getOrderDetail(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @NotNull @PathParam("status") String status)
     {
-        GetAllOrderDetailsResponse allShipmentsResponse = getOrderDetailAction.withRequestURL(request.getRequestURL().toString())
+        GetAllOrderDetailsResponse getAllOrderDetailsResponse = getOrderDetailAction.withRequestURL(request.getRequestURL().toString())
                 .withPaginateDetails(page, size, status)
                 .invoke();
-        return Response.status(Response.Status.OK).entity(allShipmentsResponse).build();
+        return Response.status(Response.Status.OK).entity(getAllOrderDetailsResponse).build();
     }
 
 
@@ -71,7 +71,7 @@ public class OrderDetailResource {
     @Timed
     public Response update(@Context HttpHeaders headers, @NotNull GetOrderDetailRequest getOrderDetailRequest, @QueryParam("page") int page, @QueryParam("size") int size)
     {
-         GetAllOrderDetailsResponse  getAllOrderDetailsResponse= this.updateOrderDetailAction.withPaginateDetails(page,size).withRequest(getOrderDetailRequest).invoke();
+         GetAllOrderDetailsResponse  getAllOrderDetailsResponse= this.updateOrderDetailAction.withRequest(getOrderDetailRequest).invoke();
         return Response.status(Response.Status.OK).entity(getAllOrderDetailsResponse).build();
     }
 

@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.OrderDetailHibernateDAO;
+import com.utdallas.onlineshopping.enumerations.OrderStatus;
 import com.utdallas.onlineshopping.exceptions.InternalErrorException;
 import com.utdallas.onlineshopping.models.OrderDetail;
 import com.utdallas.onlineshopping.payload.request.orderDetail.GetOrderDetailRequest;
@@ -27,9 +28,7 @@ public class UpdateOrderDetailAction implements Action<GetAllOrderDetailsRespons
         private final HibernateUtil hibernateUtil;
         private ModelMapper modelMapper;
         private GetOrderDetailRequest orderDetailRequest;
-        private int orderDetailId;
-        private int page, size;
-        private String status;
+
 
     public UpdateOrderDetailAction withRequest(GetOrderDetailRequest orderDetailRequest)
     {
@@ -37,12 +36,6 @@ public class UpdateOrderDetailAction implements Action<GetAllOrderDetailsRespons
         return this;
     }
 
-    public UpdateOrderDetailAction withPaginateDetails(int page, int size)
-    {
-        this.page = page;
-        this.size = size;
-        return this;
-    }
 
     @Inject
     public UpdateOrderDetailAction(Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper)
@@ -55,39 +48,36 @@ public class UpdateOrderDetailAction implements Action<GetAllOrderDetailsRespons
     public GetAllOrderDetailsResponse invoke()
     {
         OrderDetailHibernateDAO orderDetailHibernateDAO = hibernateUtil.getOrderDetailHibernateDAO();
-        List<OrderDetail> orderDetails = orderDetailHibernateDAO.getAllOrderDetails(page,size);
+        List<OrderDetail> orderDetails = orderDetailHibernateDAO.getOrderDetailsByIds(orderDetailRequest.getOrderDetailId());
         OrderDetail newOrderDetails;
         List<OrderDetailResponse> listOfOrderDetails=new ArrayList<OrderDetailResponse>();
-        int id=0;
-
-        try {
-            for (Integer orderdetailId : orderDetailRequest.getOrderDetailId())
+        try{
+            for(int i=0;i<orderDetails.size();i++)
             {
-                for(int i=0;i<orderDetails.size();i++)
-                {
-                    if(orderDetails.get(i).getOrderDetailId().intValue()==orderdetailId)
-                        id=i;
-                }
-                if (!Strings.isNullOrEmpty(orderDetailRequest.getOrder_detail_status()) && orderDetails.get(id).getOrderDetailStatus().equals("pending") && orderDetailRequest.getOrder_detail_status().equals("shipped"))
+
+                if (orderDetails.get(i).getOrderDetailStatus().equals(OrderStatus.PENDING.getStatus()) && orderDetailRequest.getOrder_detail_status()==OrderStatus.SHIPPED)
                 {
 
-                    orderDetails.get(id).setOrderDetailStatus(orderDetailRequest.getOrder_detail_status());
+                    orderDetails.get(i).setOrderDetailStatus(orderDetailRequest.getOrder_detail_status().getStatus());
                 }
 
-                if (!Strings.isNullOrEmpty(orderDetailRequest.getOrder_detail_status()) && orderDetails.get(id).getOrderDetailStatus().equals("shipped") && orderDetailRequest.getOrder_detail_status().equals("invoiced"))
+                if (orderDetails.get(i).getOrderDetailStatus().equals(OrderStatus.SHIPPED.getStatus()) && orderDetailRequest.getOrder_detail_status()==OrderStatus.INVOICED)
                 {
 
-                    orderDetails.get(id).setOrderDetailStatus(orderDetailRequest.getOrder_detail_status());
+                    orderDetails.get(i).setOrderDetailStatus(orderDetailRequest.getOrder_detail_status().getStatus());
                 }
-                if (!Strings.isNullOrEmpty(orderDetailRequest.getOrder_detail_status()) && orderDetails.get(id).getOrderDetailStatus().equals("return initiated") && orderDetailRequest.getOrder_detail_status().equals("return received"))
+
+                if (orderDetails.get(i).getOrderDetailStatus().equals(OrderStatus.RETURN_INITIATED.getStatus()) && orderDetailRequest.getOrder_detail_status()==OrderStatus.RETURN_RECEIVED)
                 {
 
-                    orderDetails.get(id).setOrderDetailStatus(orderDetailRequest.getOrder_detail_status());
+                    orderDetails.get(i).setOrderDetailStatus(orderDetailRequest.getOrder_detail_status().getStatus());
                 }
 
 
-                newOrderDetails=orderDetailHibernateDAO.update(orderDetails.get(id));
-                listOfOrderDetails = orderDetails.stream().map(shipment -> modelMapper.map(shipment, OrderDetailResponse.class)).collect(Collectors.toList());
+
+
+                newOrderDetails=orderDetailHibernateDAO.update(orderDetails.get(i));
+                listOfOrderDetails.add(modelMapper.map(newOrderDetails,OrderDetailResponse.class));
             }
              GetAllOrderDetailsResponse getAllOrderDetailsResponse= new GetAllOrderDetailsResponse();
             getAllOrderDetailsResponse.setOrderDetailsResponses(listOfOrderDetails);

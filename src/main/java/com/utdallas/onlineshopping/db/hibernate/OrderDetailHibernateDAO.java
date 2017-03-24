@@ -30,14 +30,12 @@ public class OrderDetailHibernateDAO extends BaseHibernateDAO<OrderDetail> imple
         return criteria.list();
     }
 
-    public List<OrderDetail> getAllOrderDetails(int page, int size)
+    public List<OrderDetail> getOrderDetailsByIds(List<Long> orderDetailId)
     {
         Criteria criteria = currentSession().createCriteria(OrderDetail.class);
-        criteria.setFirstResult( (page - 1) * size );
-        criteria.setMaxResults( size );
+        criteria.add(Restrictions.in("orderDetailId", orderDetailId));
         return criteria.list();
     }
 
 
 }
-

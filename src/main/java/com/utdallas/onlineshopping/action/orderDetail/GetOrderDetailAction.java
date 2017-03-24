@@ -5,7 +5,6 @@ import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.Action;
 import com.utdallas.onlineshopping.db.hibernate.OrderDetailHibernateDAO;
 import com.utdallas.onlineshopping.models.OrderDetail;
-import com.utdallas.onlineshopping.models.Shipment;
 import com.utdallas.onlineshopping.payload.response.orderdetail.GetAllOrderDetailsResponse;
 import com.utdallas.onlineshopping.payload.response.orderdetail.OrderDetailResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
@@ -75,11 +74,14 @@ public class GetOrderDetailAction implements Action<GetAllOrderDetailsResponse>
         Long totalCount = orderDetailHibernateDAO.count();
         int count = orderDetailList.size();
         int flag=0;
-        List<OrderDetailResponse> orderDetailResponses = orderDetailList.stream().map(orderDetail -> modelMapper.map(orderDetailList, OrderDetailResponse.class)).collect(Collectors.toList());
+        List<OrderDetailResponse> orderDetailResponses = orderDetailList.stream().map(orderDetail -> modelMapper.map(orderDetail, OrderDetailResponse.class)).collect(Collectors.toList());
 
         GetAllOrderDetailsResponse getAllOrderDetailsResponse = new GetAllOrderDetailsResponse();
-        getAllOrderDetailsResponse.setOrderDetails( orderDetailList );
-        List<OrderDetail> tempOrderDetails = getAllOrderDetailsResponse.getOrderDetails();
+        getAllOrderDetailsResponse.setOrderDetailsResponses( orderDetailResponses );
+        getAllOrderDetailsResponse.setCount(count);
+        getAllOrderDetailsResponse.setTotalCount(totalCount);
+        getAllOrderDetailsResponse.setLinks(preparePaginationLinks(totalCount));
+
 
         return getAllOrderDetailsResponse;
     }

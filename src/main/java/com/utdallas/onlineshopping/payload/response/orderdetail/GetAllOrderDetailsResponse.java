@@ -19,7 +19,6 @@ public class  GetAllOrderDetailsResponse
         Map<String, String> links;
         Integer count;
         Long totalCount;
-        private List<OrderDetail> orderDetails;
         private List<OrderDetailResponse> orderDetailsResponses;
 }
 

@@ -18,6 +18,10 @@ public class AllProductsValidator
         {
             errors.add( "size parameter must be at least 1");
         }
+        else if( size > 50 )
+        {
+            errors.add( "Size parameter must be at most 50" );
+        }
 
         if( errors.size() > 0 )
         {

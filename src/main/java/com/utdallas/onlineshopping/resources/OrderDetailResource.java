@@ -1,6 +1,8 @@
 package com.utdallas.onlineshopping.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.utdallas.onlineshopping.action.order.OrderDetailAction;
+import com.utdallas.onlineshopping.payload.response.orderdetail.OrderDetailListResponse;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.utdallas.onlineshopping.action.orderdetail.GetAllOrderDetailsActions;
@@ -22,18 +24,20 @@ import javax.ws.rs.core.Response;
 @Path("/order_detail")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
-public class OrderDetailResource {
-
-
+public class OrderDetailResource
+{
     private final GetAllOrderDetailsActions getAllOrderDetailsActions;
     private final UpdateOrderDetailAction updateOrderDetailAction;
+    private OrderDetailAction orderDetailAction;
 
     @Inject
-    public OrderDetailResource( Provider<GetAllOrderDetailsActions> getOrderDetailActionProvider, Provider<UpdateOrderDetailAction> updateOrderDetailActionProvider )
+    public OrderDetailResource( Provider<GetAllOrderDetailsActions> getOrderDetailActionProvider,
+                                Provider<UpdateOrderDetailAction> updateOrderDetailActionProvider,
+                                Provider<OrderDetailAction> orderDetailActionProvider)
     {
         this.getAllOrderDetailsActions =getOrderDetailActionProvider.get();
         this.updateOrderDetailAction=updateOrderDetailActionProvider.get();
-
+        this.orderDetailAction = orderDetailActionProvider.get();
     }
 
     @GET
@@ -76,4 +80,13 @@ public class OrderDetailResource {
         return Response.status(Response.Status.OK).entity( allOrderDetailsResponse ).build();
     }
 
+    @GET
+    @Path("/order/{order_id}")
+    @UnitOfWork
+    @Timed
+    public Response getOrderDetails(@Context HttpHeaders headers, @NotNull @PathParam("order_id") Long orderId)
+    {
+        OrderDetailListResponse orderDetailResponse = orderDetailAction.forOrderId(orderId).invoke();
+        return Response.status( Response.Status.OK ).entity( orderDetailResponse ).build();
+    }
 }

@@ -25,6 +25,5 @@ public class OrderResponse
     private LocalDateTime updatedAt;
     private Address shippingAddress;
     private Address billingAddress;
-    @JsonIgnoreProperties(value = {"order"})
     private List<ShipmentResponse> shipments;
 }

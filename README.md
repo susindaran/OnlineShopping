@@ -4,9 +4,9 @@ A REST HTTP service for an e-commerce website.
 ## Run from IntelliJ
 * Program Arguments: ```server src/main/resources/config.yaml```
 
-#####To server static content -
+#### To server static content -
     
-1) Open module settings
+1) Open project module settings
 2) `Dependencies` tab
 3) Select '+' -> JARs or Directories..
 4) Select the directory containing the 'assets' folder which has the static files.

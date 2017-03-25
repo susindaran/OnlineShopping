@@ -53,6 +53,7 @@ public class GetItemsInCartAction implements Action<CartItemsResponse>
             List<CartResponse> cartResponses = cartItems.stream().map(cartItem -> modelMapper.map(cartItem, CartResponse.class)).collect(Collectors.toList());
 
             CartItemsResponse cartItemsResponse = new CartItemsResponse();
+            cartItemsResponse.setCount( cartResponses.size() );
             cartItemsResponse.setCartItems( cartResponses );
             cartItemsResponse.setCustomer( modelMapper.map( customer, CustomerResponse.class) );
             return cartItemsResponse;

@@ -13,6 +13,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartItemsResponse
 {
+    private int count;
     @JsonIgnoreProperties(value = {"addresses", "card_details"})
     private CustomerResponse customer;
     private List<CartResponse> cartItems;

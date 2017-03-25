@@ -13,6 +13,7 @@ import com.utdallas.onlineshopping.models.Cart;
 import com.utdallas.onlineshopping.models.Customer;
 import com.utdallas.onlineshopping.models.Product;
 import com.utdallas.onlineshopping.payload.request.cart.AddProductToCartRequest;
+import com.utdallas.onlineshopping.payload.response.cart.AddProductToCartResponse;
 import com.utdallas.onlineshopping.payload.response.cart.CartResponse;
 import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AddProductToCartAction implements Action<CartResponse>
+public class AddProductToCartAction implements Action<AddProductToCartResponse>
 {
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
@@ -41,7 +42,7 @@ public class AddProductToCartAction implements Action<CartResponse>
     }
 
     @Override
-    public CartResponse invoke()
+    public AddProductToCartResponse invoke()
     {
         CustomerHibernateDAO customerHibernateDAO = this.hibernateUtil.getCustomerHibernateDAO();
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
@@ -71,7 +72,10 @@ public class AddProductToCartAction implements Action<CartResponse>
             product.setQuantity( product.getQuantity() - request.getQuantity() );
             productHibernateDAO.update( product );
 
-            return modelMapper.map(newCart, CartResponse.class);
+	        AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse();
+	        addProductToCartResponse.setItemsInCart( cartHibernateDAO.countForCustomer( customer ) );
+	        addProductToCartResponse.setProductAdded( modelMapper.map( newCart, CartResponse.class ) );
+	        return addProductToCartResponse;
         }
 
         List<String> errors = new ArrayList<>();

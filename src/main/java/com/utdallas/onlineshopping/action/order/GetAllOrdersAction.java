@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Created by girijagodbole on 3/23/17.
- */
 public class GetAllOrdersAction implements Action<AllOrdersResponse> {
     private HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;

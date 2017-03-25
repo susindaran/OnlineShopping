@@ -9,9 +9,6 @@ import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
-/**
- * Created by prathyusha on 2/24/17.
- */
 public class DeleteCustomerAction implements Action<Void> {
 
     private HibernateUtil hibernateUtil;

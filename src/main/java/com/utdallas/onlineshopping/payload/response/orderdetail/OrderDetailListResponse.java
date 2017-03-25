@@ -8,9 +8,6 @@ import lombok.Data;
 
 import java.util.List;
 
-/**
- * Created by girijagodbole on 3/23/17.
- */
 @JsonSnakeCase
 @Data
 @JsonInclude( JsonInclude.Include.NON_NULL)

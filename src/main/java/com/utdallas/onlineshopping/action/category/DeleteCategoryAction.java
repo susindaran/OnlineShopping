@@ -11,9 +11,6 @@ import com.utdallas.onlineshopping.util.HibernateUtil;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
-/**
- * Created by vidya on 2/24/17.
- */
 public class DeleteCategoryAction implements Action<Void>
 {
     private HibernateUtil hibernateUtil;

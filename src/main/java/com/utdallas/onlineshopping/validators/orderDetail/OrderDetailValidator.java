@@ -5,9 +5,6 @@ import com.utdallas.onlineshopping.exceptions.BadRequestException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by vidya on 3/22/17.
- */
 public class OrderDetailValidator {
     public static void validateQueryParams(int page, int size)
     {

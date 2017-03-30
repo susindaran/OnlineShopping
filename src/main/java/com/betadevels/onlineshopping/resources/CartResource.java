@@ -1,12 +1,9 @@
 package com.betadevels.onlineshopping.resources;
 
-import com.betadevels.onlineshopping.action.cart.DeleteItemsInCartAction;
+import com.betadevels.onlineshopping.action.cart.*;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.betadevels.onlineshopping.action.cart.AddProductToCartAction;
-import com.betadevels.onlineshopping.action.cart.GetItemsInCartAction;
-import com.betadevels.onlineshopping.action.cart.GetItemsInCartCountAction;
 import com.betadevels.onlineshopping.payload.request.cart.AddProductToCartRequest;
 import com.betadevels.onlineshopping.payload.response.cart.AddProductToCartResponse;
 import com.betadevels.onlineshopping.payload.response.cart.CartItemsResponse;
@@ -29,17 +26,20 @@ public class CartResource
     private final GetItemsInCartAction getItemsInCartAction;
     private final GetItemsInCartCountAction getItemsInCartCountAction;
     private final DeleteItemsInCartAction deleteItemsInCartAction;
+    private final DeleteItemsInCartCountAction deleteItemsInCartCountAction;
 
     @Inject
     public CartResource(Provider<AddProductToCartAction> addProductToCartActionProvider,
                         Provider<GetItemsInCartAction> getItemsInCartActionProvider,
                         Provider<GetItemsInCartCountAction> getItemsInCartCountActionProvider,
-                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider)
+                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider,
+                        Provider<DeleteItemsInCartCountAction> deleteItemsInCartCountActionProvider)
     {
         this.addProductToCartAction = addProductToCartActionProvider.get();
         this.getItemsInCartAction = getItemsInCartActionProvider.get();
         this.getItemsInCartCountAction = getItemsInCartCountActionProvider.get();
         this.deleteItemsInCartAction= deleteItemsInCartActionProvider.get();
+        this.deleteItemsInCartCountAction= deleteItemsInCartCountActionProvider.get();
     }
 
     @POST
@@ -72,6 +72,7 @@ public class CartResource
     public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("cart_id") int cartId)
     {
         this.deleteItemsInCartAction.withCartId(cartId).invoke();
+        this.deleteItemsInCartCountAction.forCartId(cartId).invoke();
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

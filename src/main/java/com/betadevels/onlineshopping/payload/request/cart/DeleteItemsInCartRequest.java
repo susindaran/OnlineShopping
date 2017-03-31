@@ -16,7 +16,7 @@ public class DeleteItemsInCartRequest {
     @NotNull
     private Integer quantity;
     @NotNull
-    private int cartId;
+    private Long cartId;
 
 
 }

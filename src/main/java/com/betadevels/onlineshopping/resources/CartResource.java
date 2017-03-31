@@ -26,20 +26,20 @@ public class CartResource
     private final GetItemsInCartAction getItemsInCartAction;
     private final GetItemsInCartCountAction getItemsInCartCountAction;
     private final DeleteItemsInCartAction deleteItemsInCartAction;
-    private final DeleteItemsInCartCountAction deleteItemsInCartCountAction;
+
 
     @Inject
     public CartResource(Provider<AddProductToCartAction> addProductToCartActionProvider,
                         Provider<GetItemsInCartAction> getItemsInCartActionProvider,
                         Provider<GetItemsInCartCountAction> getItemsInCartCountActionProvider,
-                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider,
-                        Provider<DeleteItemsInCartCountAction> deleteItemsInCartCountActionProvider)
+                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider
+                      )
     {
         this.addProductToCartAction = addProductToCartActionProvider.get();
         this.getItemsInCartAction = getItemsInCartActionProvider.get();
         this.getItemsInCartCountAction = getItemsInCartCountActionProvider.get();
         this.deleteItemsInCartAction= deleteItemsInCartActionProvider.get();
-        this.deleteItemsInCartCountAction= deleteItemsInCartCountActionProvider.get();
+
     }
 
     @POST
@@ -66,13 +66,12 @@ public class CartResource
     }
 
     @DELETE
-    @Path("/cart_id")
+    @Path("/{cart_id}")
     @UnitOfWork
     @Timed
-    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("cart_id") int cartId)
+    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("cart_id") Long cartId)
     {
         this.deleteItemsInCartAction.withCartId(cartId).invoke();
-        this.deleteItemsInCartCountAction.forCartId(cartId).invoke();
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

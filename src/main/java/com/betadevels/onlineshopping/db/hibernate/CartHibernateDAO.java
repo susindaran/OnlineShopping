@@ -2,6 +2,7 @@ package com.betadevels.onlineshopping.db.hibernate;
 
 import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Product;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.betadevels.onlineshopping.db.GenericDAO;
 import com.betadevels.onlineshopping.models.Cart;
@@ -30,16 +31,16 @@ public class CartHibernateDAO extends BaseHibernateDAO<Cart> implements GenericD
     {
         return (Long) criteria().add( Restrictions.eq( "customer", customer) ).setProjection( Projections.rowCount() ).uniqueResult();
     }
-    public void deleteByCartId(int cartId)
+    public void deleteByCartId(Long cartId)
     {
-        List<Cart> cartList = findByParams(Collections.singletonMap("cartId", cartId));
-        if( cartList.size() == 0 )
+        Optional<Cart> cartList = findById(cartId);
+        if( cartList.get().equals("null") )
         {
             throw new NotFoundException("Unable to find item in cart for the given ID");
         }
         else
         {
-            delete( cartList.get( 0 ) );
+            delete( cartList.get());
         }
     }
 }

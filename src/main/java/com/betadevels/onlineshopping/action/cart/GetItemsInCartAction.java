@@ -52,10 +52,32 @@ public class GetItemsInCartAction implements Action<CartItemsResponse>
             List<Cart> cartItems = cartHibernateDAO.getCartItemsOfCustomer(customer);
             List<CartResponse> cartResponses = cartItems.stream().map(cartItem -> modelMapper.map(cartItem, CartResponse.class)).collect(Collectors.toList());
 
+	        double totalPrice = cartItems.stream()
+	                              .mapToDouble( cartItem -> cartItem.getProduct().getPrice() * cartItem.getQuantity() )
+	                              .sum();
+
+	        double discounts = cartItems.stream().mapToDouble( cartItem ->
+	        {
+		        if ( cartItem.getOffer() != null )
+		        {
+			        return (cartItem.getOffer().getDiscount() * cartItem.getProduct().getPrice() / 100) * cartItem.getQuantity();
+		        }
+		        else
+		        {
+			        return 0;
+		        }
+	        } ).sum();
+
+	        CartItemsResponse.PriceDetails priceDetails = new CartItemsResponse.PriceDetails();
+            priceDetails.setTotalPrice( totalPrice );
+            priceDetails.setDiscounts( discounts );
+            priceDetails.setAmountPayable( totalPrice - discounts );
+
             CartItemsResponse cartItemsResponse = new CartItemsResponse();
             cartItemsResponse.setCount( cartResponses.size() );
             cartItemsResponse.setCartItems( cartResponses );
             cartItemsResponse.setCustomer( modelMapper.map( customer, CustomerResponse.class) );
+            cartItemsResponse.setPriceDetails( priceDetails );
             return cartItemsResponse;
         }
         throw new NotFoundException(Collections.singletonList("No customer matching the given customer_id"));

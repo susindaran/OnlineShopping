@@ -61,10 +61,10 @@ public class CreatePaymentAction implements Action<PaymentsListResponse>
 			Order order = orderOptional.get();
 			List<OrderDetail> orderDetails = order.getOrderDetails();
 			List<PaymentResponse> paymentResponses = new ArrayList<>();
-			double totalPrice = orderDetails.stream().mapToDouble( orderDetail -> orderDetail.getProduct().getPrice() ).sum();
+			double totalPrice = orderDetails.stream().mapToDouble( orderDetail -> orderDetail.getProduct().getPrice() * orderDetail.getQuantity() ).sum();
 			orderDetails.forEach( orderDetail -> paymentResponses.add( modelMapper.map( paymentHibernateDAO.create( Payment.builder()
 			                                                                                                               .order( order )
-			                                                                                                               .amount( orderDetail.getProduct().getPrice() )
+			                                                                                                               .amount( orderDetail.getProduct().getPrice() * orderDetail.getQuantity() )
 			                                                                                                               .reason( "PRICE" )
 			                                                                                                               .ref1( orderDetail.getProduct().getProductId() )
 			                                                                                                               .transactionType( TransactionType.DEBIT.getType() )

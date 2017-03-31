@@ -17,4 +17,15 @@ public class CartItemsResponse
     @JsonIgnoreProperties(value = {"addresses", "card_details"})
     private CustomerResponse customer;
     private List<CartResponse> cartItems;
+    private PriceDetails priceDetails;
+
+    @JsonSnakeCase
+    @Data
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class PriceDetails
+    {
+        private double totalPrice;
+        private double discounts;
+        private double amountPayable;
+    }
 }

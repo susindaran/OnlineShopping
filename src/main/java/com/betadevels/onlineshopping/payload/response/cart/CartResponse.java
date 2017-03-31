@@ -12,6 +12,7 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CartResponse
 {
+    private int cartId;
     @JsonIgnoreProperties(value = {"quantity"})
     private ProductResponse product;
     private int quantity;

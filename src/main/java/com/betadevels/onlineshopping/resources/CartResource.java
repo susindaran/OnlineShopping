@@ -73,7 +73,7 @@ public class CartResource
     @Path("/update/{cart_id}")
     @UnitOfWork
     @Timed
-    public Response update(@Context HttpHeaders headers, @NotNull UpdateCartRequest updateCartRequest, @NotNull @PathParam("cart_id") int id)
+    public Response update(@Context HttpHeaders headers, @NotNull UpdateCartRequest updateCartRequest, @NotNull @PathParam("cart_id") Long id)
     {
         CartItemsResponse cartItemsResponse = this.updateItemsInCartAction.withId(id).withRequest(updateCartRequest).invoke();
         return Response.status(Response.Status.OK).entity(cartItemsResponse).build();

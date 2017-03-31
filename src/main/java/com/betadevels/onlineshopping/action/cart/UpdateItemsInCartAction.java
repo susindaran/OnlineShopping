@@ -38,7 +38,7 @@ public class UpdateItemsInCartAction implements Action<CartItemsResponse>
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
     private UpdateCartRequest updateCartRequest;
-    private int cartId;
+    private Long cartId;
     private ProductRequest productRequest;
 
     public UpdateItemsInCartAction withRequest(UpdateCartRequest updateCartRequest)
@@ -48,7 +48,7 @@ public class UpdateItemsInCartAction implements Action<CartItemsResponse>
         return this;
     }
 
-    public  UpdateItemsInCartAction withId(int cartId)
+    public  UpdateItemsInCartAction withId(Long cartId)
     {
         this.cartId = cartId;
         return this;
@@ -65,54 +65,15 @@ public class UpdateItemsInCartAction implements Action<CartItemsResponse>
     public CartItemsResponse invoke()
     {
         CartHibernateDAO cartHibernateDAO = hibernateUtil.getCartHibernateDAO();
-        List<Cart> cartList = cartHibernateDAO.findByParams( Collections.singletonMap( "cartId", this.cartId ) );
+        Optional<Cart> cartOptional = cartHibernateDAO.findById(this.cartId);
         ProductHibernateDAO productHibernateDAO = hibernateUtil.getProductHibernateDAO();
-       // CustomerHibernateDAO customerHibernateDAO = hibernateUtil.getCustomerHibernateDAO();
 
-
-        if( cartList.size() < 1 )
+        if( !cartOptional.isPresent() )
         {
             throw new NotFoundException( Collections.singletonList( "No cart item matching the given cart_id" ) );
         }
 
-        Cart cart = cartList.get(0);
-
-
-
-       /* String productId = cart.getProduct().getProductId();
-        Long customerId = cart.getCustomer().getCustomerId();
-        Optional<Product> productOptional = productHibernateDAO.findById(productId);
-        Optional<Customer>customerOptional = customerHibernateDAO.findById(customerId);
-
-        if( customerOptional.isPresent() && productOptional.isPresent() )
-        {
-            Customer customer = customerOptional.get();
-            Product product = productOptional.get();
-
-            if( updateCartRequest.getQuantity()>product.getQuantity())
-                throw new BadRequestException("Requested quantity exceeds availability");
-            if( updateCartRequest.getQuantity()!=null )
-            {
-                cart.setQuantity(updateCartRequest.getQuantity());
-                product.setQuantity(product.getQuantity() - cart.getQuantity());
-                productHibernateDAO.update(product);
-            }
-            Cart newCart = Cart.builder().customer( customer )
-                    .product( product )
-                    .quantity( updateCartRequest.getQuantity() )
-                    .build();
-
-            Cart updateCart = cartHibernateDAO.create(cart);
-
-
-            CartItemsResponse updateItemsInCartResponse = new CartItemsResponse();
-            updateItemsInCartResponse.setItemsInCart( cartHibernateDAO.countForCustomer( customer ) );
-            updateItemsInCartResponse.setProductAdded( modelMapper.map( updateCart, CartResponse.class ) );
-            return updateItemsInCartResponse ;
-
-
-*/
-
+        Cart cart = cartOptional.get();
 
         String tempcart = cart.getProduct().getProductId();
         List<Product> productList = productHibernateDAO.findByParams( Collections.singletonMap( "productId", tempcart ) );

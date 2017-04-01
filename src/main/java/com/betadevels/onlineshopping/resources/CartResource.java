@@ -1,14 +1,11 @@
 package com.betadevels.onlineshopping.resources;
 
-import com.betadevels.onlineshopping.action.cart.UpdateItemsInCartAction;
 import com.betadevels.onlineshopping.payload.request.cart.UpdateCartRequest;
 import com.betadevels.onlineshopping.payload.response.cart.CartResponse;
+import com.betadevels.onlineshopping.action.cart.*;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.betadevels.onlineshopping.action.cart.AddProductToCartAction;
-import com.betadevels.onlineshopping.action.cart.GetItemsInCartAction;
-import com.betadevels.onlineshopping.action.cart.GetItemsInCartCountAction;
 import com.betadevels.onlineshopping.payload.request.cart.AddProductToCartRequest;
 import com.betadevels.onlineshopping.payload.response.cart.AddProductToCartResponse;
 import com.betadevels.onlineshopping.payload.response.cart.CartItemsResponse;
@@ -32,17 +29,21 @@ public class CartResource
     private final GetItemsInCartAction getItemsInCartAction;
     private final GetItemsInCartCountAction getItemsInCartCountAction;
     private final UpdateItemsInCartAction updateItemsInCartAction;
+    private final DeleteItemsInCartAction deleteItemsInCartAction;
 
     @Inject
     public CartResource(Provider<AddProductToCartAction> addProductToCartActionProvider,
                         Provider<GetItemsInCartAction> getItemsInCartActionProvider,
                         Provider<GetItemsInCartCountAction> getItemsInCartCountActionProvider,
-                        Provider<UpdateItemsInCartAction> updateItemsInCartActionProvider)
+                        Provider<UpdateItemsInCartAction> updateItemsInCartActionProvider,
+                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider)
+
     {
         this.addProductToCartAction = addProductToCartActionProvider.get();
         this.getItemsInCartAction = getItemsInCartActionProvider.get();
         this.getItemsInCartCountAction = getItemsInCartCountActionProvider.get();
         this.updateItemsInCartAction = updateItemsInCartActionProvider.get();
+        this.deleteItemsInCartAction= deleteItemsInCartActionProvider.get();
     }
 
     @POST
@@ -76,5 +77,15 @@ public class CartResource
     {
         CartResponse cartResponse = this.updateItemsInCartAction.forCartId(cartId ).withRequest(updateCartRequest ).invoke();
         return Response.status(Response.Status.OK).entity(cartResponse).build();
+    }
+
+    @DELETE
+    @Path("/{cart_id}")
+    @UnitOfWork
+    @Timed
+    public Response delete(@Context HttpHeaders headers, @NotNull @PathParam("cart_id") Long cartId)
+    {
+        this.deleteItemsInCartAction.withCartId(cartId).invoke();
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

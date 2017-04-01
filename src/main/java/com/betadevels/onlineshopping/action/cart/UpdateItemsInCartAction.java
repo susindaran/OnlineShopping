@@ -71,7 +71,7 @@ public class UpdateItemsInCartAction implements Action<CartResponse>
 	        }
 
             cart.setQuantity(updateCartRequest.getQuantity());
-            product.setQuantity(product.getQuantity() + quantityDifference);
+            product.setQuantity(product.getQuantity() - quantityDifference);
             try
             {
 	            productHibernateDAO.update(product);

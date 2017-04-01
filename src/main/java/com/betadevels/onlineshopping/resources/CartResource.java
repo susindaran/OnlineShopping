@@ -1,5 +1,9 @@
 package com.betadevels.onlineshopping.resources;
 
+import com.betadevels.onlineshopping.action.cart.UpdateItemsInCartAction;
+import com.betadevels.onlineshopping.payload.request.cart.UpdateCartRequest;
+import com.betadevels.onlineshopping.payload.request.category.CategoryRequest;
+import com.betadevels.onlineshopping.payload.response.category.CategoryResponse;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -11,6 +15,7 @@ import com.betadevels.onlineshopping.payload.response.cart.AddProductToCartRespo
 import com.betadevels.onlineshopping.payload.response.cart.CartItemsResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.sql.Update;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -27,15 +32,18 @@ public class CartResource
     private final AddProductToCartAction addProductToCartAction;
     private final GetItemsInCartAction getItemsInCartAction;
     private final GetItemsInCartCountAction getItemsInCartCountAction;
+    private final UpdateItemsInCartAction updateItemsInCartAction;
 
     @Inject
     public CartResource(Provider<AddProductToCartAction> addProductToCartActionProvider,
                         Provider<GetItemsInCartAction> getItemsInCartActionProvider,
-                        Provider<GetItemsInCartCountAction> getItemsInCartCountActionProvider)
+                        Provider<GetItemsInCartCountAction> getItemsInCartCountActionProvider,
+                        Provider<UpdateItemsInCartAction> updateItemsInCartActionProvider)
     {
         this.addProductToCartAction = addProductToCartActionProvider.get();
         this.getItemsInCartAction = getItemsInCartActionProvider.get();
         this.getItemsInCartCountAction = getItemsInCartCountActionProvider.get();
+        this.updateItemsInCartAction = updateItemsInCartActionProvider.get();
     }
 
     @POST
@@ -59,5 +67,15 @@ public class CartResource
 		    return Response.status( Response.Status.OK ).entity( cartItemsResponse ).build();
 	    }
         return Response.status( Response.Status.OK ).entity( this.getItemsInCartCountAction.forCustomerId( customerId ).invoke() ).build();
+    }
+
+    @POST
+    @Path("/update/{cart_id}")
+    @UnitOfWork
+    @Timed
+    public Response update(@Context HttpHeaders headers, @NotNull UpdateCartRequest updateCartRequest, @NotNull @PathParam("cart_id") Long id)
+    {
+        CartItemsResponse cartItemsResponse = this.updateItemsInCartAction.withId(id).withRequest(updateCartRequest).invoke();
+        return Response.status(Response.Status.OK).entity(cartItemsResponse).build();
     }
 }

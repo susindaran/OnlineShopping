@@ -1,5 +1,6 @@
 package com.betadevels.onlineshopping.db.hibernate;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.betadevels.onlineshopping.db.GenericDAO;
 import com.betadevels.onlineshopping.models.Cart;
@@ -27,4 +28,6 @@ public class CartHibernateDAO extends BaseHibernateDAO<Cart> implements GenericD
     {
         return (Long) criteria().add( Restrictions.eq( "customer", customer) ).setProjection( Projections.rowCount() ).uniqueResult();
     }
+
+
 }

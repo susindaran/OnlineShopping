@@ -5,17 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.betadevels.onlineshopping.payload.response.customer.CustomerResponse;
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @JsonSnakeCase
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Setter
-@Getter
-
 public class CartItemsResponse
 {
     private int count;

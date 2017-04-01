@@ -2,18 +2,15 @@ package com.betadevels.onlineshopping.payload.request.cart;
 
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Getter;
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 
-/**
- * Created by vidya on 3/28/17.
- */
 @JsonSnakeCase
 @Getter
-public class UpdateCartRequest {
-
-    private int cartId;
+public class UpdateCartRequest
+{
     @NotNull
+    @Range(min = 1)
     private Integer quantity;
 }

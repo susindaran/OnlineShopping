@@ -15,10 +15,10 @@ import com.betadevels.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.betadevels.onlineshopping.util.Utility.preparePaginationLinks;
 
 public class GetAllOrdersAction implements Action<AllOrdersResponse> {
     private HibernateUtil hibernateUtil;
@@ -47,22 +47,6 @@ public class GetAllOrdersAction implements Action<AllOrdersResponse> {
         return this;
     }
 
-    private String createLink(int page, int size)
-    {
-        return requestURL + "?page=" + page + "&size=" + size;
-    }
-
-    private Map<String, String> preparePaginationLinks(Long totalCount)
-    {
-        Map<String, String> linksMap = new HashMap<>();
-        int pages = Math.toIntExact((totalCount / this.size) + (totalCount % this.size == 0 ? 0 : 1));
-        linksMap.put("first", createLink(1, this.size));
-        linksMap.put("prev", this.page > 1 ? createLink(this.page - 1, this.size) : null);
-        linksMap.put("next", this.page * this.size < totalCount ? createLink( this.page + 1, this.size ) : null);
-        linksMap.put("last", createLink(pages, size));
-
-        return linksMap;
-    }
     public GetAllOrdersAction forCustomerId(Long customerId )
     {
         this.customerId = customerId;
@@ -73,6 +57,7 @@ public class GetAllOrdersAction implements Action<AllOrdersResponse> {
     @Override
     public AllOrdersResponse invoke()
     {
+    	//TODO: Validate pagination parameters
         OrderHibernateDAO orderHibernateDAO = this.hibernateUtil.getOrderHibernateDAO();
         CustomerHibernateDAO customerHibernateDAO = this.hibernateUtil.getCustomerHibernateDAO();
 
@@ -80,12 +65,16 @@ public class GetAllOrdersAction implements Action<AllOrdersResponse> {
         if( customerOptional.isPresent() )
         {
             Customer customer = customerOptional.get();
-            List<Order> orders = orderHibernateDAO.getAllOrders(customer);
+            List<Order> orders = orderHibernateDAO.getOrdersOfCustomer( customer, page, size );
             List<OrderResponse> orderResponses = orders.stream().map(order -> modelMapper.map(order, OrderResponse.class)).collect(Collectors.toList());
+	        Long totalCount = orderHibernateDAO.countOfCustomer( customer );
 
-            AllOrdersResponse ordersResponse = new AllOrdersResponse();
-            ordersResponse.setOrders(orderResponses);
-            return ordersResponse;
+	        return AllOrdersResponse.builder()
+                                    .count( orders.size() )
+                                    .totalCount( totalCount )
+                                    .links( preparePaginationLinks( totalCount, size, page, requestURL ) )
+                                    .orders( orderResponses )
+                                    .build();
         }
         throw new NotFoundException(Collections.singletonList("No customer matching the given customer_id"));
     }

@@ -1,5 +1,6 @@
 package com.betadevels.onlineshopping.payload.response.cart;
 
+import com.betadevels.onlineshopping.payload.response.offer.OfferResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.betadevels.onlineshopping.models.Offer;
@@ -16,6 +17,5 @@ public class CartResponse
     @JsonIgnoreProperties(value = {"quantity"})
     private ProductResponse product;
     private int quantity;
-    @JsonIgnoreProperties(value = {"product"})
-    private Offer offer;
+    private OfferResponse offer;
 }

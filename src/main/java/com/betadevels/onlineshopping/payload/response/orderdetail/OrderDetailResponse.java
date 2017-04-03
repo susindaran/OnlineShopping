@@ -1,10 +1,10 @@
 package com.betadevels.onlineshopping.payload.response.orderdetail;
 
-import com.betadevels.onlineshopping.models.Offer;
+import com.betadevels.onlineshopping.enumerations.OrderStatus;
+import com.betadevels.onlineshopping.payload.response.offer.OfferResponse;
+import com.betadevels.onlineshopping.payload.response.product.ProductResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.betadevels.onlineshopping.enumerations.OrderStatus;
-import com.betadevels.onlineshopping.payload.response.product.ProductResponse;
 import io.dropwizard.jackson.JsonSnakeCase;
 import lombok.Data;
 
@@ -18,5 +18,5 @@ public class OrderDetailResponse
     private ProductResponse product;
     private Integer quantity;
     private OrderStatus orderDetailStatus;
-    private Offer offer;
+    private OfferResponse offer;
 }

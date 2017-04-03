@@ -38,6 +38,10 @@ public class OrderDetail extends BaseModel
     @JoinColumn(name = "shipment_id", nullable = false)
     private Shipment shipment;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coupon_id")
+    private Offer offer;
+
     private String orderDetailStatus;
     private Integer quantity;
 

@@ -61,16 +61,24 @@ public class CreatePaymentAction implements Action<PaymentsListResponse>
 			Order order = orderOptional.get();
 			List<OrderDetail> orderDetails = order.getOrderDetails();
 			List<PaymentResponse> paymentResponses = new ArrayList<>();
-			double totalPrice = orderDetails.stream().mapToDouble( orderDetail -> orderDetail.getProduct().getPrice() * orderDetail.getQuantity() ).sum();
-			orderDetails.forEach( orderDetail -> paymentResponses.add( modelMapper.map( paymentHibernateDAO.create( Payment.builder()
-			                                                                                                               .order( order )
-			                                                                                                               .amount( orderDetail.getProduct().getPrice() * orderDetail.getQuantity() )
-			                                                                                                               .reason( "PRICE" )
-			                                                                                                               .ref1( orderDetail.getProduct().getProductId() )
-			                                                                                                               .transactionType( TransactionType.DEBIT.getType() )
-			                                                                                                               .build() ), PaymentResponse.class ) ) );
+			final double[] totalPrice = { 0 };
+			orderDetails.forEach( orderDetail -> {
+				//price = (Price * quantity) - ( discount on each product * quantity )
+				//discount on each product = (discount %) * price / 100
+				double price = (orderDetail.getProduct().getPrice() * orderDetail.getQuantity()) -
+						((orderDetail.getOffer().getDiscount() * orderDetail.getProduct().getPrice() / 100) * orderDetail.getQuantity());
+				totalPrice[ 0 ] += price;
+				Payment payment = paymentHibernateDAO.create( Payment.builder()
+				                                                   .order( order )
+				                                                   .amount( price )
+				                                                   .reason( "PRICE" )
+				                                                   .ref1( orderDetail.getProduct().getProductId() )
+				                                                   .transactionType( TransactionType.DEBIT.getType() )
+				                                                   .build() );
+				paymentResponses.add( modelMapper.map( payment, PaymentResponse.class ) );
+			});
 			TaxDetails taxDetails = order.getShippingAddress().getTaxDetails();
-			double totalTax = taxDetails.getTax() * totalPrice / 100;
+			double totalTax = taxDetails.getTax() * totalPrice[ 0 ] / 100;
 			paymentResponses.add( modelMapper.map( paymentHibernateDAO.create( Payment.builder()
 			                                                                          .order( order )
 			                                                                          .amount( totalTax )

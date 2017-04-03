@@ -1,7 +1,7 @@
 package com.betadevels.onlineshopping.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.betadevels.onlineshopping.action.order.OrderDetailAction;
+import com.betadevels.onlineshopping.action.order.GetOrderDetailsAction;
 import com.betadevels.onlineshopping.payload.response.orderdetail.OrderDetailListResponse;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -28,16 +28,16 @@ public class OrderDetailResource
 {
     private final GetAllOrderDetailsActions getAllOrderDetailsActions;
     private final UpdateOrderDetailAction updateOrderDetailAction;
-    private OrderDetailAction orderDetailAction;
+    private GetOrderDetailsAction getOrderDetailsAction;
 
     @Inject
     public OrderDetailResource( Provider<GetAllOrderDetailsActions> getOrderDetailActionProvider,
                                 Provider<UpdateOrderDetailAction> updateOrderDetailActionProvider,
-                                Provider<OrderDetailAction> orderDetailActionProvider)
+                                Provider<GetOrderDetailsAction> orderDetailActionProvider )
     {
         this.getAllOrderDetailsActions =getOrderDetailActionProvider.get();
         this.updateOrderDetailAction=updateOrderDetailActionProvider.get();
-        this.orderDetailAction = orderDetailActionProvider.get();
+        this.getOrderDetailsAction = orderDetailActionProvider.get();
     }
 
     @GET
@@ -86,7 +86,7 @@ public class OrderDetailResource
     @Timed
     public Response getOrderDetails(@Context HttpHeaders headers, @NotNull @PathParam("order_id") Long orderId)
     {
-        OrderDetailListResponse orderDetailResponse = orderDetailAction.forOrderId(orderId).invoke();
+        OrderDetailListResponse orderDetailResponse = getOrderDetailsAction.forOrderId(orderId ).invoke();
         return Response.status( Response.Status.OK ).entity( orderDetailResponse ).build();
     }
 }

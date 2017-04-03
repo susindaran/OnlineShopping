@@ -98,6 +98,7 @@ public class PlaceOrderFromCartAction implements Action<OrderResponse>
                                                                                       .product( cartItem.getProduct() )
                                                                                       .shipment( shipment )
                                                                                       .orderDetailStatus( OrderStatus.PENDING.getStatus() )
+                                                                                      .offer( cartItem.getOffer() )
                                                                                       .quantity( cartItem.getQuantity() ).build() ));
 
             List<Long> cartIds = cartItems.stream().map(Cart::getCartId).collect(Collectors.toList());

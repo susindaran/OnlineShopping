@@ -18,21 +18,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class OrderDetailAction implements Action<OrderDetailListResponse>
+public class GetOrderDetailsAction implements Action<OrderDetailListResponse>
 {
     private final HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
     private Long orderId;
 
     @Inject
-    public OrderDetailAction(Provider<HibernateUtil> hibernateUtilProvider,
-                          ModelMapper modelMapper)
+    public GetOrderDetailsAction( Provider<HibernateUtil> hibernateUtilProvider,
+                                  ModelMapper modelMapper )
     {
         this.hibernateUtil = hibernateUtilProvider.get();
         this.modelMapper = modelMapper;
     }
 
-    public OrderDetailAction forOrderId(Long orderId)
+    public GetOrderDetailsAction forOrderId( Long orderId )
     {
         this.orderId = orderId;
         return this;

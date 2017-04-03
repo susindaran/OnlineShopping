@@ -1,5 +1,6 @@
 package com.betadevels.onlineshopping.payload.response.orderdetail;
 
+import com.betadevels.onlineshopping.models.Offer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.betadevels.onlineshopping.enumerations.OrderStatus;
@@ -17,4 +18,5 @@ public class OrderDetailResponse
     private ProductResponse product;
     private Integer quantity;
     private OrderStatus orderDetailStatus;
+    private Offer offer;
 }

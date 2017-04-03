@@ -1,6 +1,9 @@
 package com.betadevels.onlineshopping.action.cart;
 
+import com.betadevels.onlineshopping.db.hibernate.OfferHibernateDAO;
+import com.betadevels.onlineshopping.models.Offer;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.betadevels.onlineshopping.action.Action;
@@ -18,8 +21,7 @@ import com.betadevels.onlineshopping.payload.response.cart.CartResponse;
 import com.betadevels.onlineshopping.util.HibernateUtil;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 public class AddProductToCartAction implements Action<AddProductToCartResponse>
@@ -47,6 +49,7 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
         CustomerHibernateDAO customerHibernateDAO = this.hibernateUtil.getCustomerHibernateDAO();
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
         CartHibernateDAO cartHibernateDAO = this.hibernateUtil.getCartHibernateDAO();
+        OfferHibernateDAO offerHibernateDAO = this.hibernateUtil.getOfferHibernateDAO();
 
         Optional<Customer> customerOptional = customerHibernateDAO.findById(request.getCustomerId());
         Optional<Product> productOptional = productHibernateDAO.findById(request.getProductId());
@@ -61,10 +64,25 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
                 throw new BadRequestException("Requested quantity exceeds availability");
             }
 
-            Cart cart = Cart.builder().customer( customer )
-                    .product( product )
-                    .quantity( request.getQuantity() )
-                    .build();
+            Cart.CartBuilder cartBuilder = Cart.builder().customer( customer )
+                                            .product( product )
+                                            .quantity( request.getQuantity() );
+
+            if( !Strings.isNullOrEmpty( request.getCouponId() ) )
+            {
+                Map<String, Object> searchParams = new HashMap<>();
+                searchParams.put( "couponId", request.getCouponId() );
+                searchParams.put( "product", product );
+                List<Offer> offers = offerHibernateDAO.findByParams( searchParams );
+                if( offers.size() < 1 )
+                {
+                    throw new NotFoundException( Collections.singletonList("Invalid coupon code") );
+                }
+
+                cartBuilder.offer( offers.get( 0 ) );
+            }
+
+            Cart cart = cartBuilder.build();
 
             Cart newCart = cartHibernateDAO.create(cart);
 

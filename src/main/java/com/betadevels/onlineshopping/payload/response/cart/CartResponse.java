@@ -16,5 +16,6 @@ public class CartResponse
     @JsonIgnoreProperties(value = {"quantity"})
     private ProductResponse product;
     private int quantity;
+    @JsonIgnoreProperties(value = {"product"})
     private Offer offer;
 }

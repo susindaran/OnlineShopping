@@ -1,12 +1,14 @@
 package com.betadevels.onlineshopping.db.hibernate;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.betadevels.onlineshopping.db.GenericDAO;
 import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Product;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +34,13 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         }
     }
 
-    public List<Product> getAll(int page, int size)
+    public List<Product> getAll(String categoryId, int page, int size)
     {
         Criteria criteria = currentSession().createCriteria(Product.class);
+        if(!Strings.isNullOrEmpty(categoryId))
+        {
+            criteria.add(Restrictions.like("productId",categoryId+"%"));
+        }
         criteria.setFirstResult( (page - 1) * size );
         criteria.setMaxResults( size );
         return criteria.list();

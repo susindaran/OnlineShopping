@@ -20,6 +20,7 @@ public class GetAllProductsAction implements Action<AllProductsResponse>
     private ModelMapper modelMapper;
     private String requestURL;
     private int page, size;
+    private String categoryId;
 
     @Inject
     public GetAllProductsAction(Provider<HibernateUtil> hibernateUtilProvider, ModelMapper modelMapper)
@@ -41,12 +42,18 @@ public class GetAllProductsAction implements Action<AllProductsResponse>
         return this;
     }
 
+    public GetAllProductsAction forCategoryId(String categoryId)
+    {
+        this.categoryId = categoryId;
+        return this;
+    }
+
     @Override
     public AllProductsResponse invoke()
     {
         AllProductsValidator.validatePaginateParameters(page, size);
         ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
-        List<Product> productList = productHibernateDAO.getAll( page, size );
+        List<Product> productList = productHibernateDAO.getAll( categoryId, page, size );
         Long totalCount = productHibernateDAO.count();
         int count = productList.size();
 

@@ -59,11 +59,12 @@ public class ProductResource
     @GET
     @UnitOfWork
     @Timed
-    public Response getAllProducts(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size)
+    public Response getAllProducts(@Context HttpHeaders headers, @Context HttpServletRequest request, @QueryParam("page") int page, @QueryParam("size") int size, @QueryParam("category_id") String categoryId)
     {
         AllProductsResponse allProductsResponse = getAllProductsAction.withRequestURL(request.getRequestURL().toString())
-                .withPaginateDetails(page, size)
-                .invoke();
+                                                                      .withPaginateDetails(page, size)
+                                                                      .forCategoryId( categoryId )
+                                                                      .invoke();
         return Response.status(Response.Status.OK).entity(allProductsResponse).build();
     }
 

@@ -65,8 +65,12 @@ public class CreatePaymentAction implements Action<PaymentsListResponse>
 			orderDetails.forEach( orderDetail -> {
 				//price = (Price * quantity) - ( discount on each product * quantity )
 				//discount on each product = (discount %) * price / 100
-				double price = (orderDetail.getProduct().getPrice() * orderDetail.getQuantity()) -
-						((orderDetail.getOffer().getDiscount() * orderDetail.getProduct().getPrice() / 100) * orderDetail.getQuantity());
+				double price = (orderDetail.getProduct().getPrice() * orderDetail.getQuantity());
+				if( orderDetail.getOffer() != null )
+				{
+					price -= ((orderDetail.getOffer().getDiscount() * orderDetail.getProduct().getPrice() / 100) * orderDetail.getQuantity());
+				}
+
 				totalPrice[ 0 ] += price;
 				Payment payment = paymentHibernateDAO.create( Payment.builder()
 				                                                   .order( order )

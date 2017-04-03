@@ -35,11 +35,16 @@ public class GetAllProductsAction implements Action<AllProductsResponse>
         return this;
     }
 
-    public GetAllProductsAction withPaginateDetails(int page, int size, String categoryId)
+    public GetAllProductsAction withPaginateDetails(int page, int size)
     {
         this.page = page;
         this.size = size;
-        this.categoryId=categoryId;
+        return this;
+    }
+
+    public GetAllProductsAction forCategoryId(String categoryId)
+    {
+        this.categoryId = categoryId;
         return this;
     }
 

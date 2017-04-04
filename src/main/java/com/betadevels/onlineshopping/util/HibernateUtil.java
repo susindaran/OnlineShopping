@@ -20,6 +20,7 @@ public class HibernateUtil
     private final CartHibernateDAO cartHibernateDAO;
     private final OfferHibernateDAO offerHibernateDAO;
     private final PaymentHibernateDAO paymentHibernateDAO;
+    private final SubscriptionHibernateDAO subscriptionHibernateDAO;
 
     @Inject
     public HibernateUtil(Provider<CustomerHibernateDAO> customerHibernateDAOProvider,
@@ -33,7 +34,8 @@ public class HibernateUtil
                          Provider<OrderDetailHibernateDAO> orderDetailHibernateDAOProvider,
                          Provider<CartHibernateDAO> cartHibernateDAOProvider,
                          Provider<OfferHibernateDAO> offerHibernateDAOProvider,
-                         Provider<PaymentHibernateDAO> paymentHibernateDAOProvider)
+                         Provider<PaymentHibernateDAO> paymentHibernateDAOProvider,
+                         Provider<SubscriptionHibernateDAO> subscriptionHibernateDAOProvider)
     {
         this.customerHibernateDAO = customerHibernateDAOProvider.get();
         this.taxDetailsHibernateDAO = taxDetailsHibernateDAOProvider.get();
@@ -47,5 +49,6 @@ public class HibernateUtil
         this.cartHibernateDAO = cartHibernateDAOProvider.get();
         this.offerHibernateDAO = offerHibernateDAOProvider.get();
         this.paymentHibernateDAO = paymentHibernateDAOProvider.get();
+        this.subscriptionHibernateDAO = subscriptionHibernateDAOProvider.get();
     }
 }

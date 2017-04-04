@@ -23,7 +23,8 @@ public class HibernateModule extends AbstractModule
                     OrderDetail.class,
                     Cart.class,
                     Offer.class,
-                    Payment.class
+                    Payment.class,
+                    Subscription.class
             };
 
     private final HibernateBundle<OnlineShoppingConfiguration> hibernateBundle;
@@ -48,6 +49,7 @@ public class HibernateModule extends AbstractModule
         bind(new TypeLiteral<GenericDAO<Cart>>(){}).to(CartHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<Offer>>(){}).to(OfferHibernateDAO.class);
         bind(new TypeLiteral<GenericDAO<Payment>>(){}).to(PaymentHibernateDAO.class);
+        bind(new TypeLiteral<GenericDAO<Subscription>>(){}).to(SubscriptionHibernateDAO.class);
     }
 
     @Provides
@@ -120,5 +122,11 @@ public class HibernateModule extends AbstractModule
     public PaymentHibernateDAO providePaymentHibernateDAO()
     {
         return new PaymentHibernateDAO(hibernateBundle.getSessionFactory());
+    }
+
+    @Provides
+    public SubscriptionHibernateDAO provideSubscriptionHibernateDAO()
+    {
+        return new SubscriptionHibernateDAO( hibernateBundle.getSessionFactory() );
     }
 }

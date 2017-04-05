@@ -1,5 +1,6 @@
 package com.betadevels.onlineshopping.resources;
 
+import com.betadevels.onlineshopping.action.order.PlaceOrderFromSubscriptionAction;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -28,14 +29,18 @@ public class OrderResource
     private final PlaceOrderFromCartAction placeOrderFromCartAction;
     private final GetOrderAction getOrderAction;
     private final GetAllOrdersAction getAllOrdersAction;
+    private final PlaceOrderFromSubscriptionAction placeOrderFromSubscriptionAction;
 
     @Inject
     public OrderResource(Provider<PlaceOrderFromCartAction> placeOrderFromCartActionProvider,
-                         Provider<GetOrderAction> getOrderActionProvider, Provider<GetAllOrdersAction> getAllOrdersForCustomerActionProvider)
+                         Provider<GetOrderAction> getOrderActionProvider,
+                         Provider<GetAllOrdersAction> getAllOrdersForCustomerActionProvider,
+                         Provider<PlaceOrderFromSubscriptionAction> placeOrderFromSubscriptionActionProvider)
     {
         this.placeOrderFromCartAction = placeOrderFromCartActionProvider.get();
         this.getOrderAction = getOrderActionProvider.get();
         this.getAllOrdersAction=getAllOrdersForCustomerActionProvider.get();
+        this.placeOrderFromSubscriptionAction = placeOrderFromSubscriptionActionProvider.get();
     }
 
     @POST
@@ -46,6 +51,16 @@ public class OrderResource
     {
         OrderResponse orderResponse = this.placeOrderFromCartAction.withRequest(request).forCustomerId(customerId).invoke();
         return Response.status( Response.Status.CREATED ).entity(orderResponse).build();
+    }
+
+    @POST
+    @Path("/subscription/{subscription_id}" )
+    @UnitOfWork
+    @Timed
+    public Response placeOrderFromSubscription(@Context HttpHeaders headers, @NotNull @PathParam("subscription_id") Long subscriptionId)
+    {
+        OrderResponse orderResponse = this.placeOrderFromSubscriptionAction.forSubsctiptionId( subscriptionId ).invoke();
+        return Response.status( Response.Status.CREATED ).entity( orderResponse ).build();
     }
 
     @GET

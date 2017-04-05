@@ -1,5 +1,6 @@
 package com.betadevels.onlineshopping.payload.response.subscription;
 
+import com.betadevels.onlineshopping.models.Address;
 import com.betadevels.onlineshopping.models.Offer;
 import com.betadevels.onlineshopping.payload.response.product.ProductResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,4 +24,6 @@ public class SubscriptionResponse
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private Offer offer;
+	private Address shippingAddress;
+	private Address billingAddress;
 }

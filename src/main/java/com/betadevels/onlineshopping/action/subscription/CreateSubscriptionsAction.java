@@ -1,10 +1,13 @@
 package com.betadevels.onlineshopping.action.subscription;
 
 import com.betadevels.onlineshopping.action.Action;
+import com.betadevels.onlineshopping.db.hibernate.AddressHibernateDAO;
 import com.betadevels.onlineshopping.db.hibernate.CartHibernateDAO;
 import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
 import com.betadevels.onlineshopping.enumerations.SubscriptionStatus;
 import com.betadevels.onlineshopping.exceptions.BadRequestException;
+import com.betadevels.onlineshopping.exceptions.NotFoundException;
+import com.betadevels.onlineshopping.models.Address;
 import com.betadevels.onlineshopping.models.Cart;
 import com.betadevels.onlineshopping.models.Subscription;
 import com.betadevels.onlineshopping.payload.request.subscription.CreateSubscriptionsRequest;
@@ -46,6 +49,7 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 	{
 		CartHibernateDAO cartHibernateDAO = this.hibernateUtil.getCartHibernateDAO();
 		SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
+		AddressHibernateDAO addressHibernateDAO = this.hibernateUtil.getAddressHibernateDAO();
 
 		List<Long> invalidCartIds = new ArrayList<>(  );
 		List<SubscriptionResponse> subscriptions = new ArrayList<>(  );
@@ -56,39 +60,57 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 			throw new BadRequestException( Collections.singletonList( "IDs and Frequencies arrays are not of same length" ) );
 		}
 
-		for( int i = 0; i < cartIds.size(); i++)
+		Optional<Address> billingAddressOptional = addressHibernateDAO.findByIdForCustomer(createSubscriptionsRequest.getBillingAddressId(), createSubscriptionsRequest.getCustomerId());
+		Optional<Address> shippingAddressOptional = addressHibernateDAO.findByIdForCustomer(createSubscriptionsRequest.getShippingAddressId(), createSubscriptionsRequest.getCustomerId());
+
+		if( billingAddressOptional.isPresent() && shippingAddressOptional.isPresent() )
 		{
-			//TODO: Change the following call to batch SQL
-			Optional<Cart> cartOptional = cartHibernateDAO.findById( cartIds.get( i ) );
-			if( !cartOptional.isPresent() )
+			Address billingAddress = billingAddressOptional.get();
+			Address shippingAddress = shippingAddressOptional.get();
+			for( int i = 0; i < cartIds.size(); i++)
 			{
-				invalidCartIds.add( cartIds.get( i ) );
-			}
-			else
-			{
-				Cart cart = cartOptional.get();
-				LocalDateTime now = LocalDateTime.now();
+				//TODO: Change the following call to batch SQL
+				Optional<Cart> cartOptional = cartHibernateDAO.findById( cartIds.get( i ) );
+				if( !cartOptional.isPresent() )
+				{
+					invalidCartIds.add( cartIds.get( i ) );
+				}
+				else
+				{
+					Cart cart = cartOptional.get();
+					LocalDateTime now = LocalDateTime.now();
 
-				Subscription subscription = Subscription.builder()
-				                                        .customer( cart.getCustomer() )
-				                                        .product( cart.getProduct() )
-				                                        .quantity( cart.getQuantity() )
-				                                        .frequencyInDays( frequencies.get( i ) )
-				                                        .status( SubscriptionStatus.ACTIVE.getStatus() )
-				                                        .nextDueDate( now )
-				                                        .createdAt( now )
-				                                        .updatedAt( now )
-				                                        .offer( cart.getOffer() )
-				                                        .build();
+					Subscription subscription = Subscription.builder()
+					                                        .customer( cart.getCustomer() )
+					                                        .product( cart.getProduct() )
+					                                        .quantity( cart.getQuantity() )
+					                                        .frequencyInDays( frequencies.get( i ) )
+					                                        .status( SubscriptionStatus.ACTIVE.getStatus() )
+					                                        .nextDueDate( now )
+					                                        .createdAt( now )
+					                                        .updatedAt( now )
+					                                        .offer( cart.getOffer() )
+					                                        .billingAddress( billingAddress )
+					                                        .shippingAddress( shippingAddress )
+					                                        .build();
 
-				Subscription newSubscription = subscriptionHibernateDAO.create( subscription );
-				subscriptions.add( modelMapper.map( newSubscription, SubscriptionResponse.class ) );
+					Subscription newSubscription = subscriptionHibernateDAO.create( subscription );
+					subscriptions.add( modelMapper.map( newSubscription, SubscriptionResponse.class ) );
+				}
 			}
+
+			SubscriptionListResponse subscriptionListResponse = new SubscriptionListResponse();
+			subscriptionListResponse.setInvalidCartIds( invalidCartIds );
+			subscriptionListResponse.setSubscriptions( subscriptions );
+			return subscriptionListResponse;
 		}
 
-		SubscriptionListResponse subscriptionListResponse = new SubscriptionListResponse();
-		subscriptionListResponse.setInvalidCartIds( invalidCartIds );
-		subscriptionListResponse.setSubscriptions( subscriptions );
-		return subscriptionListResponse;
+		List<String> errors = new ArrayList<>();
+		if( !billingAddressOptional.isPresent() )
+			errors.add("No Billing Address matching the given billing_address_id for the customer");
+		if( !shippingAddressOptional.isPresent() )
+			errors.add("No Shipping Address matching the given shipping_address_id for the customer");
+
+		throw new NotFoundException(errors);
 	}
 }

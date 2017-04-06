@@ -6,6 +6,8 @@ import com.betadevels.onlineshopping.payload.response.product.ProductResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.dropwizard.jackson.JsonSnakeCase;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import org.joda.time.LocalDateTime;
 

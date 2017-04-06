@@ -1,6 +1,8 @@
 package com.betadevels.onlineshopping.resources;
 
 import com.betadevels.onlineshopping.action.order.PlaceOrderFromSubscriptionAction;
+import com.betadevels.onlineshopping.payload.request.order.PlaceOrderFromSubscriptionRequest;
+import com.betadevels.onlineshopping.payload.response.order.CreateOrdersFromSubscriptionsResponse;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -14,6 +16,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -54,13 +57,15 @@ public class OrderResource
     }
 
     @POST
-    @Path("/subscription/{subscription_id}" )
+    @Path("/subscription/" )
     @UnitOfWork
     @Timed
-    public Response placeOrderFromSubscription(@Context HttpHeaders headers, @NotNull @PathParam("subscription_id") Long subscriptionId)
+    public Response placeOrderFromSubscription( @Context HttpHeaders headers, @NotNull @Valid
+                                                PlaceOrderFromSubscriptionRequest request)
     {
-        OrderResponse orderResponse = this.placeOrderFromSubscriptionAction.forSubsctiptionId( subscriptionId ).invoke();
-        return Response.status( Response.Status.CREATED ).entity( orderResponse ).build();
+        CreateOrdersFromSubscriptionsResponse response = this.placeOrderFromSubscriptionAction.withRequest( request )
+                                                                                            .invoke();
+        return Response.status( Response.Status.CREATED ).entity( response ).build();
     }
 
     @GET

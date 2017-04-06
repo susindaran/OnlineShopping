@@ -7,11 +7,9 @@ import com.betadevels.onlineshopping.db.hibernate.ShipmentHibernateDAO;
 import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
 import com.betadevels.onlineshopping.enumerations.OrderStatus;
 import com.betadevels.onlineshopping.enumerations.ShipmentStatus;
-import com.betadevels.onlineshopping.exceptions.NotFoundException;
-import com.betadevels.onlineshopping.models.Order;
-import com.betadevels.onlineshopping.models.OrderDetail;
-import com.betadevels.onlineshopping.models.Shipment;
-import com.betadevels.onlineshopping.models.Subscription;
+import com.betadevels.onlineshopping.models.*;
+import com.betadevels.onlineshopping.payload.request.order.PlaceOrderFromSubscriptionRequest;
+import com.betadevels.onlineshopping.payload.response.order.CreateOrdersFromSubscriptionsResponse;
 import com.betadevels.onlineshopping.payload.response.order.OrderResponse;
 import com.betadevels.onlineshopping.util.HibernateUtil;
 import com.google.common.base.Optional;
@@ -20,13 +18,13 @@ import com.google.inject.Provider;
 import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 
-import java.util.Collections;
+import java.util.*;
 
-public class PlaceOrderFromSubscriptionAction implements Action<OrderResponse>
+public class PlaceOrderFromSubscriptionAction implements Action<CreateOrdersFromSubscriptionsResponse>
 {
 	private final HibernateUtil hibernateUtil;
 	private ModelMapper modelMapper;
-	private Long subscriptionId;
+	private PlaceOrderFromSubscriptionRequest request;
 
 	@Inject
 	public PlaceOrderFromSubscriptionAction( Provider<HibernateUtil> hibernateUtilProvider,
@@ -36,57 +34,82 @@ public class PlaceOrderFromSubscriptionAction implements Action<OrderResponse>
 		this.modelMapper = modelMapper;
 	}
 
-	public PlaceOrderFromSubscriptionAction forSubsctiptionId(Long subscriptionId)
+	public PlaceOrderFromSubscriptionAction withRequest( PlaceOrderFromSubscriptionRequest request )
 	{
-		this.subscriptionId = subscriptionId;
+		this.request = request;
 		return this;
 	}
 
 	@Override
-	public OrderResponse invoke()
+	public CreateOrdersFromSubscriptionsResponse invoke()
 	{
 		SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
 		OrderDetailHibernateDAO orderDetailHibernateDAO = this.hibernateUtil.getOrderDetailHibernateDAO();
 		ShipmentHibernateDAO shipmentHibernateDAO = this.hibernateUtil.getShipmentHibernateDAO();
 		OrderHibernateDAO orderHibernateDAO = this.hibernateUtil.getOrderHibernateDAO();
 
-		Optional<Subscription> subscriptionOptional = subscriptionHibernateDAO.findById( subscriptionId );
-		if( !subscriptionOptional.isPresent() )
-		{
-			throw new NotFoundException( Collections.singletonList("No subscription matching the given subscription_id") );
-		}
+		List<Long> invalidSubscriptionIds = new ArrayList<>(  );
+		List<OrderResponse> orderResponses = new ArrayList<>(  );
+		Map<Customer, Map<Address, List<Subscription>>> customerToAddressMap = new HashMap<>(  );
 
-		Subscription subscription = subscriptionOptional.get();
+		request.getSubscriptionIds().forEach( subscriptionId -> {
+			//TODO: Change this to batch call.
+			Optional<Subscription> subscriptionOptional = subscriptionHibernateDAO.findById( subscriptionId );
+			if( !subscriptionOptional.isPresent() )
+			{
+				invalidSubscriptionIds.add( subscriptionId );
+			}
+			else
+			{
+				Subscription subscription = subscriptionOptional.get();
 
-		Order order = orderHibernateDAO.create(Order.builder()
-		                                            .customer(subscription.getCustomer())
-		                                            .shippingAddress(subscription.getShippingAddress())
-		                                            .billingAddress(subscription.getBillingAddress())
-		                                            .orderStatus( OrderStatus.PENDING.getStatus() )
-		                                            .createdAt( LocalDateTime.now() )
-		                                            .updatedAt(LocalDateTime.now()).build() );
+				Map<Address, List<Subscription>> addressToSubscriptionsMap = customerToAddressMap
+						.computeIfAbsent( subscription.getCustomer(), k -> new HashMap<>() );
 
-		Shipment shipment = shipmentHibernateDAO.create(Shipment.builder()
-		                                                        .order(order)
-		                                                        .status( ShipmentStatus.PICKED.getStatus() )
-		                                                        .deliveryDueDate(LocalDateTime.now().plusDays(10))
-		                                                        .createdAt(LocalDateTime.now())
-		                                                        .updatedAt(LocalDateTime.now()).build() );
+				List<Subscription> subscriptions = addressToSubscriptionsMap
+						.computeIfAbsent( subscription.getShippingAddress(), k -> new ArrayList<>() );
 
-		orderDetailHibernateDAO.create( OrderDetail.builder()
-		                                           .order( order )
-		                                           .product( subscription.getProduct() )
-		                                           .shipment( shipment )
-		                                           .orderDetailStatus( OrderStatus.PENDING.getStatus() )
-		                                           .offer( subscription.getOffer() )
-		                                           .quantity( subscription.getQuantity() ).build() );
+				subscriptions.add( subscription );
+			}
+		} );
 
-		subscription.setNextDueDate( subscription.getNextDueDate().plusDays( subscription.getFrequencyInDays() ) );
-		subscriptionHibernateDAO.update( subscription );
+		customerToAddressMap.forEach( (customer, addressToSubscriptions) ->
+				addressToSubscriptions.forEach( ( shippingAddress, subscriptions) -> {
+					Order order = orderHibernateDAO.create(Order.builder()
+					                                            .customer(customer)
+					                                            .shippingAddress(shippingAddress)
+					                                            .billingAddress(shippingAddress)
+					                                            .orderStatus( OrderStatus.PENDING.getStatus() )
+					                                            .createdAt( LocalDateTime.now() )
+					                                            .updatedAt(LocalDateTime.now()).build() );
 
-		shipmentHibernateDAO.reload( shipment );
-		orderHibernateDAO.reload( order );
+					Shipment shipment = shipmentHibernateDAO.create(Shipment.builder()
+					                                                        .order(order)
+					                                                        .status( ShipmentStatus.PICKED.getStatus() )
+					                                                        .deliveryDueDate(LocalDateTime.now().plusDays(10))
+					                                                        .createdAt(LocalDateTime.now())
+					                                                        .updatedAt(LocalDateTime.now()).build() );
 
-		return modelMapper.map( order, OrderResponse.class );
+					subscriptions.forEach( subscription -> {
+						orderDetailHibernateDAO.create( OrderDetail.builder()
+						                                           .order( order )
+						                                           .product( subscription.getProduct() )
+						                                           .shipment( shipment )
+						                                           .orderDetailStatus( OrderStatus.PENDING.getStatus() )
+						                                           .offer( subscription.getOffer() )
+						                                           .quantity( subscription.getQuantity() ).build() );
+
+						subscription.setNextDueDate( subscription.getNextDueDate().plusDays( subscription.getFrequencyInDays() ) );
+						subscriptionHibernateDAO.update( subscription );
+					} );
+
+					shipmentHibernateDAO.reload( shipment );
+					orderHibernateDAO.reload( order );
+
+					orderResponses.add( modelMapper.map( order, OrderResponse.class ) );
+				} )
+        );
+
+		return CreateOrdersFromSubscriptionsResponse.builder().invalidSubscriptionsIds( invalidSubscriptionIds ).orders( orderResponses ).build();
 	}
 }

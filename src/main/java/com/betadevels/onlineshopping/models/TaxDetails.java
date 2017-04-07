@@ -22,8 +22,4 @@ public class TaxDetails extends BaseModel
 
     @Column(name = "tax", columnDefinition = "float(6,3)")
     private Float tax;
-
-    @Getter(AccessLevel.NONE)
-    @OneToMany(mappedBy = "taxDetails", fetch = FetchType.LAZY)
-    private List<Address> addresses;
 }

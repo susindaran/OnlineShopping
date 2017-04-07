@@ -10,6 +10,7 @@ import com.betadevels.onlineshopping.payload.response.payment.PaymentsListRespon
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -37,7 +38,7 @@ public class PaymentResource
 	@Path( "/{order_id}" )
 	@UnitOfWork
 	@Timed
-	public Response createPayment( @Context HttpHeaders headers, @NotNull CreatePaymentRequest createPaymentRequest,
+	public Response createPayment( @Context HttpHeaders headers, @NotNull @Valid CreatePaymentRequest createPaymentRequest,
 	                               @NotNull @PathParam( "order_id" ) Long orderId )
 	{
 		PaymentsListResponse paymentsListResponse = this.createPaymentAction.withRequest( createPaymentRequest ).forOrderId( orderId ).invoke();

@@ -89,6 +89,13 @@ public class CreatePaymentAction implements Action<PaymentsListResponse>
 			                                                                          .reason( "TAX" )
 			                                                                          .transactionType( TransactionType.DEBIT.getType() )
 			                                                                          .build() ), PaymentResponse.class ) );
+			paymentResponses.add( modelMapper.map( paymentHibernateDAO.create( Payment.builder()
+			                                                                          .order( order )
+			                                                                          .amount( totalPrice[ 0 ] )
+			                                                                          .reason( "CARD_PAYMENT" )
+			                                                                          .transactionType( TransactionType.DEBIT.getType() )
+			                                                                          .ref1( createPaymentRequest.getCardNumber() )
+			                                                                          .build()), PaymentResponse.class ) );
 			PaymentsListResponse paymentsListResponse = new PaymentsListResponse();
 			paymentsListResponse.setOrder( modelMapper.map( order, OrderResponse.class ) );
 			paymentsListResponse.setPayments( paymentResponses );

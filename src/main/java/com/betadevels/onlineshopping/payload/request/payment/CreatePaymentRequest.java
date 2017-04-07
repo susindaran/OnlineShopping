@@ -10,6 +10,5 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class CreatePaymentRequest
 {
-	@NotNull @NotEmpty
 	private String cardNumber;
 }

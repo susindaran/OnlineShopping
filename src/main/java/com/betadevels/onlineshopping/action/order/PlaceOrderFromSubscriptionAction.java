@@ -1,10 +1,7 @@
 package com.betadevels.onlineshopping.action.order;
 
 import com.betadevels.onlineshopping.action.Action;
-import com.betadevels.onlineshopping.db.hibernate.OrderDetailHibernateDAO;
-import com.betadevels.onlineshopping.db.hibernate.OrderHibernateDAO;
-import com.betadevels.onlineshopping.db.hibernate.ShipmentHibernateDAO;
-import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
+import com.betadevels.onlineshopping.db.hibernate.*;
 import com.betadevels.onlineshopping.enumerations.OrderStatus;
 import com.betadevels.onlineshopping.enumerations.ShipmentStatus;
 import com.betadevels.onlineshopping.models.*;
@@ -19,6 +16,7 @@ import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PlaceOrderFromSubscriptionAction implements Action<CreateOrdersFromSubscriptionsResponse>
 {
@@ -44,11 +42,13 @@ public class PlaceOrderFromSubscriptionAction implements Action<CreateOrdersFrom
 	public CreateOrdersFromSubscriptionsResponse invoke()
 	{
 		SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
+		ProductHibernateDAO productHibernateDAO = this.hibernateUtil.getProductHibernateDAO();
 		OrderDetailHibernateDAO orderDetailHibernateDAO = this.hibernateUtil.getOrderDetailHibernateDAO();
 		ShipmentHibernateDAO shipmentHibernateDAO = this.hibernateUtil.getShipmentHibernateDAO();
 		OrderHibernateDAO orderHibernateDAO = this.hibernateUtil.getOrderHibernateDAO();
 
 		List<Long> invalidSubscriptionIds = new ArrayList<>(  );
+		List<Subscription> stockUnavailable = new ArrayList<>(  );
 		List<OrderResponse> orderResponses = new ArrayList<>(  );
 		Map<Customer, Map<Address, List<Subscription>>> customerToAddressMap = new HashMap<>(  );
 
@@ -63,13 +63,21 @@ public class PlaceOrderFromSubscriptionAction implements Action<CreateOrdersFrom
 			{
 				Subscription subscription = subscriptionOptional.get();
 
-				Map<Address, List<Subscription>> addressToSubscriptionsMap = customerToAddressMap
-						.computeIfAbsent( subscription.getCustomer(), k -> new HashMap<>() );
+				//Considering only those products which have enough available quantity for order creation
+				if( subscription.getQuantity() <= subscription.getProduct().getQuantity() )
+				{
+					Map<Address, List<Subscription>> addressToSubscriptionsMap = customerToAddressMap
+							.computeIfAbsent( subscription.getCustomer(), k -> new HashMap<>() );
 
-				List<Subscription> subscriptions = addressToSubscriptionsMap
-						.computeIfAbsent( subscription.getShippingAddress(), k -> new ArrayList<>() );
+					List<Subscription> subscriptions = addressToSubscriptionsMap
+							.computeIfAbsent( subscription.getShippingAddress(), k -> new ArrayList<>() );
 
-				subscriptions.add( subscription );
+					subscriptions.add( subscription );
+				}
+				else
+				{
+					stockUnavailable.add( subscription );
+				}
 			}
 		} );
 
@@ -99,7 +107,14 @@ public class PlaceOrderFromSubscriptionAction implements Action<CreateOrdersFrom
 						                                           .offer( subscription.getOffer() )
 						                                           .quantity( subscription.getQuantity() ).build() );
 
-						subscription.setNextDueDate( subscription.getNextDueDate().plusDays( subscription.getFrequencyInDays() ) );
+						//Updating the catalogue for the new available quantity
+						//Existing available quantity - quantity used for subscription order
+						Product product = subscription.getProduct();
+						product.setQuantity( product.getQuantity() - subscription.getQuantity() );
+						productHibernateDAO.update( product );
+
+						//Updating subscription to set the next due date based on the frequency
+						subscription.setNextDueDate( LocalDateTime.now().plusDays( subscription.getFrequencyInDays() ) );
 						subscriptionHibernateDAO.update( subscription );
 					} );
 
@@ -110,6 +125,17 @@ public class PlaceOrderFromSubscriptionAction implements Action<CreateOrdersFrom
 				} )
         );
 
-		return CreateOrdersFromSubscriptionsResponse.builder().invalidSubscriptionsIds( invalidSubscriptionIds ).orders( orderResponses ).build();
+		//Updating the next due dates of subscriptions with insufficient stock
+		stockUnavailable.forEach( subscription -> {
+			subscription.setNextDueDate( LocalDateTime.now().plusDays( 1 ) );
+			subscriptionHibernateDAO.update( subscription );
+		} );
+
+		return CreateOrdersFromSubscriptionsResponse.builder()
+		                                            .invalidSubscriptionsIds( invalidSubscriptionIds )
+		                                            .stockUnavailable( stockUnavailable.stream()
+		                                                                               .map( Subscription::getSubscriptionId )
+		                                                                               .collect( Collectors.toList() ) )
+		                                            .orders( orderResponses ).build();
 	}
 }

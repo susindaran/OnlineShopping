@@ -65,16 +65,23 @@ if __name__ == '__main__':
 		try:
 			body = {'subscription_ids': subscription_ids}
 			headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-			response = requests.post('http://localhost:8888/api/order/subscription/', data = json.dumps(body), headers = headers)
-			if response.status_code == 201:
-				print_success('\tResponse status code - {}'.format(response.status_code))
+			order_response = requests.post('http://localhost:8888/api/order/subscription/', data = json.dumps(body), headers = headers)
+			if order_response.status_code == 201:
+				print_success('\tResponse status code - {}'.format(order_response.status_code))
 				order_ids = []
-				for order in response.json()['orders']:
+				for order in order_response.json()['orders']:
 					order_ids.append(order['order_id'])
 				print_info('\tOrder IDs of newly created orders: {}'.format(order_ids))
+
+				for order_id in order_ids:
+					print_info('\t\tMaking payment for Order ID: {}'.format(order_id))
+					payment_response = requests.post('http://localhost:8888/api/payment/{}'.format(order_id), data = json.dumps({}), headers = headers)
+					if payment_response.status_code != 201:
+						print_error('\t\tResponse status code - {}'.format(payment_response.status_code))
+						print_error('\t\tError! Response - {}'.format(json.dumps(payment_response.json())))
 			else:
-				print_error('\tResponse status code - {}'.format(response.status_code))
-				print_error('\tError! Response - {}'.format(json.dumps(response.json())))
+				print_error('\tResponse status code - {}'.format(order_response.status_code))
+				print_error('\tError! Response - {}'.format(json.dumps(order_response.json())))
 		except requests.exceptions.RequestException as e:
 			print_error('\tFailed to create orders from subscriptions')
 			print e

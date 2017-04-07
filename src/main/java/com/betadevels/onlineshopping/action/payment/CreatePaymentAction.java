@@ -83,15 +83,18 @@ public class CreatePaymentAction implements Action<PaymentsListResponse>
 			});
 			TaxDetails taxDetails = order.getShippingAddress().getTaxDetails();
 			double totalTax = taxDetails.getTax() * totalPrice[ 0 ] / 100;
+			//Recording tax applied
 			paymentResponses.add( modelMapper.map( paymentHibernateDAO.create( Payment.builder()
 			                                                                          .order( order )
 			                                                                          .amount( totalTax )
 			                                                                          .reason( "TAX" )
 			                                                                          .transactionType( TransactionType.DEBIT.getType() )
 			                                                                          .build() ), PaymentResponse.class ) );
+
+			//Recording card number and final total price (including tax)
 			paymentResponses.add( modelMapper.map( paymentHibernateDAO.create( Payment.builder()
 			                                                                          .order( order )
-			                                                                          .amount( totalPrice[ 0 ] )
+			                                                                          .amount( totalPrice[ 0 ] + totalTax )
 			                                                                          .reason( "CARD_PAYMENT" )
 			                                                                          .transactionType( TransactionType.DEBIT.getType() )
 			                                                                          .ref1( createPaymentRequest.getCardNumber() )

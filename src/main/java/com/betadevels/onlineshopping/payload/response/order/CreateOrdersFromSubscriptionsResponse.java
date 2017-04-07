@@ -15,4 +15,5 @@ public class CreateOrdersFromSubscriptionsResponse
 {
 	private List<OrderResponse> orders;
 	private List<Long> invalidSubscriptionsIds;
+	private List<Long> stockUnavailable;
 }

@@ -3,7 +3,9 @@ package com.betadevels.onlineshopping.resources;
 import com.betadevels.onlineshopping.action.subscription.CreateSubscriptionsAction;
 import com.betadevels.onlineshopping.action.subscription.GetSubscriptionsAction;
 import com.betadevels.onlineshopping.action.subscription.SkipDueDateAction;
+import com.betadevels.onlineshopping.action.subscription.UpdateSubscriptionAction;
 import com.betadevels.onlineshopping.payload.request.subscription.CreateSubscriptionsRequest;
+import com.betadevels.onlineshopping.payload.request.subscription.UpdateSubscriptionRequest;
 import com.betadevels.onlineshopping.payload.response.subscription.SubscriptionListResponse;
 import com.betadevels.onlineshopping.payload.response.subscription.SubscriptionResponse;
 import com.codahale.metrics.annotation.Timed;
@@ -29,15 +31,18 @@ public class SubscriptionResource
 	private final CreateSubscriptionsAction createSubscriptionsAction;
 	private final GetSubscriptionsAction getSubscriptionsAction;
 	private final SkipDueDateAction skipDueDateAction;
+	private final UpdateSubscriptionAction updateSubscriptionAction;
 
 	@Inject
 	public SubscriptionResource( Provider<CreateSubscriptionsAction> createSubscriptionsActionProvider,
 								 Provider<GetSubscriptionsAction> getSubscriptionsActionProvider,
-								 Provider<SkipDueDateAction> skipDueDateActionProvider)
+								 Provider<SkipDueDateAction> skipDueDateActionProvider,
+								 Provider<UpdateSubscriptionAction> updateSubscriptionActionProvider)
 	{
 		this.createSubscriptionsAction = createSubscriptionsActionProvider.get();
 		this.getSubscriptionsAction = getSubscriptionsActionProvider.get();
 		this.skipDueDateAction=skipDueDateActionProvider.get();
+		this.updateSubscriptionAction=updateSubscriptionActionProvider.get();
 	}
 
 	@POST
@@ -70,4 +75,18 @@ public class SubscriptionResource
 		SubscriptionResponse subscriptionResponse=skipDueDateAction.withId(subscriptionId).invoke();
 		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
 	}
+
+	@POST
+	@Path("/update/{subscription_id}")
+	@UnitOfWork
+	@Timed
+	public Response updateSubscription(@Context HttpHeaders headers, @NotNull UpdateSubscriptionRequest updateSubscriptionRequest, @NotNull @PathParam("subscription_id") Long subscriptionId)
+	{
+		SubscriptionResponse subscriptionResponse=updateSubscriptionAction.withRequest(updateSubscriptionRequest)
+																			.withId(subscriptionId).invoke();
+		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
+
+	}
+
+
 }

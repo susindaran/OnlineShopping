@@ -3,12 +3,14 @@ package com.betadevels.onlineshopping.db.hibernate;
 import com.betadevels.onlineshopping.db.GenericDAO;
 import com.betadevels.onlineshopping.models.Customer;
 import com.betadevels.onlineshopping.models.Subscription;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> implements GenericDAO<Subscription> {
@@ -25,6 +27,15 @@ public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> imp
 		criteria.setMaxResults(size);
 		return criteria.list();
 	}
+
+	public Subscription getSubscriptionById(Long subscriptionId)
+	{
+			List<Subscription> subscriptionList = findByParams(Collections.singletonMap("subscriptionId", subscriptionId));
+
+				return subscriptionList.get(0) ;
+
+	}
+
 
 	public Long countOfCustomer(Customer customer)
 	{

@@ -64,6 +64,15 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
                 throw new BadRequestException("Requested quantity exceeds availability");
             }
 
+            List<Cart> cartItems=cartHibernateDAO.getCartItemsOfCustomer(customer);
+            for(Cart c:cartItems)
+            {
+                if(c.getProduct().getProductId().equalsIgnoreCase(product.getProductId()))
+                    throw new BadRequestException("Product already exists in cart !");
+
+            }
+
+
             Cart.CartBuilder cartBuilder = Cart.builder().customer( customer )
                                             .product( product )
                                             .quantity( request.getQuantity() );

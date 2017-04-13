@@ -23,12 +23,12 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 public class CreateSubscriptionsAction implements Action<SubscriptionListResponse>
 {
 	private final HibernateUtil hibernateUtil;
 	private ModelMapper modelMapper;
 	private CreateSubscriptionsRequest createSubscriptionsRequest;
+	int page,size;
 
 	@Inject
 	public CreateSubscriptionsAction( Provider<HibernateUtil> hibernateUtilProvider,
@@ -50,7 +50,6 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 		CartHibernateDAO cartHibernateDAO = this.hibernateUtil.getCartHibernateDAO();
 		SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
 		AddressHibernateDAO addressHibernateDAO = this.hibernateUtil.getAddressHibernateDAO();
-
 		List<Long> invalidCartIds = new ArrayList<>(  );
 		List<SubscriptionResponse> subscriptions = new ArrayList<>(  );
 		List<Long> cartIds = createSubscriptionsRequest.getCartIds();
@@ -80,6 +79,9 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 					Cart cart = cartOptional.get();
 					LocalDateTime now = LocalDateTime.now();
 
+					List<Subscription> userSubscriptions = subscriptionHibernateDAO.getSubscriptionsOfUser(page,size,cart.getCustomer());
+
+
 					Subscription subscription = Subscription.builder()
 					                                        .customer( cart.getCustomer() )
 					                                        .product( cart.getProduct() )
@@ -93,16 +95,22 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 					                                        .billingAddress( billingAddress )
 					                                        .shippingAddress( shippingAddress )
 					                                        .build();
+					for(Subscription s:userSubscriptions)
+					{
+						if (s.getProduct().getProductId().equalsIgnoreCase(subscription.getProduct().getProductId()))
+						throw new BadRequestException("Susbcription already exists !!");
 
-					Subscription newSubscription = subscriptionHibernateDAO.create( subscription );
-					subscriptions.add( modelMapper.map( newSubscription, SubscriptionResponse.class ) );
+					}
+						Subscription newSubscription = subscriptionHibernateDAO.create(subscription);
+						subscriptions.add(modelMapper.map(newSubscription, SubscriptionResponse.class));
+
 				}
 			}
+				SubscriptionListResponse subscriptionListResponse = new SubscriptionListResponse();
+				subscriptionListResponse.setInvalidCartIds(invalidCartIds);
+				subscriptionListResponse.setSubscriptions(subscriptions);
+				return subscriptionListResponse;
 
-			SubscriptionListResponse subscriptionListResponse = new SubscriptionListResponse();
-			subscriptionListResponse.setInvalidCartIds( invalidCartIds );
-			subscriptionListResponse.setSubscriptions( subscriptions );
-			return subscriptionListResponse;
 		}
 
 		List<String> errors = new ArrayList<>();

@@ -2,8 +2,10 @@ package com.betadevels.onlineshopping.resources;
 
 import com.betadevels.onlineshopping.action.subscription.CreateSubscriptionsAction;
 import com.betadevels.onlineshopping.action.subscription.GetSubscriptionsAction;
+import com.betadevels.onlineshopping.action.subscription.SkipDueDateAction;
 import com.betadevels.onlineshopping.payload.request.subscription.CreateSubscriptionsRequest;
 import com.betadevels.onlineshopping.payload.response.subscription.SubscriptionListResponse;
+import com.betadevels.onlineshopping.payload.response.subscription.SubscriptionResponse;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -26,12 +28,16 @@ public class SubscriptionResource
 {
 	private final CreateSubscriptionsAction createSubscriptionsAction;
 	private final GetSubscriptionsAction getSubscriptionsAction;
+	private final SkipDueDateAction skipDueDateAction;
 
 	@Inject
-	public SubscriptionResource( Provider<CreateSubscriptionsAction> createSubscriptionsActionProvider, Provider<GetSubscriptionsAction> getSubscriptionsActionProvider )
+	public SubscriptionResource( Provider<CreateSubscriptionsAction> createSubscriptionsActionProvider,
+								 Provider<GetSubscriptionsAction> getSubscriptionsActionProvider,
+								 Provider<SkipDueDateAction> skipDueDateActionProvider)
 	{
 		this.createSubscriptionsAction = createSubscriptionsActionProvider.get();
 		this.getSubscriptionsAction = getSubscriptionsActionProvider.get();
+		this.skipDueDateAction=skipDueDateActionProvider.get();
 	}
 
 	@POST
@@ -54,4 +60,14 @@ public class SubscriptionResource
 		return Response.status( Response.Status.OK ).entity( subscriptionListResponse ).build();
 	}
 
+
+	@POST
+	@Path("/skip/{subscription_id}")
+	@UnitOfWork
+	@Timed
+	public Response skipDueDate(@Context HttpHeaders headers, @Context HttpServletRequest request, @NotNull @PathParam("subscription_id") Long subscriptionId)
+	{
+		SubscriptionResponse subscriptionResponse=skipDueDateAction.withId(subscriptionId).invoke();
+		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
+	}
 }

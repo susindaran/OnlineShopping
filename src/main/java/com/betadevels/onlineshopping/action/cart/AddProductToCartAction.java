@@ -19,11 +19,13 @@ import com.betadevels.onlineshopping.payload.request.cart.AddProductToCartReques
 import com.betadevels.onlineshopping.payload.response.cart.AddProductToCartResponse;
 import com.betadevels.onlineshopping.payload.response.cart.CartResponse;
 import com.betadevels.onlineshopping.util.HibernateUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
 import java.util.*;
 
-
+@Slf4j
 public class AddProductToCartAction implements Action<AddProductToCartResponse>
 {
     private final HibernateUtil hibernateUtil;
@@ -64,13 +66,7 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
                 throw new BadRequestException("Requested quantity exceeds availability");
             }
 
-            List<Cart> cartItems=cartHibernateDAO.getCartItemsOfCustomer(customer);
-            for(Cart c:cartItems)
-            {
-                if(c.getProduct().getProductId().equalsIgnoreCase(product.getProductId()))
-                    throw new BadRequestException("Product already exists in cart !");
 
-            }
 
 
             Cart.CartBuilder cartBuilder = Cart.builder().customer( customer )
@@ -92,7 +88,8 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
             }
 
             Cart cart = cartBuilder.build();
-
+            try
+            {
             Cart newCart = cartHibernateDAO.create(cart);
 
             //Updating the new available quantity of the product
@@ -102,7 +99,15 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
 	        AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse();
 	        addProductToCartResponse.setItemsInCart( cartHibernateDAO.countForCustomer( customer ) );
 	        addProductToCartResponse.setProductAdded( modelMapper.map( newCart, CartResponse.class ) );
+
 	        return addProductToCartResponse;
+            }
+            catch(HibernateException e)
+            {
+                log.error(String.valueOf(e.getCause()));
+                throw new BadRequestException("Product already exists in cart !");
+
+            }
         }
 
         List<String> errors = new ArrayList<>();

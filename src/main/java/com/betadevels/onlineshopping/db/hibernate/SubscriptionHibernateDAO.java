@@ -28,13 +28,7 @@ public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> imp
 		return criteria.list();
 	}
 
-	public Subscription getSubscriptionById(Long subscriptionId)
-	{
-			List<Subscription> subscriptionList = findByParams(Collections.singletonMap("subscriptionId", subscriptionId));
 
-				return subscriptionList.get(0) ;
-
-	}
 
 
 	public Long countOfCustomer(Customer customer)

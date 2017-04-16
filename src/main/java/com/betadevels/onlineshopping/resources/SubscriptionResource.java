@@ -76,8 +76,8 @@ public class SubscriptionResource
 		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
 	}
 
-	@POST
-	@Path("/update/{subscription_id}")
+	@PUT
+	@Path("/{subscription_id}")
 	@UnitOfWork
 	@Timed
 	public Response updateSubscription(@Context HttpHeaders headers, @NotNull UpdateSubscriptionRequest updateSubscriptionRequest, @NotNull @PathParam("subscription_id") Long subscriptionId)

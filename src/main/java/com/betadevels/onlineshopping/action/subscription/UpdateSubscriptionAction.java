@@ -3,16 +3,20 @@ package com.betadevels.onlineshopping.action.subscription;
 import com.betadevels.onlineshopping.action.Action;
 import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
 import com.betadevels.onlineshopping.exceptions.InternalErrorException;
+import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Subscription;
 import com.betadevels.onlineshopping.payload.request.subscription.UpdateSubscriptionRequest;
 import com.betadevels.onlineshopping.payload.response.subscription.SubscriptionResponse;
 import com.betadevels.onlineshopping.util.HibernateUtil;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
+
+import java.util.Collections;
 
 import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 
@@ -51,11 +55,18 @@ public class UpdateSubscriptionAction implements Action<SubscriptionResponse>
         public SubscriptionResponse invoke() {
 
             SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
-            Subscription currentSubscription=subscriptionHibernateDAO.getSubscriptionById(subscriptionId);
+            Optional<Subscription> subscriptionOptional=subscriptionHibernateDAO.findById(subscriptionId);
+            if( !subscriptionOptional.isPresent() )
+            {
+                throw new NotFoundException( Collections.singletonList( "No Subscription matching the given subscription_id" ) );
+            }
+
+            Subscription currentSubscription=subscriptionOptional.get();
+
             try {
-                if (updateSubscriptionRequest.getFrequencyInDays() != null)
+                if (updateSubscriptionRequest.getFrequencyInDays() != null && updateSubscriptionRequest.getFrequencyInDays()>0 )
                     currentSubscription.setFrequencyInDays(updateSubscriptionRequest.getFrequencyInDays());
-                if (updateSubscriptionRequest.getQuantity() != null)
+                if (updateSubscriptionRequest.getQuantity() != null && updateSubscriptionRequest.getQuantity() >0 )
                     currentSubscription.setQuantity(updateSubscriptionRequest.getQuantity());
 
                 Subscription newSubscription = subscriptionHibernateDAO.update(currentSubscription);

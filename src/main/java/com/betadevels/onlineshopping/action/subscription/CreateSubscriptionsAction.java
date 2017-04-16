@@ -6,6 +6,7 @@ import com.betadevels.onlineshopping.db.hibernate.CartHibernateDAO;
 import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
 import com.betadevels.onlineshopping.enumerations.SubscriptionStatus;
 import com.betadevels.onlineshopping.exceptions.BadRequestException;
+import com.betadevels.onlineshopping.exceptions.InternalErrorException;
 import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Address;
 import com.betadevels.onlineshopping.models.Cart;
@@ -17,12 +18,17 @@ import com.betadevels.onlineshopping.util.HibernateUtil;
 import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.HibernateException;
 import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+@Slf4j
 public class CreateSubscriptionsAction implements Action<SubscriptionListResponse>
 {
 	private final HibernateUtil hibernateUtil;
@@ -79,9 +85,6 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 					Cart cart = cartOptional.get();
 					LocalDateTime now = LocalDateTime.now();
 
-					List<Subscription> userSubscriptions = subscriptionHibernateDAO.getSubscriptionsOfUser(page,size,cart.getCustomer());
-
-
 					Subscription subscription = Subscription.builder()
 					                                        .customer( cart.getCustomer() )
 					                                        .product( cart.getProduct() )
@@ -95,14 +98,16 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 					                                        .billingAddress( billingAddress )
 					                                        .shippingAddress( shippingAddress )
 					                                        .build();
-					for(Subscription s:userSubscriptions)
-					{
-						if (s.getProduct().getProductId().equalsIgnoreCase(subscription.getProduct().getProductId()))
-						throw new BadRequestException("Susbcription already exists !!");
 
-					}
+					try {
 						Subscription newSubscription = subscriptionHibernateDAO.create(subscription);
 						subscriptions.add(modelMapper.map(newSubscription, SubscriptionResponse.class));
+					}
+					catch(HibernateException e)
+					{
+						log.error(String.valueOf(e.getCause()));
+						throw new BadRequestException("Subscription already exists ! ");
+					}
 
 				}
 			}

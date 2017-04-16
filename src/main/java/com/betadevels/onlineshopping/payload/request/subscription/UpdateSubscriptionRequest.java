@@ -15,7 +15,6 @@ import org.joda.time.LocalDateTime;
 @Data
 public class UpdateSubscriptionRequest
 {
-    private Long subscriptionId;
     private Integer quantity;
     private Integer frequencyInDays;
 }

@@ -3,16 +3,19 @@ package com.betadevels.onlineshopping.db.hibernate;
 import com.betadevels.onlineshopping.db.GenericDAO;
 import com.betadevels.onlineshopping.models.Customer;
 import com.betadevels.onlineshopping.models.Subscription;
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> implements GenericDAO<Subscription> {
 	@Inject
+
 	public SubscriptionHibernateDAO(SessionFactory sessionFactory) {
 		super(sessionFactory);
 	}
@@ -34,4 +37,24 @@ public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> imp
 		}
 		return count();
 	}
+	public Optional<Subscription> findById(Long id)
+	{
+		List<Subscription> subscriptionList = findByParams(Collections.singletonMap("subscriptionId", id) );
+		if( subscriptionList.size() > 0 ) {
+			return Optional.fromNullable(subscriptionList.get(0));
+		}
+		else
+		{
+			return Optional.absent();
+		}
+
+	}
+	public List<Subscription> getSubscriptionsByIds(List<Long> subscriptionId)
+	{
+		Criteria criteria = currentSession().createCriteria(Subscription.class);
+		criteria.add(Restrictions.in("subscriptionId",subscriptionId));
+		return criteria.list();
+	}
+
+
 }

@@ -106,7 +106,6 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
             {
                 log.error(String.valueOf(e.getCause()));
                 throw new BadRequestException("Product already exists in cart !");
-
             }
         }
 

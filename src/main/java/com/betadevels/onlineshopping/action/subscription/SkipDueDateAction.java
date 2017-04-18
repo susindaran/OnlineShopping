@@ -11,6 +11,8 @@ import org.modelmapper.ModelMapper;
 
 import org.joda.time.LocalDateTime;
 
+import com.google.common.base.Optional;
+
 
 /**
  * Created by prathyusha on 4/13/17.
@@ -37,8 +39,8 @@ public class SkipDueDateAction implements Action<SubscriptionResponse>
     public SubscriptionResponse invoke() {
 
         SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
-        Subscription currentSubscription=subscriptionHibernateDAO.getSubscriptionById(subscriptionId);
-
+        Optional<Subscription> subscriptionOptional=subscriptionHibernateDAO.findById(subscriptionId);
+        Subscription currentSubscription=subscriptionOptional.get();
         LocalDateTime newDate=currentSubscription.getNextDueDate().plusDays(currentSubscription.getFrequencyInDays());
         currentSubscription.setNextDueDate(newDate);
 

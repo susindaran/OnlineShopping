@@ -8,7 +8,7 @@ import com.betadevels.onlineshopping.models.OrderDetail;
 import com.betadevels.onlineshopping.payload.response.orderdetail.AllOrderDetailsResponse;
 import com.betadevels.onlineshopping.payload.response.orderdetail.OrderDetailResponse;
 import com.betadevels.onlineshopping.util.HibernateUtil;
-import com.betadevels.onlineshopping.validators.orderDetail.OrderDetailValidator;
+import com.betadevels.onlineshopping.validators.orderdetail.OrderDetailValidator;
 import org.modelmapper.ModelMapper;
 
 import java.util.List;

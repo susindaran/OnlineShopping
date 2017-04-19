@@ -44,12 +44,12 @@ public class Subscription extends BaseModel
 	@JoinColumn(name = "coupon_id")
 	private Offer offer;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@NotNull
 	@JoinColumn(name = "shipping_address_id", nullable = false)
 	private Address shippingAddress;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@NotNull
 	@JoinColumn(name = "billing_address_id", nullable = false)
 	private Address billingAddress;

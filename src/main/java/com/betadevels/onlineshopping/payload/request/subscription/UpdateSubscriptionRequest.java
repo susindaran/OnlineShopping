@@ -2,16 +2,13 @@ package com.betadevels.onlineshopping.payload.request.subscription;
 
 import com.betadevels.onlineshopping.enumerations.SubscriptionStatus;
 import io.dropwizard.jackson.JsonSnakeCase;
-import lombok.Getter;
+import lombok.Data;
 
-import java.util.List;
-
-/**
- * Created by girijagodbole on 4/16/17.
- */
 @JsonSnakeCase
-@Getter
-public class UpdateSubscriptionStatusRequest {
-    private List<Long> subscriptionIds;
+@Data
+public class UpdateSubscriptionRequest
+{
+    private Integer quantity;
+    private Integer frequencyInDays;
     private SubscriptionStatus status;
 }

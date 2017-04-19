@@ -12,19 +12,22 @@ import org.hibernate.criterion.Restrictions;
 import java.util.Collections;
 import java.util.List;
 
-public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> implements GenericDAO<Subscription> {
-	@Inject
+public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> implements GenericDAO<Subscription>
+{
 
-	public SubscriptionHibernateDAO(SessionFactory sessionFactory) {
+	public SubscriptionHibernateDAO(SessionFactory sessionFactory)
+	{
+
 		super(sessionFactory);
 	}
 
-	public List<Subscription> getSubscriptionsOfUser(int page, int size, Customer customer) {
-		Criteria criteria = currentSession().createCriteria(Subscription.class);
-		criteria.add(Restrictions.eq("customer", customer));
+	public List<Subscription> getSubscriptionsOfUser(int page, int size, Customer customer)
+	{
+		Criteria criteria = currentSession().createCriteria( Subscription.class );
+		criteria.add( Restrictions.eq( "customer", customer ) );
 
-		criteria.setFirstResult((page - 1) * size);
-		criteria.setMaxResults(size);
+		criteria.setFirstResult( (page - 1) * size );
+		criteria.setMaxResults( size );
 		return criteria.list();
 	}
 

@@ -16,7 +16,7 @@ import org.joda.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubscriptionResponse
 {
-	private int subscriptionId;
+	private Long subscriptionId;
 	@JsonIgnoreProperties(value = {"quantity"})
 	private ProductResponse product;
 	private Integer quantity;

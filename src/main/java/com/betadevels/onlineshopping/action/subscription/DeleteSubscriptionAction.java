@@ -2,6 +2,7 @@ package com.betadevels.onlineshopping.action.subscription;
 import com.betadevels.onlineshopping.action.Action;
 import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
 import com.betadevels.onlineshopping.exceptions.InternalErrorException;
+import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Subscription;
 import com.betadevels.onlineshopping.util.HibernateUtil;
 import com.google.common.base.Optional;
@@ -9,6 +10,9 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by girijagodbole on 4/15/17.
@@ -37,6 +41,11 @@ public class DeleteSubscriptionAction implements Action{
         Optional<Subscription> subscriptionOptional = subscriptionHibernateDAO.findById(subscriptionId);
         try
         {
+            List<String> errors = new ArrayList<>();
+            if(!subscriptionOptional.isPresent()){
+                errors.add("no subscription found for the given id");
+                throw new NotFoundException(errors);
+            }
             Subscription subscription= subscriptionOptional.get();
             subscriptionHibernateDAO.delete(subscription);
         }

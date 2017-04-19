@@ -17,6 +17,8 @@ import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
+
 
 /**
  * Created by girijagodbole on 4/16/17.
@@ -59,7 +61,6 @@ public class UpdateSubscriptionStatusAction implements Action<SubscriptionListRe
         }
         catch( HibernateException e )
         {
-            e.printStackTrace();
             throw new InternalErrorException(e.getMessage());
         }
     }

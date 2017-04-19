@@ -1,4 +1,4 @@
-package com.betadevels.onlineshopping.validators.orderDetail;
+package com.betadevels.onlineshopping.validators.orderdetail;
 
 import com.betadevels.onlineshopping.exceptions.BadRequestException;
 

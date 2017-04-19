@@ -1,6 +1,7 @@
 package com.betadevels.onlineshopping.action.cart;
 
 import com.betadevels.onlineshopping.db.hibernate.OfferHibernateDAO;
+import com.betadevels.onlineshopping.exceptions.InternalErrorException;
 import com.betadevels.onlineshopping.models.Offer;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
@@ -66,9 +68,6 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
                 throw new BadRequestException("Requested quantity exceeds availability");
             }
 
-
-
-
             Cart.CartBuilder cartBuilder = Cart.builder().customer( customer )
                                             .product( product )
                                             .quantity( request.getQuantity() );
@@ -90,22 +89,30 @@ public class AddProductToCartAction implements Action<AddProductToCartResponse>
             Cart cart = cartBuilder.build();
             try
             {
-            Cart newCart = cartHibernateDAO.create(cart);
+                Cart newCart = cartHibernateDAO.create(cart);
 
-            //Updating the new available quantity of the product
-            product.setQuantity( product.getQuantity() - request.getQuantity() );
-            productHibernateDAO.update( product );
+                //Updating the new available quantity of the product
+                product.setQuantity( product.getQuantity() - request.getQuantity() );
+                productHibernateDAO.update( product );
 
-	        AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse();
-	        addProductToCartResponse.setItemsInCart( cartHibernateDAO.countForCustomer( customer ) );
-	        addProductToCartResponse.setProductAdded( modelMapper.map( newCart, CartResponse.class ) );
+                AddProductToCartResponse addProductToCartResponse = new AddProductToCartResponse();
+                addProductToCartResponse.setItemsInCart( cartHibernateDAO.countForCustomer( customer ) );
+                addProductToCartResponse.setProductAdded( modelMapper.map( newCart, CartResponse.class ) );
 
-	        return addProductToCartResponse;
+                return addProductToCartResponse;
             }
             catch(HibernateException e)
             {
-                log.error(String.valueOf(e.getCause()));
-                throw new BadRequestException("Product already exists in cart !");
+                log.error(e.getCause().getMessage());
+                Throwable cause = e.getCause();
+                if( cause instanceof SQLException )
+                {
+                    if( ( ( SQLException ) cause ).getErrorCode() == 1062 )
+                    {
+                        throw new BadRequestException("Product already exists in cart !");
+                    }
+                }
+                throw new InternalErrorException(e.getCause().getMessage());
             }
         }
 

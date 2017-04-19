@@ -13,18 +13,11 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
-import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 
 import java.util.Collections;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
-
-/**
- * Created by prathyusha on 4/13/17.
- */
 @Slf4j
-
 public class UpdateSubscriptionAction implements Action<SubscriptionResponse>
 {
         private final HibernateUtil hibernateUtil;
@@ -61,16 +54,20 @@ public class UpdateSubscriptionAction implements Action<SubscriptionResponse>
                 throw new NotFoundException( Collections.singletonList( "No Subscription matching the given subscription_id" ) );
             }
 
-            Subscription currentSubscription=subscriptionOptional.get();
+            Subscription currentSubscription = subscriptionOptional.get();
 
-            try {
-                if (updateSubscriptionRequest.getFrequencyInDays() != null && updateSubscriptionRequest.getFrequencyInDays()>0 )
-                    currentSubscription.setFrequencyInDays(updateSubscriptionRequest.getFrequencyInDays());
-                if (updateSubscriptionRequest.getQuantity() != null && updateSubscriptionRequest.getQuantity() >0 )
-                    currentSubscription.setQuantity(updateSubscriptionRequest.getQuantity());
+            try
+            {
+                if( updateSubscriptionRequest.getFrequencyInDays() != null && updateSubscriptionRequest.getFrequencyInDays() > 0 )
+                {
+                    currentSubscription.setFrequencyInDays( updateSubscriptionRequest.getFrequencyInDays() );
+                }
+                if ( updateSubscriptionRequest.getQuantity() != null && updateSubscriptionRequest.getQuantity() > 0 )
+                {
+                    currentSubscription.setQuantity( updateSubscriptionRequest.getQuantity() );
+                }
 
                 Subscription newSubscription = subscriptionHibernateDAO.update(currentSubscription);
-
                 return modelMapper.map(newSubscription, SubscriptionResponse.class);
             }
             catch (HibernateException e)

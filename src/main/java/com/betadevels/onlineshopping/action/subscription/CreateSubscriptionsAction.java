@@ -23,18 +23,17 @@ import org.hibernate.HibernateException;
 import org.joda.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static jdk.nashorn.internal.runtime.regexp.joni.Config.log;
 @Slf4j
 public class CreateSubscriptionsAction implements Action<SubscriptionListResponse>
 {
 	private final HibernateUtil hibernateUtil;
 	private ModelMapper modelMapper;
 	private CreateSubscriptionsRequest createSubscriptionsRequest;
-	int page,size;
 
 	@Inject
 	public CreateSubscriptionsAction( Provider<HibernateUtil> hibernateUtilProvider,
@@ -99,14 +98,23 @@ public class CreateSubscriptionsAction implements Action<SubscriptionListRespons
 					                                        .shippingAddress( shippingAddress )
 					                                        .build();
 
-					try {
+					try
+					{
 						Subscription newSubscription = subscriptionHibernateDAO.create(subscription);
 						subscriptions.add(modelMapper.map(newSubscription, SubscriptionResponse.class));
 					}
 					catch(HibernateException e)
 					{
-						log.error(String.valueOf(e.getCause()));
-						throw new BadRequestException("Subscription already exists ! ");
+						log.error(e.getCause().getMessage());
+						Throwable cause = e.getCause();
+						if( cause instanceof SQLException )
+						{
+							if( ( ( SQLException ) cause ).getErrorCode() == 1062 )
+							{
+								throw new BadRequestException("This product is already subscribed by the customer!");
+							}
+						}
+						throw new InternalErrorException(e.getCause().getMessage());
 					}
 
 				}

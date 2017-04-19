@@ -61,18 +61,20 @@ public class SubscriptionResource
 	@Timed
 	public Response getAllSubscriptions(@Context HttpHeaders headers, @Context HttpServletRequest request, @NotNull @PathParam("customer_id") Long customerId, @QueryParam("page") int page, @QueryParam("size") int size)
 	{
-		SubscriptionListResponse subscriptionListResponse = getSubscriptionsAction.forCustomerId(customerId).invoke();
+		SubscriptionListResponse subscriptionListResponse = getSubscriptionsAction.forCustomerId(customerId)
+		                                                                          .withRequestURL( request.getRequestURL().toString() )
+		                                                                          .withPaginateDetails( page, size )
+		                                                                          .invoke();
 		return Response.status( Response.Status.OK ).entity( subscriptionListResponse ).build();
 	}
-
 
 	@POST
 	@Path("/skip/{subscription_id}")
 	@UnitOfWork
 	@Timed
-	public Response skipDueDate(@Context HttpHeaders headers, @Context HttpServletRequest request, @NotNull @PathParam("subscription_id") Long subscriptionId)
+	public Response skipDueDate(@Context HttpHeaders headers, @NotNull @PathParam("subscription_id") Long subscriptionId)
 	{
-		SubscriptionResponse subscriptionResponse=skipDueDateAction.withId(subscriptionId).invoke();
+		SubscriptionResponse subscriptionResponse = skipDueDateAction.forSubscriptionId( subscriptionId ).invoke();
 		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
 	}
 
@@ -85,8 +87,5 @@ public class SubscriptionResource
 		SubscriptionResponse subscriptionResponse=updateSubscriptionAction.withRequest(updateSubscriptionRequest)
 																			.withId(subscriptionId).invoke();
 		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
-
 	}
-
-
 }

@@ -27,4 +27,9 @@ public class CartHibernateDAO extends BaseHibernateDAO<Cart> implements GenericD
     {
         return (Long) criteria().add( Restrictions.eq( "customer", customer) ).setProjection( Projections.rowCount() ).uniqueResult();
     }
+
+    public List<Cart> getCartItems(List<Long> cartIds)
+    {
+        return criteria().add( Restrictions.in( "cartId", cartIds ) ).list();
+    }
 }

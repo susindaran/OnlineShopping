@@ -11,6 +11,7 @@ import com.betadevels.onlineshopping.payload.response.cart.AddProductToCartRespo
 import com.betadevels.onlineshopping.payload.response.cart.CartItemsResponse;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/cart")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,13 +32,15 @@ public class CartResource
     private final GetItemsInCartCountAction getItemsInCartCountAction;
     private final UpdateItemsInCartAction updateItemsInCartAction;
     private final DeleteItemsInCartAction deleteItemsInCartAction;
+    private final GetParticularCartItemsAction getParticularCartItemsAction;
 
     @Inject
     public CartResource(Provider<AddProductToCartAction> addProductToCartActionProvider,
                         Provider<GetItemsInCartAction> getItemsInCartActionProvider,
                         Provider<GetItemsInCartCountAction> getItemsInCartCountActionProvider,
                         Provider<UpdateItemsInCartAction> updateItemsInCartActionProvider,
-                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider)
+                        Provider<DeleteItemsInCartAction> deleteItemsInCartActionProvider,
+                        Provider<GetParticularCartItemsAction> getParticularCartItemsActionProvider)
 
     {
         this.addProductToCartAction = addProductToCartActionProvider.get();
@@ -44,6 +48,7 @@ public class CartResource
         this.getItemsInCartCountAction = getItemsInCartCountActionProvider.get();
         this.updateItemsInCartAction = updateItemsInCartActionProvider.get();
         this.deleteItemsInCartAction= deleteItemsInCartActionProvider.get();
+        this.getParticularCartItemsAction = getParticularCartItemsActionProvider.get();
     }
 
     @POST
@@ -67,6 +72,16 @@ public class CartResource
 		    return Response.status( Response.Status.OK ).entity( cartItemsResponse ).build();
 	    }
         return Response.status( Response.Status.OK ).entity( this.getItemsInCartCountAction.forCustomerId( customerId ).invoke() ).build();
+    }
+
+    @GET
+    @UnitOfWork
+    @Timed
+    public Response getParticularCartItems( @Context HttpHeaders headers, @NotNull @NotEmpty @QueryParam( "cart_id" )
+                                            List<Long> cartIds )
+    {
+        CartItemsResponse cartItemsResponse = this.getParticularCartItemsAction.forCartIds( cartIds ).invoke();
+        return Response.status( Response.Status.OK ).entity( cartItemsResponse ).build();
     }
 
     @PUT

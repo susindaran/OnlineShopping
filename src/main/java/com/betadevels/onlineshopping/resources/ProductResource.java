@@ -29,6 +29,7 @@ public class ProductResource
     private final GetProductAction getProductAction;
     private final GetAllProductsAction getAllProductsAction;
     private final GetProductCountAction getProductCountAction;
+    private final SearchProductsAction searchProductsAction;
 
     @Inject
     public ProductResource(Provider<AddProductAction> addProductActionProvider,
@@ -36,7 +37,8 @@ public class ProductResource
                            Provider<DeleteProductAction> deleteProductActionProvider,
                            Provider<GetProductAction> getProductActionProvider,
                            Provider<GetAllProductsAction> getAllProductsActionProvider,
-                           Provider<GetProductCountAction> getProductCountActionProvider)
+                           Provider<GetProductCountAction> getProductCountActionProvider,
+                           Provider<SearchProductsAction> searchProductsActionProvider)
     {
         this.addProductAction = addProductActionProvider.get();
         this.updateProductAction = updateProductActionProvider.get();
@@ -44,6 +46,7 @@ public class ProductResource
         this.getProductAction = getProductActionProvider.get();
         this.getAllProductsAction = getAllProductsActionProvider.get();
         this.getProductCountAction = getProductCountActionProvider.get();
+        this.searchProductsAction = searchProductsActionProvider.get();
     }
 
     @GET
@@ -105,5 +108,15 @@ public class ProductResource
     {
         ProductResponse productResponse = this.updateProductAction.withId(productId).withRequest(productRequest).invoke();
         return Response.status(Response.Status.OK).entity(productResponse).build();
+    }
+
+    @GET
+    @Path( "/search" )
+    @UnitOfWork
+    @Timed
+    public Response searchByName(@Context HttpHeaders headers, @NotNull @QueryParam( "query" ) String query)
+    {
+        AllProductsResponse allProductsResponse = this.searchProductsAction.withQuery( query ).invoke();
+        return Response.status( Response.Status.OK ).entity( allProductsResponse ).build();
     }
 }

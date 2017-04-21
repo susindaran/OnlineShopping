@@ -8,6 +8,7 @@ import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Product;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import java.util.Collections;
@@ -57,5 +58,14 @@ public class ProductHibernateDAO extends BaseHibernateDAO<Product> implements Ge
         {
             delete( productList.get( 0 ) );
         }
+    }
+
+    public List<Product> searchProductsByName( String query )
+    {
+        Criteria criteria = criteria();
+        criteria.add( Restrictions.like( "productName", '%' + query + '%' ) );
+        criteria.addOrder( Order.asc( "productName" ) );
+
+        return criteria.list();
     }
 }

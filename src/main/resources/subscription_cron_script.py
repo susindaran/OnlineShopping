@@ -51,7 +51,7 @@ if __name__ == '__main__':
 	cursor = connection.cursor()
 	now = datetime.datetime.now()
 	customer_subscriptions_map = {}
-	cursor.execute("SELECT customer_id, subscription_id FROM subscription WHERE next_due_date < '"+'{}-{}-{}'.format(now.strftime('%Y'), now.strftime('%m'), int(now.strftime('%d')) + 1)+"'")
+	cursor.execute("SELECT customer_id, subscription_id FROM subscription WHERE status = 'ACTIVE' AND next_due_date < '"+'{}-{}-{}'.format(now.strftime('%Y'), now.strftime('%m'), int(now.strftime('%d')) + 1)+"'")
 	for (customer_id, subscription_id,) in cursor:
 		if not customer_id in customer_subscriptions_map:
 			customer_subscriptions_map[customer_id] = []

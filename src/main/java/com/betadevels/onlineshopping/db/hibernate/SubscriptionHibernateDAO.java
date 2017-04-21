@@ -5,6 +5,7 @@ import com.betadevels.onlineshopping.models.Customer;
 import com.betadevels.onlineshopping.models.Subscription;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -21,6 +22,7 @@ public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> imp
 	{
 		Criteria criteria = currentSession().createCriteria( Subscription.class );
 		criteria.add( Restrictions.eq( "customer", customer ) );
+		criteria.addOrder( Order.asc( "status" ) );
 
 		criteria.setFirstResult( (page - 1) * size );
 		criteria.setMaxResults( size );

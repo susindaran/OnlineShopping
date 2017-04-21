@@ -10,5 +10,5 @@ public class UpdateSubscriptionRequest
 {
     private Integer quantity;
     private Integer frequencyInDays;
-    private SubscriptionStatus status;
+    private SubscriptionStatus subscriptionStatus;
 }

@@ -33,7 +33,6 @@ public class SubscriptionResource
 {
 	private final CreateSubscriptionsAction createSubscriptionsAction;
 	private final GetSubscriptionsAction getSubscriptionsAction;
-
 	private final DeleteSubscriptionAction deleteSubscriptionAction;
 	private final SkipDueDateAction skipDueDateAction;
 	private final UpdateSubscriptionAction updateSubscriptionAction;
@@ -51,9 +50,9 @@ public class SubscriptionResource
 	{
 		this.createSubscriptionsAction = createSubscriptionsActionProvider.get();
 		this.getSubscriptionsAction = getSubscriptionsActionProvider.get();
-		this.skipDueDateAction=skipDueDateActionProvider.get();
-		this.updateSubscriptionAction=updateSubscriptionActionProvider.get();
-		this.deleteSubscriptionAction=deleteSubscriptionActionProvider.get();
+		this.skipDueDateAction = skipDueDateActionProvider.get();
+		this.updateSubscriptionAction = updateSubscriptionActionProvider.get();
+		this.deleteSubscriptionAction = deleteSubscriptionActionProvider.get();
 
 	}
 
@@ -110,8 +109,7 @@ public class SubscriptionResource
 	@Timed
 	public Response updateSubscription(@Context HttpHeaders headers, @NotNull UpdateSubscriptionRequest updateSubscriptionRequest, @NotNull @PathParam("subscription_id") Long subscriptionId)
 	{
-		SubscriptionResponse subscriptionResponse=updateSubscriptionAction.withRequest(updateSubscriptionRequest)
-																			.withId(subscriptionId).invoke();
+		SubscriptionResponse subscriptionResponse=updateSubscriptionAction.withRequest(updateSubscriptionRequest).withId(subscriptionId).invoke();
 		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
 	}
 

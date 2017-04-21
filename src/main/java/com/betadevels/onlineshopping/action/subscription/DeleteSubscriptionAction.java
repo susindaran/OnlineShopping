@@ -11,13 +11,10 @@ import com.google.inject.Provider;
 import org.hibernate.HibernateException;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
-/**
- * Created by girijagodbole on 4/15/17.
- */
-public class DeleteSubscriptionAction implements Action{
+public class DeleteSubscriptionAction implements Action<Void>
+{
     private HibernateUtil hibernateUtil;
     private ModelMapper modelMapper;
     private Long subscriptionId;
@@ -36,17 +33,17 @@ public class DeleteSubscriptionAction implements Action{
     }
 
     @Override
-    public Void invoke() {
+    public Void invoke()
+    {
         SubscriptionHibernateDAO subscriptionHibernateDAO = this.hibernateUtil.getSubscriptionHibernateDAO();
         Optional<Subscription> subscriptionOptional = subscriptionHibernateDAO.findById(subscriptionId);
         try
         {
-            List<String> errors = new ArrayList<>();
-            if(!subscriptionOptional.isPresent()){
-                errors.add("no subscription found for the given id");
-                throw new NotFoundException(errors);
+            if(!subscriptionOptional.isPresent())
+            {
+                throw new NotFoundException( Collections.singletonList("No subscription matching the given subscription_id") );
             }
-            Subscription subscription= subscriptionOptional.get();
+            Subscription subscription = subscriptionOptional.get();
             subscriptionHibernateDAO.delete(subscription);
         }
         catch (HibernateException e)

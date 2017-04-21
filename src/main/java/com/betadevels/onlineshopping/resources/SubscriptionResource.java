@@ -1,9 +1,12 @@
 package com.betadevels.onlineshopping.resources;
 
 import com.betadevels.onlineshopping.action.subscription.CreateSubscriptionsAction;
+import com.betadevels.onlineshopping.action.subscription.DeleteSubscriptionAction;
 import com.betadevels.onlineshopping.action.subscription.GetSubscriptionsAction;
+
 import com.betadevels.onlineshopping.action.subscription.SkipDueDateAction;
 import com.betadevels.onlineshopping.action.subscription.UpdateSubscriptionAction;
+
 import com.betadevels.onlineshopping.payload.request.subscription.CreateSubscriptionsRequest;
 import com.betadevels.onlineshopping.payload.request.subscription.UpdateSubscriptionRequest;
 import com.betadevels.onlineshopping.payload.response.subscription.SubscriptionListResponse;
@@ -30,25 +33,35 @@ public class SubscriptionResource
 {
 	private final CreateSubscriptionsAction createSubscriptionsAction;
 	private final GetSubscriptionsAction getSubscriptionsAction;
+
+	private final DeleteSubscriptionAction deleteSubscriptionAction;
 	private final SkipDueDateAction skipDueDateAction;
 	private final UpdateSubscriptionAction updateSubscriptionAction;
+
+
+
+
 
 	@Inject
 	public SubscriptionResource( Provider<CreateSubscriptionsAction> createSubscriptionsActionProvider,
 								 Provider<GetSubscriptionsAction> getSubscriptionsActionProvider,
 								 Provider<SkipDueDateAction> skipDueDateActionProvider,
-								 Provider<UpdateSubscriptionAction> updateSubscriptionActionProvider)
+								 Provider<UpdateSubscriptionAction> updateSubscriptionActionProvider,
+								 Provider<DeleteSubscriptionAction> deleteSubscriptionActionProvider)
 	{
 		this.createSubscriptionsAction = createSubscriptionsActionProvider.get();
 		this.getSubscriptionsAction = getSubscriptionsActionProvider.get();
 		this.skipDueDateAction=skipDueDateActionProvider.get();
 		this.updateSubscriptionAction=updateSubscriptionActionProvider.get();
+		this.deleteSubscriptionAction=deleteSubscriptionActionProvider.get();
+
 	}
+
 
 	@POST
 	@UnitOfWork
 	@Timed
-	public Response createSubscriptions( @Context HttpHeaders headers, @NotNull @Valid CreateSubscriptionsRequest createSubscriptionsRequest )
+	public Response createSubscriptions(@Context HttpHeaders headers, @NotNull @Valid CreateSubscriptionsRequest createSubscriptionsRequest )
 	{
 		SubscriptionListResponse subscriptionListResponse = this.createSubscriptionsAction.withRequest( createSubscriptionsRequest )
 		                                                                .invoke();
@@ -67,6 +80,19 @@ public class SubscriptionResource
 		                                                                          .invoke();
 		return Response.status( Response.Status.OK ).entity( subscriptionListResponse ).build();
 	}
+
+
+	@DELETE
+	@Path("/{subscription_id}")
+	@UnitOfWork
+	@Timed
+	public Response delete(@Context HttpHeaders headers, @Context HttpServletRequest request, @NotNull @PathParam("subscription_id") Long subscriptionId)
+	{
+
+		deleteSubscriptionAction.withSubscriptionId(subscriptionId).invoke();
+		return Response.status( Response.Status.OK ).build();
+	}
+
 
 	@POST
 	@Path("/skip/{subscription_id}")
@@ -88,4 +114,5 @@ public class SubscriptionResource
 																			.withId(subscriptionId).invoke();
 		return Response.status(Response.Status.OK).entity(subscriptionResponse).build();
 	}
+
 }

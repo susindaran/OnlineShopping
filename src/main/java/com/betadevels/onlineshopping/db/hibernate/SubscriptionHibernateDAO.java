@@ -9,13 +9,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import java.util.Collections;
 import java.util.List;
 
 public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> implements GenericDAO<Subscription>
 {
-	@Inject
+
 	public SubscriptionHibernateDAO(SessionFactory sessionFactory)
 	{
+
 		super(sessionFactory);
 	}
 
@@ -37,4 +39,12 @@ public class SubscriptionHibernateDAO extends BaseHibernateDAO<Subscription> imp
 		}
 		return count();
 	}
+	public List<Subscription> getSubscriptionsByIds(List<Long> subscriptionId)
+	{
+		Criteria criteria = currentSession().createCriteria(Subscription.class);
+		criteria.add(Restrictions.in("subscriptionId",subscriptionId));
+		return criteria.list();
+	}
+
+
 }

@@ -2,6 +2,7 @@ package com.betadevels.onlineshopping.action.subscription;
 
 import com.betadevels.onlineshopping.action.Action;
 import com.betadevels.onlineshopping.db.hibernate.SubscriptionHibernateDAO;
+import com.betadevels.onlineshopping.enumerations.SubscriptionStatus;
 import com.betadevels.onlineshopping.exceptions.InternalErrorException;
 import com.betadevels.onlineshopping.exceptions.NotFoundException;
 import com.betadevels.onlineshopping.models.Subscription;
@@ -66,7 +67,14 @@ public class UpdateSubscriptionAction implements Action<SubscriptionResponse>
                 {
                     currentSubscription.setQuantity( updateSubscriptionRequest.getQuantity() );
                 }
-
+                if(updateSubscriptionRequest.getStatus()== SubscriptionStatus.INACTIVE)
+                {
+                    currentSubscription.setStatus(updateSubscriptionRequest.getStatus().getStatus());
+                }
+                if(updateSubscriptionRequest.getStatus()== SubscriptionStatus.ACTIVE)
+                {
+                    currentSubscription.setStatus(updateSubscriptionRequest.getStatus().getStatus());
+                }
                 Subscription newSubscription = subscriptionHibernateDAO.update(currentSubscription);
                 return modelMapper.map(newSubscription, SubscriptionResponse.class);
             }

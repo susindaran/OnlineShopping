@@ -14,6 +14,8 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.federecio.dropwizard.swagger.SwaggerBundle;
+import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.Configuration;
 import org.joda.time.DateTimeZone;
@@ -80,6 +82,15 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
         bootstrap.addBundle(HIBERNATE_BUNDLE);
         bootstrap.addBundle(GUICE_BUNDLE);
         bootstrap.addBundle( new AssetsBundle( "/assets/", "/assets/" ) );
+
+        bootstrap.addBundle(new SwaggerBundle<OnlineShoppingConfiguration>() {
+            @Override
+            public SwaggerBundleConfiguration getSwaggerBundleConfiguration(
+                    OnlineShoppingConfiguration sampleConfiguration ) {
+                // this would be the preferred way to set up swagger, you can also construct the object here programtically if you want
+                return sampleConfiguration.swaggerBundleConfiguration;
+            }
+        });
     }
 
     @Override
@@ -88,7 +99,6 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
         log.info("ONLINE SHOPPING BACKEND SERVICE STARTED!");
         environment.getObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         environment.healthChecks().register("Online Shopping Health Check", new OnlineShoppingHealthCheck());
-        environment.jersey().setUrlPattern( "/api/*" );
     }
 
     public static void main(String[] args) throws Exception

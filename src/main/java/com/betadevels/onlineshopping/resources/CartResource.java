@@ -10,6 +10,8 @@ import com.betadevels.onlineshopping.payload.request.cart.AddProductToCartReques
 import com.betadevels.onlineshopping.payload.response.cart.AddProductToCartResponse;
 import com.betadevels.onlineshopping.payload.response.cart.CartItemsResponse;
 import io.dropwizard.hibernate.UnitOfWork;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -22,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@Api("/cart")
 @Path("/cart")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
@@ -51,6 +54,7 @@ public class CartResource
         this.getParticularCartItemsAction = getParticularCartItemsActionProvider.get();
     }
 
+    @ApiOperation( "Sample endpoint" )
     @POST
     @UnitOfWork
     @Timed

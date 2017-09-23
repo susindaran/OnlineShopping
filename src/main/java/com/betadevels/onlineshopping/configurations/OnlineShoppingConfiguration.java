@@ -3,6 +3,7 @@ package com.betadevels.onlineshopping.configurations;
 import io.dropwizard.db.DataSourceFactory;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import lombok.Getter;
 
 import javax.validation.Valid;
@@ -27,4 +28,7 @@ public class OnlineShoppingConfiguration extends Configuration
     @JsonProperty("staticContentRoot")
     @Getter
 	private String staticContentRoot;
+
+    @JsonProperty("swagger")
+    public SwaggerBundleConfiguration swaggerBundleConfiguration;
 }

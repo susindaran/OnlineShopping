@@ -47,3 +47,5 @@ endpoint: http://localhost:8888/
 
 swagger:
   resourcePackage: com.betadevels.onlineshopping.resources
+  host: localhost
+  port: 8888

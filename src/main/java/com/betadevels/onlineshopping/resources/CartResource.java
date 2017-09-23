@@ -24,7 +24,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@Api("/cart")
+@Api( value = "Cart operations",
+basePath = "/cart",
+consumes = MediaType.APPLICATION_JSON,
+produces = MediaType.APPLICATION_JSON,
+description = "Perform operations on a user's cart such as add, delete and update products")
 @Path("/cart")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
@@ -54,7 +58,11 @@ public class CartResource
         this.getParticularCartItemsAction = getParticularCartItemsActionProvider.get();
     }
 
-    @ApiOperation( "Sample endpoint" )
+    @ApiOperation
+    (
+            value = "Add product to a user's cart",
+            response = AddProductToCartResponse.class
+    )
     @POST
     @UnitOfWork
     @Timed
@@ -64,6 +72,11 @@ public class CartResource
         return Response.status( Response.Status.CREATED ).entity( addProductToCartResponse ).build();
     }
 
+    @ApiOperation
+    (
+            value = "Get items in a user's cart",
+            response = CartItemsResponse.class
+    )
     @GET
     @Path("/{customer_id}")
     @UnitOfWork
@@ -78,6 +91,11 @@ public class CartResource
         return Response.status( Response.Status.OK ).entity( this.getItemsInCartCountAction.forCustomerId( customerId ).invoke() ).build();
     }
 
+    @ApiOperation
+    (
+            value = "Get specific cart items",
+            response =  CartItemsResponse.class
+    )
     @GET
     @UnitOfWork
     @Timed
@@ -88,6 +106,11 @@ public class CartResource
         return Response.status( Response.Status.OK ).entity( cartItemsResponse ).build();
     }
 
+    @ApiOperation
+    (
+            value = "Update cart",
+            response =  CartResponse.class
+    )
     @PUT
     @Path("/{cart_id}")
     @UnitOfWork
@@ -98,6 +121,11 @@ public class CartResource
         return Response.status(Response.Status.OK).entity(cartResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Delete item in a cart",
+            response = Void.class
+    )
     @DELETE
     @Path("/{cart_id}")
     @UnitOfWork

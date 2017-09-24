@@ -1,12 +1,14 @@
 package com.betadevels.onlineshopping.resources;
 
+import com.betadevels.onlineshopping.action.category.*;
+import com.betadevels.onlineshopping.payload.request.category.CategoryRequest;
+import com.betadevels.onlineshopping.payload.response.category.CategoriesResponse;
+import com.betadevels.onlineshopping.payload.response.category.CategoryResponse;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.betadevels.onlineshopping.action.category.*;
-import com.betadevels.onlineshopping.payload.request.category.CategoryRequest;
-import com.betadevels.onlineshopping.payload.response.category.CategoryResponse;
-import com.betadevels.onlineshopping.payload.response.category.CategoriesResponse;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,6 +19,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Api( value = "Category operations",
+        basePath = "/cart",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON,
+        description = "Product category management")
 @Path("/category")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
@@ -43,6 +50,11 @@ public class CategoryResource
     }
 
 
+    @ApiOperation
+    (
+            value = "Create a new category",
+            response = CategoryResponse.class
+    )
     @POST
     @UnitOfWork
     @Timed
@@ -52,7 +64,11 @@ public class CategoryResource
         return Response.status(Response.Status.CREATED).entity(categoryResponse).build();
     }
 
-
+    @ApiOperation
+    (
+            value = "Get a category by id",
+            response = CategoryResponse.class
+    )
     @GET
     @Path("/{id}")
     @UnitOfWork
@@ -63,6 +79,11 @@ public class CategoryResource
         return Response.ok().entity(categoryResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Update a category by id",
+            response = CategoryResponse.class
+    )
     @POST
     @Path("/update/{id}")
     @UnitOfWork
@@ -73,6 +94,11 @@ public class CategoryResource
         return Response.status(Response.Status.OK).entity(categoryResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Get all categories",
+            response = CategoriesResponse.class
+    )
     @GET
     @Path("/all")
     @UnitOfWork
@@ -82,6 +108,11 @@ public class CategoryResource
         return Response.status(Response.Status.OK).entity(categoriesResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Delete a category by ID",
+            response = Void.class
+    )
     @DELETE
     @Path("/{id}")
     @UnitOfWork

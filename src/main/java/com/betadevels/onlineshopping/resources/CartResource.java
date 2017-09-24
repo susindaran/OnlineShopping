@@ -28,7 +28,7 @@ import java.util.List;
 basePath = "/cart",
 consumes = MediaType.APPLICATION_JSON,
 produces = MediaType.APPLICATION_JSON,
-description = "Perform operations on a user's cart such as add, delete and update products")
+description = "CRUD ops on items in cart")
 @Path("/cart")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j

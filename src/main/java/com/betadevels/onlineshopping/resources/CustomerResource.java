@@ -23,6 +23,8 @@ import com.betadevels.onlineshopping.payload.response.address.AddressResponse;
 import com.betadevels.onlineshopping.payload.response.card.CardDetailResponse;
 import com.betadevels.onlineshopping.payload.response.customer.ChallengeLoginResponse;
 import com.betadevels.onlineshopping.payload.response.customer.CustomerResponse;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 import io.dropwizard.hibernate.UnitOfWork;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +36,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Api( value = "Customer operations",
+        basePath = "/customer",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON,
+        description = "Customer, Address and Card CRUD")
 @Path("/customer")
 @Produces(MediaType.APPLICATION_JSON)
 @Slf4j
@@ -77,6 +84,11 @@ public class CustomerResource
         this.editCardDetailAction = editCardDetailActionProvider.get();
     }
 
+    @ApiOperation
+    (
+            value = "Get customer by id",
+            response = CustomerResponse.class
+    )
     @GET
     @Path("/{id}")
     @UnitOfWork
@@ -87,6 +99,11 @@ public class CustomerResource
         return Response.ok().entity(customerResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Create new customer",
+            response = CustomerResponse.class
+    )
     @POST
     @UnitOfWork
     @Timed
@@ -96,6 +113,11 @@ public class CustomerResource
         return Response.status(Response.Status.CREATED).entity(customerResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Authenticate customer login",
+            response = ChallengeLoginResponse.class
+    )
     @POST
     @Path("/login")
     @UnitOfWork
@@ -106,6 +128,11 @@ public class CustomerResource
         return Response.status(Response.Status.OK).entity(challengeLoginResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Update customer profile by id",
+            response = CustomerResponse.class
+    )
     @PUT
     @Path("/{id}")
     @UnitOfWork
@@ -116,6 +143,11 @@ public class CustomerResource
         return Response.status(Response.Status.OK).entity(customerResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Delete customer by id",
+            response = Void.class
+    )
     @DELETE
     @Path("/{id}")
     @UnitOfWork
@@ -130,6 +162,11 @@ public class CustomerResource
     * Address APIs
     * */
 
+    @ApiOperation
+    (
+            value = "Add address for customer",
+            response = AddressResponse.class
+    )
     @POST
     @Path("/address/{customer_id}")
     @UnitOfWork
@@ -140,6 +177,11 @@ public class CustomerResource
         return Response.status(Response.Status.CREATED).entity(addressResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Delete customer address by ID",
+            response = Void.class
+    )
     @DELETE
     @Path("/address/{address_id}")
     @UnitOfWork
@@ -150,7 +192,11 @@ public class CustomerResource
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
-
+    @ApiOperation
+    (
+            value = "Edit customer address by ID",
+            response = AddressResponse.class
+    )
     @PUT
     @Path("/address/{address_id}")
     @UnitOfWork
@@ -166,6 +212,11 @@ public class CustomerResource
     * Card APIs
     * */
 
+    @ApiOperation
+    (
+            value = "Add card details to customer",
+            response = CardDetailResponse.class
+    )
     @POST
     @Path("/card/{customer_id}")
     @UnitOfWork
@@ -176,6 +227,11 @@ public class CustomerResource
         return Response.status(Response.Status.CREATED).entity(cardDetailResponse).build();
     }
 
+    @ApiOperation
+    (
+            value = "Delete card detail",
+            response = Void.class
+    )
     @DELETE
     @Path("/card/{card_number}")
     @UnitOfWork
@@ -186,6 +242,11 @@ public class CustomerResource
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+    @ApiOperation
+    (
+            value = "Edit card detail",
+            response = CardDetailResponse.class
+    )
     @PUT
     @Path("/card/{card_number}")
     @UnitOfWork

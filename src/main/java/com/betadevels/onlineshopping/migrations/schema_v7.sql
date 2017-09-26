@@ -1,1 +1,0 @@
-ALTER TABLE shopping.order_detail ADD order_detail_status VARCHAR(45) NOT NULL;

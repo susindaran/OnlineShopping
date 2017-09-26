@@ -1,0 +1,1 @@
+mysql --defaults-file=mysql_creds.cnf < ../java/com/betadevels/onlineshopping/migrations/schema.sql

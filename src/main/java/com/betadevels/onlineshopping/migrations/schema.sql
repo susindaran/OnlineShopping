@@ -165,3 +165,71 @@ CREATE TABLE `tax_details` (
   `tax` int(5) DEFAULT NULL,
   PRIMARY KEY (`zipcode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `customer` ADD CONSTRAINT `email_id_UK_customer` UNIQUE (`email_id`);
+
+ALTER TABLE `order` ADD `shipping_address_id` INT(11) UNSIGNED NOT NULL;
+ALTER TABLE `order` ADD `billing_address_id` INT(11) UNSIGNED NOT NULL;
+
+ALTER TABLE `order` ADD CONSTRAINT `shipping_address_id_FK_order` FOREIGN KEY (`shipping_address_id`) REFERENCES `address`(`address_id`);
+ALTER TABLE `order` ADD CONSTRAINT `billing_address_id_FK_order` FOREIGN KEY (`billing_address_id`) REFERENCES `address`(`address_id`);
+
+ALTER TABLE `order` ADD INDEX `shipping_address_id_IDX_order` (`shipping_address_id`);
+ALTER TABLE `order` ADD INDEX `billing_address_id_IDX_order` (`billing_address_id`);
+
+ALTER TABLE `tax_details` CHANGE `zipcode` `state` VARCHAR(15);
+
+ALTER TABLE `address` CHANGE `state` `state` VARCHAR(15);
+ALTER TABLE `address` ADD CONSTRAINT `state_FK_address` FOREIGN KEY (`state`) REFERENCES `tax_details`(`state`);
+ALTER TABLE `address` ADD INDEX `state_IDX_address` (`state`);
+
+ALTER TABLE `subscription` ADD `coupon_id` VARCHAR(15) NOT NULL;
+ALTER TABLE `subscription` ADD CONSTRAINT `coupon_id_FK_subscription` FOREIGN KEY (`coupon_id`) REFERENCES `offer`(`coupon_id`);
+ALTER TABLE `subscription` ADD INDEX `coupon_id_IDX_subscription` (`coupon_id`);
+
+ALTER TABLE `address` ADD `type` VARCHAR(10) NOT NULL;
+ALTER TABLE `tax_details` MODIFY COLUMN `tax` FLOAT(6,3) NOT NULL DEFAULT 0.0;
+ALTER TABLE `address` ADD `name` VARCHAR(90) NOT NULL;
+
+ALTER TABLE `address` CHANGE `state` `state` VARCHAR(15) NOT NULL;
+
+ALTER TABLE customer ADD is_admin TINYINT(1) DEFAULT 0 NULL;
+
+ALTER TABLE shopping.order_detail ADD order_detail_id INT(11) UNSIGNED NOT NULL;
+ALTER TABLE shopping.order_detail DROP PRIMARY KEY;
+ALTER TABLE shopping.order_detail ADD PRIMARY KEY (order_detail_id);
+ALTER TABLE shopping.order_detail CHANGE order_detail_id order_detail_id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE shopping.order_detail ADD CONSTRAINT order_product_UK_order_detail UNIQUE (order_id, product_id);
+
+ALTER TABLE shopping.cart ADD cart_id INT(11) UNSIGNED NOT NULL;
+ALTER TABLE shopping.cart DROP PRIMARY KEY;
+ALTER TABLE shopping.cart ADD PRIMARY KEY (cart_id);
+ALTER TABLE shopping.cart CHANGE cart_id cart_id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE shopping.cart ADD CONSTRAINT customer_product_UK_cart UNIQUE (customer_id, product_id);
+
+ALTER TABLE shopping.product ADD CONSTRAINT product_id_UK_product UNIQUE KEY (product_id);
+
+ALTER TABLE shopping.shipment ADD order_id INT(11) UNSIGNED NOT NULL;
+ALTER TABLE shopping.shipment ADD CONSTRAINT order_id_FK_shipment FOREIGN KEY (order_id) REFERENCES `order` (order_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE shopping.order_detail ADD order_detail_status VARCHAR(45) NOT NULL;
+
+ALTER TABLE `order_detail` ADD `coupon_id` varchar(15) DEFAULT NULL;
+ALTER TABLE `order_detail` ADD CONSTRAINT `coupon_id_FK_order_detail` FOREIGN KEY (`coupon_id`) REFERENCES `offer` (`coupon_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `order_detail` ADD INDEX `coupon_id_IDX_order_detail` (`coupon_id`);
+
+ALTER TABLE shopping.subscription ADD subscription_id INT(11) UNSIGNED NOT NULL;
+ALTER TABLE shopping.subscription DROP PRIMARY KEY;
+ALTER TABLE shopping.subscription ADD PRIMARY KEY (subscription_id);
+ALTER TABLE shopping.subscription CHANGE subscription_id subscription_id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+ALTER TABLE shopping.subscription ADD CONSTRAINT customer_product_UK_subscription UNIQUE (customer_id, product_id);
+ALTER TABLE shopping.subscription MODIFY COLUMN coupon_id varchar(15) NULL;
+
+ALTER TABLE `subscription` ADD `shipping_address_id` INT(11) UNSIGNED NOT NULL;
+ALTER TABLE `subscription` ADD `billing_address_id` INT(11) UNSIGNED NOT NULL;
+
+ALTER TABLE `subscription` ADD CONSTRAINT `shipping_address_id_FK_subscription` FOREIGN KEY (`shipping_address_id`) REFERENCES `address`(`address_id`);
+ALTER TABLE `subscription` ADD CONSTRAINT `billing_address_id_FK_subscription` FOREIGN KEY (`billing_address_id`) REFERENCES `address`(`address_id`);
+
+ALTER TABLE `subscription` ADD INDEX `shipping_address_id_IDX_subscription` (`shipping_address_id`);
+ALTER TABLE `subscription` ADD INDEX `billing_address_id_IDX_subscription` (`billing_address_id`);

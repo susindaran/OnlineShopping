@@ -1,1 +1,0 @@
-ALTER TABLE customer ADD is_admin TINYINT(1) DEFAULT 0 NULL;

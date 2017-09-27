@@ -1,3 +1,5 @@
+[![Swagger Validator](https://img.shields.io/badge/swagger-integrated-brightgreen.svg)](https://swagger.io/)
+
 # OnlineShopping
 A REST HTTP service for an e-commerce website. 
 

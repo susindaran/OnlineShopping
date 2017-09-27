@@ -45,7 +45,7 @@ public class OnlineShoppingConfiguration extends Configuration
         String username = jdbUri.getUserInfo().split(":")[0];
         String password = jdbUri.getUserInfo().split(":")[1];
         String port = String.valueOf(jdbUri.getPort());
-        String jdbUrl = "jdbc:mysql://" + jdbUri.getHost() + ":" + port + jdbUri.getPath();
+        String jdbUrl = "jdbc:mysql://" + jdbUri.getHost() + ":" + port + jdbUri.getPath() + "?useSSL=false";
 
         DataSourceFactory fac = new DataSourceFactory();
         fac.setUrl( jdbUrl );

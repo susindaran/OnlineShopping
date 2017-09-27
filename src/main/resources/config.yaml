@@ -36,7 +36,7 @@ databaseConfiguration:
 # server settings
 server:
   applicationConnectors:
-    - type: http
+    - type: https
       port: 5000
 
 endpoint: http://0.0.0.0:5000/

@@ -19,6 +19,7 @@ public class OnlineShoppingConfiguration extends Configuration
 
     @Valid
     @NotNull
+    @JsonProperty("databaseConfiguration")
     private DataSourceFactory dataSourceFactory = getDS();
 
     public OnlineShoppingConfiguration() throws URISyntaxException

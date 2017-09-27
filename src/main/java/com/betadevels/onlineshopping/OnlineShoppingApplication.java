@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.Configuration;
 import org.joda.time.DateTimeZone;
 
+import java.net.URISyntaxException;
 import java.util.TimeZone;
 
 @Slf4j
@@ -51,6 +52,14 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
                 public DataSourceFactory getDataSourceFactory(OnlineShoppingConfiguration onlineShoppingConfiguration)
                 {
                     System.out.println(onlineShoppingConfiguration.getDatabaseConfiguration().getUrl());
+                    try
+                    {
+                        return OnlineShoppingConfiguration.getDS();
+                    }
+                    catch( URISyntaxException e )
+                    {
+                        e.printStackTrace();
+                    }
                     return onlineShoppingConfiguration.getDatabaseConfiguration();
                 }
 

@@ -52,6 +52,10 @@ public class OnlineShoppingConfiguration extends Configuration
         fac.setUser( username );
         fac.setPassword( password );
 
+        System.out.println(jdbUrl);
+        System.out.println(username);
+        System.out.println(password);
+
         return fac;
     }
 }

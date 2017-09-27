@@ -43,4 +43,4 @@ endpoint: http://0.0.0.0:5000/
 
 swagger:
   resourcePackage: com.betadevels.onlineshopping.resources
-  host: https://mercato-backend.herokuapp.com
+  host: mercato-backend.herokuapp.com

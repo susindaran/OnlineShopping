@@ -99,7 +99,7 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
                     OnlineShoppingConfiguration sampleConfiguration ) {
                 // this would be the preferred way to set up swagger, you can also construct the object here programtically if you want
                 SwaggerBundleConfiguration swaggerBundleConfiguration = sampleConfiguration.swaggerBundleConfiguration;
-                swaggerBundleConfiguration.setPort( Integer.valueOf( System.getenv("PORT" ) ) );
+//                swaggerBundleConfiguration.setPort( Integer.valueOf( System.getenv("PORT" ) ) );
                 return swaggerBundleConfiguration;
             }
         });

@@ -179,7 +179,7 @@ ALTER TABLE `order` ADD INDEX `billing_address_id_IDX_order` (`billing_address_i
 
 ALTER TABLE `tax_details` CHANGE `zipcode` `state` VARCHAR(15);
 
-ALTER TABLE `address` CHANGE `state` `state` VARCHAR(15);
+ALTER TABLE `address` CHANGE `state` `state` VARCHAR(15) NOT NULL;
 ALTER TABLE `address` ADD CONSTRAINT `state_FK_address` FOREIGN KEY (`state`) REFERENCES `tax_details`(`state`);
 ALTER TABLE `address` ADD INDEX `state_IDX_address` (`state`);
 
@@ -190,8 +190,6 @@ ALTER TABLE `subscription` ADD INDEX `coupon_id_IDX_subscription` (`coupon_id`);
 ALTER TABLE `address` ADD `type` VARCHAR(10) NOT NULL;
 ALTER TABLE `tax_details` MODIFY COLUMN `tax` FLOAT(6,3) NOT NULL DEFAULT 0.0;
 ALTER TABLE `address` ADD `name` VARCHAR(90) NOT NULL;
-
-ALTER TABLE `address` CHANGE `state` `state` VARCHAR(15) NOT NULL;
 
 ALTER TABLE customer ADD is_admin TINYINT(1) DEFAULT 0 NULL;
 

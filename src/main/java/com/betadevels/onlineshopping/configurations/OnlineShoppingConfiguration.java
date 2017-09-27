@@ -51,6 +51,9 @@ public class OnlineShoppingConfiguration extends Configuration
         fac.setUrl( jdbUrl );
         fac.setUser( username );
         fac.setPassword( password );
+        fac.setDriverClass( "com.mysql.jdbc.Driver" );
+        fac.setMinSize( 3 );
+        fac.setMaxSize( 8 );
 
         System.out.println(jdbUrl);
         System.out.println(username);

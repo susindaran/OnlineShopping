@@ -1,6 +1,12 @@
 # OnlineShopping
 A REST HTTP service for an e-commerce website. 
 
+#### Create Database(MySQL) Schema
+* ```cd src/main/resources```
+* Modify ```mysql_creds.cnf``` with mysql username and password
+* ```sh create_schema.sh```
+
+
 ## Run from IntelliJ
 * Program Arguments: ```server src/main/resources/config.yaml```
 
@@ -18,8 +24,6 @@ Now static files under the `assets` folder will be served in the path `/assets/i
 * ```mvn clean install```
 * ```java -jar path/to/jar.jar server path/to/config.yaml```
 
-To server static content, have a directory named `static` in the same directory as the jar
-and put all the static contents under the `assets` folder inside the `static` directory.
+To server static content, have a directory named `static` in the same directory as the jar and put all the static contents under the `assets` folder inside the `static` directory.
 
-__The directory should be named 'static' and should be in the same path as the jar file
-because the maven shade plugin is configured to add this static folder to the class path__
+__The directory should be named 'static' and should be in the same path as the jar file because the maven shade plugin is configured to add this static folder to the class path__

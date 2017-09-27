@@ -50,6 +50,7 @@ public class OnlineShoppingApplication extends Application<OnlineShoppingConfigu
                 @Override
                 public DataSourceFactory getDataSourceFactory(OnlineShoppingConfiguration onlineShoppingConfiguration)
                 {
+                    System.out.println(onlineShoppingConfiguration.getDatabaseConfiguration().getUrl());
                     return onlineShoppingConfiguration.getDatabaseConfiguration();
                 }
 
